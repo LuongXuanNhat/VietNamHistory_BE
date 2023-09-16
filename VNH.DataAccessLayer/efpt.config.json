@@ -1,0 +1,175 @@
+﻿{
+   "CodeGenerationMode": 2,
+   "ContextClassName": "VietNamHistoryContext",
+   "ContextNamespace": null,
+   "DefaultDacpacSchema": null,
+   "FilterSchemas": false,
+   "IncludeConnectionString": true,
+   "ModelNamespace": null,
+   "OutputContextPath": null,
+   "OutputPath": "Models",
+   "PreserveCasingWithRegex": true,
+   "ProjectRootNamespace": "VNH.DataAccessLayer",
+   "Schemas": null,
+   "SelectedHandlebarsLanguage": 0,
+   "SelectedToBeGenerated": 0,
+   "T4TemplatePath": null,
+   "Tables": [
+      {
+         "Name": "[dbo].[Answer]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[AnswerVote]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Course]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[CourseComment]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[CourseRating]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[CourseSave]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[CourseSubComment]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Document]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[DocumentSave]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Exercise]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ExerciseDetail]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Lesson]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[News]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Post]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[PostComment]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[PostDetail]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[PostLike]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[PostReport]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[PostReportDetail]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[PostSave]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[PostSubComment]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Question]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[QuestionLike]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[QuestionReport]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[QuestionReportDetail]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[QuestionSave]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[QuestionTag]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Quiz]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Search]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SubAnswer]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Tag]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Topic]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TopicDetail]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[User]",
+         "ObjectType": 0
+      }
+   ],
+   "UiHint": "devcode1\\sqlexpress.VietNamHistory.dbo",
+   "UncountableWords": null,
+   "UseBoolPropertiesWithoutDefaultSql": false,
+   "UseDatabaseNames": false,
+   "UseDateOnlyTimeOnly": false,
+   "UseDbContextSplitting": false,
+   "UseFluentApiOnly": false,
+   "UseHandleBars": false,
+   "UseHierarchyId": false,
+   "UseInflector": true,
+   "UseLegacyPluralizer": false,
+   "UseManyToManyEntity": false,
+   "UseNoDefaultConstructor": false,
+   "UseNoObjectFilter": false,
+   "UseNodaTime": false,
+   "UseNullableReferences": false,
+   "UseSchemaFolders": false,
+   "UseSchemaNamespaces": false,
+   "UseSpatial": false,
+   "UseT4": false
+}
