@@ -4,7 +4,7 @@ namespace VNH.Infrastructure
 {
     public static class DependencyInjectionInfrastructure
     {
-        public static IServiceCollection AddDataAccessLayer(this IServiceCollection services)
+        public static IServiceCollection AddInfrastructure(this IServiceCollection services)
         {
 
             return services;

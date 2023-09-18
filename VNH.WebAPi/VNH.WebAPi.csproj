@@ -11,9 +11,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
     <Folder Include="ViewModels\Common\" />
     <Folder Include="ViewModels\Catalog\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\VNH.Application\VNH.Application.csproj" />
+    <ProjectReference Include="..\VNH.Infrastructure\VNH.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
