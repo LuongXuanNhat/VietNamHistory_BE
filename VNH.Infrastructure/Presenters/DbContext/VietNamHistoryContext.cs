@@ -4,9 +4,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
+using VNH.Domain;
 using VNH.Domain.Entities;
 
-namespace VNH.Domain
+namespace VNH.Infrastructure.Presenters.Migrations
 {
     public partial class VietNamHistoryContext : IdentityDbContext<User, Role, Guid>
     {

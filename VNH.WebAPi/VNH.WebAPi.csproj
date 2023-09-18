@@ -10,4 +10,10 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+    <Folder Include="ViewModels\Common\" />
+    <Folder Include="ViewModels\Catalog\" />
+  </ItemGroup>
+
 </Project>

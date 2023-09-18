@@ -8,7 +8,7 @@ using VNH.Domain;
 
 #nullable disable
 
-namespace VNH.Domain.Migrations
+namespace VNH.Infrastructure.Presenters.Migrations
 {
     [DbContext(typeof(VietNamHistoryContext))]
     partial class VietNamHistoryContextModelSnapshot : ModelSnapshot

@@ -10,4 +10,12 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Common\" />
+    <Folder Include="DTOs\Catalog\" />
+    <Folder Include="DTOs\Common\" />
+    <Folder Include="Services\Catalog\" />
+    <Folder Include="System\" />
+  </ItemGroup>
+
 </Project>

@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace VNH.Domain.Migrations
+namespace VNH.Infrastructure.Presenters.Migrations
 {
-    public partial class init_database : Migration
+    public partial class InitDatabase : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
