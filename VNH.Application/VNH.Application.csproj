@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\VNH.Infrastructure\VNH.Infrastructure.csproj" />
+    <ProjectReference Include="..\VNH.Domain\VNH.Domain.csproj" />
   </ItemGroup>
 
 </Project>

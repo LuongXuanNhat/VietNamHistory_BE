@@ -11,8 +11,9 @@ namespace VNH.WebAPi
 
             // Add services to the container.
             // Add DI in other layer
-            builder.Services.AddApplication();
             builder.Services.AddInfrastructure();
+            builder.Services.AddApplication();
+            
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

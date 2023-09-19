@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using VNH.Application.DTOs.Catalog.Users;
-using VNH.Application.Services.Catalog.User;
+using VNH.Application.Services.Catalog.Users;
 
 namespace VNH.WebAPi.Controllers
 {

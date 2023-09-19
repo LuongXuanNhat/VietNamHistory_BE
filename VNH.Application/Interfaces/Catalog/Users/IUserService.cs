@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using VNH.Application.DTOs.Catalog.Users;
 using VNH.Application.DTOs.Common;
 
-namespace VNH.Application.Services.Catalog.User
+namespace VNH.Application.Services.Catalog.Users
 {
     public interface IUserService
     {

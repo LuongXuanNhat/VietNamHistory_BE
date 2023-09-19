@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace VNH.Infrastructure.Presenters.Migrations
 {
-    public partial class InitDatabase : Migration
+    public partial class initDatabase : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -125,6 +125,8 @@ namespace VNH.Infrastructure.Presenters.Migrations
                     table.PrimaryKey("PK_Roles", x => x.Id);
                 });
 
+            
+
             migrationBuilder.CreateTable(
                 name: "Tag",
                 columns: table => new
@@ -165,8 +167,23 @@ namespace VNH.Infrastructure.Presenters.Migrations
                 {
                     table.PrimaryKey("PK_User", x => x.Id);
                 });
+
             migrationBuilder.CreateTable(
-                name: "AppUserRoles",
+                name: "UserClaims",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserClaims", x => x.Id);
+                });
+            migrationBuilder.CreateTable(
+                name: "UserRoles",
                 columns: table => new
                 {
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -190,21 +207,6 @@ namespace VNH.Infrastructure.Presenters.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
-            migrationBuilder.CreateTable(
-                name: "UserClaims",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserClaims", x => x.Id);
-                });
-
             migrationBuilder.CreateTable(
                 name: "Answer",
                 columns: table => new

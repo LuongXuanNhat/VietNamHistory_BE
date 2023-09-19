@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using VNH.Application.Interfaces.Catalog.User;
-using VNH.Application.Services.Catalog.User;
+using VNH.Application.Services.Catalog.Users;
 
 namespace VNH.Application
 {
@@ -8,7 +7,6 @@ namespace VNH.Application
     {
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
-            services.AddTransient<IUserService, UserService>();
 
             return services;
         }

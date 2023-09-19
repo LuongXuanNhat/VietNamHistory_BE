@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using VNH.Domain;
 using VNH.Domain.Entities;
+using VNH.Infrastructure.Presenters.DbContext;
 
 namespace VNH.Infrastructure.Presenters.Migrations
 {
@@ -515,12 +516,13 @@ namespace VNH.Infrastructure.Presenters.Migrations
           
             });
 
-            modelBuilder.Entity<IdentityUserRole<Guid>>().ToTable("AppUserRoles").HasKey(x => new { x.UserId, x.RoleId });
+            modelBuilder.Entity<IdentityUserRole<Guid>>().ToTable("UserRoles").HasKey(x => new { x.UserId, x.RoleId });
             modelBuilder.Entity<IdentityUserLogin<Guid>>().ToTable("AppUserLogins").HasKey(x => x.UserId);
             modelBuilder.Entity<IdentityRoleClaim<Guid>>().ToTable("AppRoleClaims");
             modelBuilder.Entity<IdentityUserToken<Guid>>().ToTable("AppUserTokens").HasKey(x => x.UserId);
 
             OnModelCreatingPartial(modelBuilder);
+            new SeedingData(modelBuilder).Seed();
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
