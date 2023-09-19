@@ -1,5 +1,5 @@
 ﻿
-namespace VNH.Domain
+namespace VNH.Domain.Enums
 {
     public enum Gender
     {

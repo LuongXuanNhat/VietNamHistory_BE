@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using VNH.Application.Services.Catalog.Users;
 
 namespace VNH.Application
 {

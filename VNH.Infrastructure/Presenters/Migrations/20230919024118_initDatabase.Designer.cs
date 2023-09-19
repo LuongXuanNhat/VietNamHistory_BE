@@ -5,15 +5,15 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using VNH.Domain;
+using VNH.Infrastructure.Presenters.Migrations;
 
 #nullable disable
 
-namespace VNH.Domain.Migrations
+namespace VNH.Infrastructure.Presenters.Migrations
 {
     [DbContext(typeof(VietNamHistoryContext))]
-    [Migration("20230918052113_init_database")]
-    partial class init_database
+    [Migration("20230919024118_initDatabase")]
+    partial class initDatabase
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

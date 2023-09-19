@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using VNH.Domain;
 using VNH.Domain.Entities;
+using VNH.Infrastructure.Presenters.DbContext;
 
 namespace VNH.Infrastructure.Presenters.Migrations
 {
@@ -20,6 +21,7 @@ namespace VNH.Infrastructure.Presenters.Migrations
         {
         }
 
+        #region Configuration DbSet<Object>
         public virtual DbSet<Answer> Answers { get; set; }
         public virtual DbSet<Notification> Notifications { get; set; }
         public virtual DbSet<NotificationDetail> NotificationDetails { get; set; }
@@ -56,6 +58,7 @@ namespace VNH.Infrastructure.Presenters.Migrations
         public virtual DbSet<Topic> Topics { get; set; }
         public virtual DbSet<TopicDetail> TopicDetails { get; set; }
         public virtual DbSet<User> User { get; set; }
+        #endregion
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -515,12 +518,13 @@ namespace VNH.Infrastructure.Presenters.Migrations
           
             });
 
-            modelBuilder.Entity<IdentityUserRole<Guid>>().ToTable("AppUserRoles").HasKey(x => new { x.UserId, x.RoleId });
+            modelBuilder.Entity<IdentityUserRole<Guid>>().ToTable("UserRoles").HasKey(x => new { x.UserId, x.RoleId });
             modelBuilder.Entity<IdentityUserLogin<Guid>>().ToTable("AppUserLogins").HasKey(x => x.UserId);
             modelBuilder.Entity<IdentityRoleClaim<Guid>>().ToTable("AppRoleClaims");
             modelBuilder.Entity<IdentityUserToken<Guid>>().ToTable("AppUserTokens").HasKey(x => x.UserId);
 
             OnModelCreatingPartial(modelBuilder);
+            new SeedingData(modelBuilder).Seed();
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);

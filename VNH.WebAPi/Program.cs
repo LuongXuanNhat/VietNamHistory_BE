@@ -1,3 +1,6 @@
+using VNH.Application;
+using VNH.Infrastructure;
+
 namespace VNH.WebAPi
 {
     public class Program
@@ -7,6 +10,10 @@ namespace VNH.WebAPi
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            // Add DI in other layer
+            builder.Services.AddInfrastructure(builder.Configuration);
+            builder.Services.AddApplication();
+            
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
