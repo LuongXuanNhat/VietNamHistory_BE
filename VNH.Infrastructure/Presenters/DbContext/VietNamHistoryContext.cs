@@ -21,6 +21,7 @@ namespace VNH.Infrastructure.Presenters.Migrations
         {
         }
 
+        #region Configuration DbSet<Object>
         public virtual DbSet<Answer> Answers { get; set; }
         public virtual DbSet<Notification> Notifications { get; set; }
         public virtual DbSet<NotificationDetail> NotificationDetails { get; set; }
@@ -57,6 +58,7 @@ namespace VNH.Infrastructure.Presenters.Migrations
         public virtual DbSet<Topic> Topics { get; set; }
         public virtual DbSet<TopicDetail> TopicDetails { get; set; }
         public virtual DbSet<User> User { get; set; }
+        #endregion
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

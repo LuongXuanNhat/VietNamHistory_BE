@@ -16,7 +16,6 @@ namespace VNH.Infrastructure.Implement.Catalog.Users
 {
     public class UserService : IUserService
     {
-        private readonly IMemoryCache _cache;
         private readonly IConfiguration _config;
         private readonly VietNamHistoryContext _context;
         private readonly UserManager<User> _userManager;
@@ -26,28 +25,21 @@ namespace VNH.Infrastructure.Implement.Catalog.Users
         public UserService(VietNamHistoryContext context,
                 UserManager<User> userManager, 
                 SignInManager<User> signInManager,
-                IConfiguration configuration,
-                IMemoryCache memoryCache) {
+                IConfiguration configuration) {
             _context = context;
             _userManager = userManager;
             _signInManager = signInManager;
             _config = configuration;
-            _cache = memoryCache;
         }
         public async Task<ApiResult<string>> Authenticate(LoginRequest request)
         {
-            var user = await GetUserFromCacheOrDatabase(request.Email);
+            var user = await _userManager.FindByEmailAsync(request.Email);
             if (user == null) return new ApiErrorResult<string>("Tài khoản không tồn tại");
-            if (user.Status.Equals(true))
-            {
-                return new ApiErrorResult<string>("Tài khoản bị khóa");
-            }
+            if (user.Status.Equals(true)) return new ApiErrorResult<string>("Tài khoản bị khóa");
 
             var result = await _signInManager.PasswordSignInAsync(user, request.Password, true, true);
-            if (!result.Succeeded)
-            {
-                return new ApiErrorResult<string>("Sai mật khẩu");
-            }
+            if (!result.Succeeded) return new ApiErrorResult<string>("Sai mật khẩu");
+            
             var roles = await _userManager.GetRolesAsync(user);
             var claims = new[]
             {
@@ -63,33 +55,8 @@ namespace VNH.Infrastructure.Implement.Catalog.Users
                 claims,
                 expires: DateTime.Now.AddHours(3),
                 signingCredentials: creds);
-            return new ApiSuccessResult<string>(GetJwtTokenString(token));
+            return new ApiSuccessResult<string>(new JwtSecurityTokenHandler().WriteToken(token));
         }
-        private async Task<User?> GetUserFromCacheOrDatabase(string email)
-        {
-            if (_cache.TryGetValue(email, out User cachedUser))
-            {
-                return cachedUser;
-            }
-            var user = await _userManager.Users.FirstOrDefaultAsync(x=>x.Email.Equals(email));
-            if (user != null)
-            {
-                var cacheEntryOptions = new MemoryCacheEntryOptions
-                {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(7)
-                };
-                _cache.Set(email, user, cacheEntryOptions);
-            }
-
-            return user;
-        }
-        private string GetJwtTokenString(JwtSecurityToken token)
-        {
-            var jwtHandler = new JwtSecurityTokenHandler();
-            return jwtHandler.WriteToken(token);
-        }
-
-
 
 
 

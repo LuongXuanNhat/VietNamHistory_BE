@@ -11,7 +11,7 @@ namespace VNH.WebAPi
 
             // Add services to the container.
             // Add DI in other layer
-            builder.Services.AddInfrastructure();
+            builder.Services.AddInfrastructure(builder.Configuration);
             builder.Services.AddApplication();
             
 
