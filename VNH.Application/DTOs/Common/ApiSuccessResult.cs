@@ -13,5 +13,10 @@ namespace VNH.Application.DTOs.Common
         {
             IsSuccessed = true;
         }
+        public ApiSuccessResult(string message)
+        {
+            IsSuccessed = true;
+            Message = message;
+        }
     }
 }

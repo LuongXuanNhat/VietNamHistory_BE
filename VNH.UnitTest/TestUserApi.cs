@@ -1,9 +1,11 @@
+using Bogus;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using System.Linq.Expressions;
@@ -20,6 +22,8 @@ namespace VNH.UnitTest
 {
     public class TestUserApi
     {
+        private readonly Faker _faker;
+        private readonly Mock<ILogger> _mockLogger;
         private readonly UserService _userService;
         private readonly Mock<IConfiguration> _mockConfiguration;
         private readonly Mock<VietNamHistoryContext> _mockVietNamHistoryContext;
@@ -28,18 +32,19 @@ namespace VNH.UnitTest
 
         public TestUserApi()
         {
+            _faker = new Faker();
             _mockConfiguration = new Mock<IConfiguration>();
             _mockVietNamHistoryContext = new Mock<VietNamHistoryContext>();
             _mockUserManager = new Mock<UserManager<User>>(Mock.Of<IUserStore<User>>(), null, null, null, null, null, null, null, null);
-
-            var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
+            _mockLogger = new Mock<ILogger>();
             _mockSignInManager = new Mock<SignInManager<User>>(
                 _mockUserManager.Object,
-                /* IHttpContextAccessor contextAccessor */Mock.Of<IHttpContextAccessor>(),
-                /* IUserClaimsPrincipalFactory<TUser> claimsFactory */Mock.Of<IUserClaimsPrincipalFactory<User>>(), null, null, null, null);
+                Mock.Of<IHttpContextAccessor>(),
+                Mock.Of<IUserClaimsPrincipalFactory<User>>(), null, null, null, null);
 
             _userService = new UserService(
                 _mockVietNamHistoryContext.Object,
+                _mockLogger.Object,
                 _mockUserManager.Object,
                 _mockSignInManager.Object,
                 _mockConfiguration.Object
@@ -68,6 +73,26 @@ namespace VNH.UnitTest
             // Assert
             Assert.NotNull(result);
             Assert.True(result.IsSuccessed);
+        }
+
+        [Fact]
+        public async Task RegisterValidReturnsSuccessResult()
+        {
+            var email = _faker.Internet.Email();
+            var password = _faker.Internet.Password();
+            var registerRequest = new RegisterRequest(email, password, password);
+
+            _mockUserManager.Setup(m => m.FindByEmailAsync(It.IsAny<string>()))
+           .ReturnsAsync((string email) => null);
+
+            _mockUserManager.Setup(m => m.CreateAsync(It.IsAny<User>(), It.IsAny<string>()))
+                .ReturnsAsync(IdentityResult.Success);
+
+
+            var result = _userService.Register(registerRequest);
+
+            Assert.NotNull(result);
+            Assert.True(result.IsCompletedSuccessfully);
         }
     }
 }
