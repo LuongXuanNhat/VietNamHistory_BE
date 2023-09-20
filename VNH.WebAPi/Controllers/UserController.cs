@@ -17,16 +17,25 @@ namespace VNH.WebAPi.Controllers
             _userService = userService;
         }
 
-        [HttpPost("authenticate")]
+        [HttpPost("Login")]
         [AllowAnonymous]
         public async Task<IActionResult> Authenticate([FromBody] LoginRequest request)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             var result = await _userService.Authenticate(request);
 
-            if (string.IsNullOrEmpty(result.ResultObj))
+            if (!result.IsSuccessed)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
+
+        [HttpPost("Signup")]
+        [AllowAnonymous]
+        public async Task<IActionResult> RegisterUser([FromBody] RegisterRequest request)
+        {
+            var result = await _userService.Register(request);
+            if (!result.IsSuccessed)
             {
                 return BadRequest(result);
             }

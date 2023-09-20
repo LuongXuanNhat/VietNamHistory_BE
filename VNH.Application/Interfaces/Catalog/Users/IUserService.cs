@@ -11,5 +11,6 @@ namespace VNH.Application.Services.Catalog.Users
     public interface IUserService
     {
         Task<ApiResult<string>> Authenticate(LoginRequest request);
+        Task<ApiResult<bool>> Register(RegisterRequest request);
     }
 }

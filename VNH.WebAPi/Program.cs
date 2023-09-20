@@ -1,3 +1,6 @@
+using Microsoft.AspNetCore.Hosting;
+using Serilog.Events;
+using Serilog;
 using VNH.Application;
 using VNH.Infrastructure;
 
@@ -20,6 +23,10 @@ namespace VNH.WebAPi
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            
+
+
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -38,5 +45,7 @@ namespace VNH.WebAPi
 
             app.Run();
         }
+
+
     }
 }
