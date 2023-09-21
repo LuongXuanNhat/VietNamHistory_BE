@@ -6,8 +6,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using Microsoft.EntityFrameworkCore.InMemory;
 using Moq;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using VNH.Application.DTOs.Catalog.Users;
 using VNH.Application.DTOs.Common;
@@ -17,13 +18,14 @@ using VNH.Infrastructure.Implement.Catalog.Users;
 using VNH.Infrastructure.Presenters.Migrations;
 using VNH.WebAPi.Controllers;
 using Xunit.Sdk;
+using Microsoft.Extensions.Options;
 
 namespace VNH.UnitTest
 {
     public class TestUserApi
     {
         private readonly Faker _faker;
-        private readonly Mock<ILogger> _mockLogger;
+        private readonly Mock<ILogger<UserService>> _mockLogger;
         private readonly UserService _userService;
         private readonly Mock<IConfiguration> _mockConfiguration;
         private readonly Mock<VietNamHistoryContext> _mockVietNamHistoryContext;
@@ -34,16 +36,27 @@ namespace VNH.UnitTest
         {
             _faker = new Faker();
             _mockConfiguration = new Mock<IConfiguration>();
-            _mockVietNamHistoryContext = new Mock<VietNamHistoryContext>();
-            _mockUserManager = new Mock<UserManager<User>>(Mock.Of<IUserStore<User>>(), null, null, null, null, null, null, null, null);
-            _mockLogger = new Mock<ILogger>();
+
+            // Initialize _dataContext here
+            var options = new DbContextOptionsBuilder<VietNamHistoryContext>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .Options;
+
+            var dbContext = new VietNamHistoryContext(options);
+            _mockVietNamHistoryContext = new Mock<VietNamHistoryContext>(options);
+
+            _mockUserManager = new Mock<UserManager<User>>(
+                Mock.Of<IUserStore<User>>(),
+                null, null, null, null, null, null, null, null);
+
+            _mockLogger = new Mock<ILogger<UserService>>();
             _mockSignInManager = new Mock<SignInManager<User>>(
                 _mockUserManager.Object,
                 Mock.Of<IHttpContextAccessor>(),
                 Mock.Of<IUserClaimsPrincipalFactory<User>>(), null, null, null, null);
 
             _userService = new UserService(
-                _mockVietNamHistoryContext.Object,
+                dbContext,
                 _mockLogger.Object,
                 _mockUserManager.Object,
                 _mockSignInManager.Object,
@@ -78,21 +91,46 @@ namespace VNH.UnitTest
         [Fact]
         public async Task RegisterValidReturnsSuccessResult()
         {
+            // Arrange
             var email = _faker.Internet.Email();
             var password = _faker.Internet.Password();
             var registerRequest = new RegisterRequest(email, password, password);
 
+            
+            // Mock the UserManager's FindByEmailAsync to return null, indicating that the email is not in use.
             _mockUserManager.Setup(m => m.FindByEmailAsync(It.IsAny<string>()))
-           .ReturnsAsync((string email) => null);
+                .ReturnsAsync((string email) => null);
 
+            // Set up the context to return an empty list for Users.
+            var users = new List<User>().AsQueryable();
+            _mockVietNamHistoryContext.Setup(c => c.Users).Returns(GetQueryableMock(users).Object);
+
+            using (var context = new VietNamHistoryContext())
+            {
+                context.Users.AddRange(new List<User>());
+                await context.SaveChangesAsync();
+            }
+
+            // Mock the UserManager's CreateAsync to return IdentityResult.Success, indicating successful user creation.
             _mockUserManager.Setup(m => m.CreateAsync(It.IsAny<User>(), It.IsAny<string>()))
                 .ReturnsAsync(IdentityResult.Success);
 
+            // Act
+            var result = await _userService.Register(registerRequest);
 
-            var result = _userService.Register(registerRequest);
-
+            // Assert
             Assert.NotNull(result);
-            Assert.True(result.IsCompletedSuccessfully);
+            Assert.True(result.IsSuccessed);
+        }
+
+        private Mock<DbSet<T>> GetQueryableMock<T>(IQueryable<T> data) where T : class
+        {
+            var mockSet = new Mock<DbSet<T>>();
+            mockSet.As<IQueryable<T>>().Setup(m => m.Provider).Returns(data.Provider);
+            mockSet.As<IQueryable<T>>().Setup(m => m.Expression).Returns(data.Expression);
+            mockSet.As<IQueryable<T>>().Setup(m => m.ElementType).Returns(data.ElementType);
+            mockSet.As<IQueryable<T>>().Setup(m => m.GetEnumerator()).Returns(data.GetEnumerator());
+            return mockSet;
         }
     }
 }
