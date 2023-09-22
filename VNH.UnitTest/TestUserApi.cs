@@ -19,6 +19,8 @@ using VNH.Infrastructure.Presenters.Migrations;
 using VNH.WebAPi.Controllers;
 using Xunit.Sdk;
 using Microsoft.Extensions.Options;
+using Azure.Core;
+using VNH.Application.Interfaces.Email;
 
 namespace VNH.UnitTest
 {
@@ -28,6 +30,7 @@ namespace VNH.UnitTest
         private readonly Mock<ILogger<UserService>> _mockLogger;
         private readonly UserService _userService;
         private readonly Mock<IConfiguration> _mockConfiguration;
+        private readonly Mock<ISendMailService> _mockSendMailService;
         private readonly Mock<VietNamHistoryContext> _mockVietNamHistoryContext;
         private readonly Mock<UserManager<User>> _mockUserManager;
         private readonly Mock<SignInManager<User>> _mockSignInManager;
@@ -48,7 +51,7 @@ namespace VNH.UnitTest
             _mockUserManager = new Mock<UserManager<User>>(
                 Mock.Of<IUserStore<User>>(),
                 null, null, null, null, null, null, null, null);
-
+            _mockSendMailService = new Mock<ISendMailService>();
             _mockLogger = new Mock<ILogger<UserService>>();
             _mockSignInManager = new Mock<SignInManager<User>>(
                 _mockUserManager.Object,
@@ -60,7 +63,8 @@ namespace VNH.UnitTest
                 _mockLogger.Object,
                 _mockUserManager.Object,
                 _mockSignInManager.Object,
-                _mockConfiguration.Object
+                _mockConfiguration.Object,
+                _mockSendMailService.Object
             );
         }
 
@@ -68,7 +72,7 @@ namespace VNH.UnitTest
         public async Task AuthenticateValidReturnsSuccessResult()
         {
             // Arrange
-            var loginRequest = new LoginRequest("admin@gmail.com", "Aa@123");
+            var loginRequest = new LoginRequest("nam@gmail.com", "Aa@123");
             var user = new User { Email = loginRequest.Email, Status = false };
             var roles = new[] { "Role1", "Role2" };
             _mockUserManager.Setup(manager => manager.FindByEmailAsync(loginRequest.Email))
@@ -96,20 +100,13 @@ namespace VNH.UnitTest
             var password = _faker.Internet.Password();
             var registerRequest = new RegisterRequest(email, password, password);
 
-            
             // Mock the UserManager's FindByEmailAsync to return null, indicating that the email is not in use.
             _mockUserManager.Setup(m => m.FindByEmailAsync(It.IsAny<string>()))
                 .ReturnsAsync((string email) => null);
 
-            // Set up the context to return an empty list for Users.
+            // Set up the context to return an empty list for Users using the mock context.
             var users = new List<User>().AsQueryable();
             _mockVietNamHistoryContext.Setup(c => c.Users).Returns(GetQueryableMock(users).Object);
-
-            using (var context = new VietNamHistoryContext())
-            {
-                context.Users.AddRange(new List<User>());
-                await context.SaveChangesAsync();
-            }
 
             // Mock the UserManager's CreateAsync to return IdentityResult.Success, indicating successful user creation.
             _mockUserManager.Setup(m => m.CreateAsync(It.IsAny<User>(), It.IsAny<string>()))
@@ -126,11 +123,14 @@ namespace VNH.UnitTest
         private Mock<DbSet<T>> GetQueryableMock<T>(IQueryable<T> data) where T : class
         {
             var mockSet = new Mock<DbSet<T>>();
-            mockSet.As<IQueryable<T>>().Setup(m => m.Provider).Returns(data.Provider);
-            mockSet.As<IQueryable<T>>().Setup(m => m.Expression).Returns(data.Expression);
-            mockSet.As<IQueryable<T>>().Setup(m => m.ElementType).Returns(data.ElementType);
-            mockSet.As<IQueryable<T>>().Setup(m => m.GetEnumerator()).Returns(data.GetEnumerator());
+            var mockData = data.ToList(); // Materialize the data to a list
+            mockSet.As<IQueryable<T>>().Setup(m => m.Provider).Returns(mockData.AsQueryable().Provider);
+            mockSet.As<IQueryable<T>>().Setup(m => m.Expression).Returns(mockData.AsQueryable().Expression);
+            mockSet.As<IQueryable<T>>().Setup(m => m.ElementType).Returns(mockData.AsQueryable().ElementType);
+            mockSet.As<IQueryable<T>>().Setup(m => m.GetEnumerator()).Returns(() => mockData.AsQueryable().GetEnumerator());
             return mockSet;
         }
+
+
     }
 }

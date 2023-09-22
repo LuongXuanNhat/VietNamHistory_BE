@@ -3,6 +3,7 @@ using Serilog.Events;
 using Serilog;
 using VNH.Application;
 using VNH.Infrastructure;
+using Microsoft.Extensions.Configuration;
 
 namespace VNH.WebAPi
 {
@@ -22,9 +23,6 @@ namespace VNH.WebAPi
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-
-            
-
 
 
             var app = builder.Build();

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VNH.Application.DTOs.Catalog.Users;
-using VNH.Application.DTOs.Common;
+using VNH.Application.DTOs.Common.ResponseNotification;
 
 namespace VNH.Application.Services.Catalog.Users
 {
