@@ -34,7 +34,7 @@ namespace VNH.WebAPi.Controllers
                 return BadRequest(result);
             }
             var userPrincipal = _userService.ValidateToken(result.ResultObj);
-            
+
             var authProperties = new AuthenticationProperties // Lưu cookie khi vào lại mà không logout
             {
                 ExpiresUtc = DateTimeOffset.UtcNow.AddHours(1),
@@ -70,7 +70,7 @@ namespace VNH.WebAPi.Controllers
 
         [HttpPost("EmailConfirm")]
         [Authorize]
-        public async Task<IActionResult> EmailConfirm(string? numberConfirm = "10000")
+        public async Task<IActionResult> EmailConfirm(string numberConfirm)
         {
             var result = await _userService.EmailConfirm(numberConfirm, User.Identity.Name);
             if (!result.IsSuccessed)
@@ -78,6 +78,40 @@ namespace VNH.WebAPi.Controllers
                 return BadRequest(result);
             }
             return Ok(result);
+        }
+
+        [HttpGet("ForgetPassword")]
+        public async Task<IActionResult> ForgetPassword(string email)
+        {
+            var result = await _userService.ForgetPassword(email);
+            if (!result.IsSuccessed)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
+
+        [HttpPost("ForgetPassword/ConfirmCode")]
+        public async Task<IActionResult> ConfirmCode(LoginRequest request)
+        {
+            var result = await _userService.ConfirmCode(request);
+            if (!result.IsSuccessed)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
+
+        [HttpPost("ResetPassword")]
+        public async Task<IActionResult> ResetPassword(ResetPassDTO resetPass)
+        {
+            var result = await _userService.ResetPassword(resetPass);
+            if (!result.IsSuccessed)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+
         }
     }
 }

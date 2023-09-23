@@ -48,20 +48,37 @@ namespace VNH.Infrastructure.Implement.Catalog.Users
         }
         public async Task<ApiResult<string>> Authenticate(LoginRequest request)
         {
-
             var user = await _userManager.FindByEmailAsync(request.Email);
             if (user == null) return new ApiErrorResult<string>("Tài khoản không tồn tại");
-            if (user.LockoutEnabled.Equals(false)) return new ApiErrorResult<string>("Tài khoản bị khóa");
-
+            if (user.LockoutEnabled.Equals(true))
+            {
+                if (user.AccessFailedCount == -1)
+                {
+                    return new ApiErrorResult<string>("Tài khoản bị khóa vĩnh viễn");
+                }
+                return new ApiErrorResult<string>("Tài khoản bị khóa");
+            }
+            var accessFailedCount = user.AccessFailedCount;
             var result = await _signInManager.PasswordSignInAsync(user, request.Password, true, true);
+            if (accessFailedCount == 4 && !result.Succeeded)
+            {
+                await LockAccount(user);
+                return new ApiErrorResult<string>("Bạn đã nhập sai mật khẩu liên tục 5 lần! Tài khoản của bạn đã bị khóa. Để lấy lại tài khoản vui lòng thực hiện quên mật khẩu");
+            }
             if (!result.Succeeded) return new ApiErrorResult<string>("Sai mật khẩu");
+            var token = await GetToKen(user);
 
+            return new ApiSuccessResult<string>(token); 
+        }
+
+        public async Task<string> GetToKen(User user)
+        {
             var roles = await _userManager.GetRolesAsync(user);
             var claims = new[]
             {
             new Claim(ClaimTypes.Email,user.Email),
             new Claim(ClaimTypes.Role, string.Join(";",roles)),
-            new Claim(ClaimTypes.Name, request.Email)
+            new Claim(ClaimTypes.Name, user.Email)
             };
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Tokens:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -71,9 +88,26 @@ namespace VNH.Infrastructure.Implement.Catalog.Users
                 claims,
                 expires: DateTime.Now.AddHours(3),
                 signingCredentials: creds);
-            return new ApiSuccessResult<string>(new JwtSecurityTokenHandler().WriteToken(token));
-            
-            
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+
+        // Confirm Code to Reset Password
+        public async Task<ApiResult<ResetPassDTO>> ConfirmCode(LoginRequest request)
+        {
+            var user = await _userManager.FindByEmailAsync(request.Email);
+            if (user != null && user.NumberConfirm.Equals(request.Password))
+            {
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var result = new ResetPassDTO()
+                {
+                    Email = request.Email,
+                    Token = token
+                };
+                return new ApiSuccessResult<ResetPassDTO>(result);
+            }
+            return new ApiErrorResult<ResetPassDTO>("Mã xác nhận không chính xác");
         }
 
         [Authorize]
@@ -91,20 +125,45 @@ namespace VNH.Infrastructure.Implement.Catalog.Users
             return new ApiErrorResult<bool>("Xác thực không thành công");
         }
 
+        public async Task<ApiResult<LoginRequest>> ForgetPassword(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if(user == null)
+            {
+                return new ApiErrorResult<LoginRequest>("Không tìm thấy tài khoản");
+            }
+            if (user.AccessFailedCount == -1)
+            {
+                return new ApiErrorResult<LoginRequest>("Tài khoản bị khóa vĩnh viễn");
+            }
+            var confirmNumber = GetConfirmCode();
+            user.NumberConfirm = confirmNumber;
+            _dataContext.User.Update(user);
+            await _dataContext.SaveChangesAsync();
+
+            await SendConfirmCodeToEmail(user.Email, confirmNumber);
+
+            var result = new LoginRequest()
+            {
+                Email = email
+            };
+
+            return new ApiSuccessResult<LoginRequest>(result);
+        }
+
         public async Task<ApiResult<bool>> Register(RegisterRequest request)
         {
             try
             {
                 var user = await _userManager.FindByEmailAsync(request.Email);
                 if (user != null) return new ApiErrorResult<bool>("Email đã tồn tại");
-                int confirmNumber = new Random().Next(10000, 100000);
-
+                var confirmNumber = GetConfirmCode();
                 user = new User()
                 {
                     Id = Guid.NewGuid(),
                     UserName = request.Email,
                     Email = request.Email,
-                    NumberConfirm = confirmNumber.ToString(),
+                    NumberConfirm = confirmNumber,
                     LockoutEnabled = true
                 };
 
@@ -113,19 +172,9 @@ namespace VNH.Infrastructure.Implement.Catalog.Users
                 if (result.Succeeded)
                 {
                     var role = "student";
-
                     var getUser = await _dataContext.Users.FirstOrDefaultAsync(x => x.Email.Equals(request.Email));
                     if (getUser != null) {
-                        
-                        MailContent content = new MailContent
-                        {
-                            To = request.Email,
-                            Subject = "Yêu cầu xác nhận email từ [Người Kể Sử]",
-                            Body = "Xin chào " + request.Email + " , <p> Chúng tôi đã nhận yêu cầu xác thực tài khoản web [NguoiKeSu] của bạn. <p> Mã dùng một lần của bạn là: <strong>" + confirmNumber + "</strong>"
-                        };
-
-                        await _sendmailservice.SendMail(content);
-
+                        await SendConfirmCodeToEmail(request.Email, confirmNumber);
 
                         await _userManager.AddToRoleAsync(getUser, role);
                         return new ApiSuccessResult<bool>();
@@ -141,6 +190,23 @@ namespace VNH.Infrastructure.Implement.Catalog.Users
             }
         }
 
+        private async Task SendConfirmCodeToEmail(string email, string confirmNumber)
+        {
+            MailContent content = new MailContent
+            {
+                To = email,
+                Subject = "Yêu cầu xác nhận email từ [Người Kể Sử]",
+                Body = "Xin chào " + email + " , <p> Chúng tôi đã nhận yêu cầu xác thực tài khoản web [NguoiKeSu] của bạn. <p> Mã dùng một lần của bạn là: <strong>" + confirmNumber + "</strong>"
+            };
+
+            await _sendmailservice.SendMail(content);
+        }
+
+        private string GetConfirmCode()
+        {
+            return new Random().Next(10000, 100000).ToString();
+        }
+
         public ClaimsPrincipal ValidateToken(string jwtToken)
         {
             IdentityModelEventSource.ShowPII = true;
@@ -149,7 +215,6 @@ namespace VNH.Infrastructure.Implement.Catalog.Users
             TokenValidationParameters validationParameters = new TokenValidationParameters();
 
             validationParameters.ValidateLifetime = true;
-
             validationParameters.ValidAudience = _config["Tokens:Issuer"];
             validationParameters.ValidIssuer = _config["Tokens:Issuer"];
             validationParameters.IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Tokens:Key"]));
@@ -157,6 +222,33 @@ namespace VNH.Infrastructure.Implement.Catalog.Users
             ClaimsPrincipal principal = new JwtSecurityTokenHandler().ValidateToken(jwtToken, validationParameters, out validatedToken);
 
             return principal;
+        }
+
+        public async Task<ApiResult<bool>> ResetPassword(ResetPassDTO resetPass)
+        {
+            var user = await _userManager.FindByEmailAsync(resetPass.Email);
+            if (user == null) return new ApiErrorResult<bool>("Lỗi");
+            var resetPasswordResult = await _userManager.ResetPasswordAsync(user, resetPass.Token ,resetPass.Password);
+            if (!resetPasswordResult.Succeeded)
+            {
+                _logger.LogError("Xảy ra lỗi trong quá trình xử lý | ", resetPasswordResult.Errors.Select(e => e.Description));
+                return new ApiErrorResult<bool>("Lỗi!");
+            }
+            if (user.AccessFailedCount == 5) {
+                user.LockoutEnabled = false;
+                user.AccessFailedCount = 0;
+                _dataContext.User.Update(user);
+                await _dataContext.SaveChangesAsync();
+            }
+            return new ApiSuccessResult<bool>();
+        }
+
+        public async Task LockAccount(User user)
+        {
+            user.LockoutEnabled = true;
+            user.AccessFailedCount = 5;
+            _dataContext.User.Update(user);
+            await _dataContext.SaveChangesAsync();
         }
     }
 }
