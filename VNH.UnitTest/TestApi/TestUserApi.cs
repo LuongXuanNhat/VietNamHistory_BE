@@ -21,8 +21,10 @@ using Xunit.Sdk;
 using Microsoft.Extensions.Options;
 using Azure.Core;
 using VNH.Application.Interfaces.Email;
+using Microsoft.AspNetCore.Mvc;
+using VNH.Application.DTOs.Common.ResponseNotification;
 
-namespace VNH.UnitTest
+namespace VNH.UnitTest.TestApi
 {
     public class TestUserApi
     {
@@ -34,9 +36,11 @@ namespace VNH.UnitTest
         private readonly Mock<VietNamHistoryContext> _mockVietNamHistoryContext;
         private readonly Mock<UserManager<User>> _mockUserManager;
         private readonly Mock<SignInManager<User>> _mockSignInManager;
+        private readonly VietNamHistoryContext _vietNamHistoryContext;
 
         public TestUserApi()
         {
+            _vietNamHistoryContext = new VietNamHistoryContext();
             _faker = new Faker();
             _mockConfiguration = new Mock<IConfiguration>();
 
@@ -78,7 +82,7 @@ namespace VNH.UnitTest
             _mockUserManager.Setup(manager => manager.FindByEmailAsync(loginRequest.Email))
             .ReturnsAsync(user);
             _mockSignInManager.Setup(signIn => signIn.PasswordSignInAsync(user, loginRequest.Password, true, true))
-                .ReturnsAsync(SignInResult.Success);
+                .ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Success);
             _mockUserManager.Setup(manager => manager.GetRolesAsync(user))
                 .ReturnsAsync(roles);
             _mockConfiguration.Setup(config => config["Tokens:Key"])
@@ -120,6 +124,41 @@ namespace VNH.UnitTest
             Assert.True(result.IsSuccessed);
         }
 
+        [Fact]
+        public async Task Email_Confirm_Success()
+        {
+            var loginRequest = new LoginRequest("nam@gmail.com", "Aa@123");
+            var user = _vietNamHistoryContext.User.FirstOrDefault(x=>x.Email.Equals(loginRequest.Email));
+            if (user != null && user.NumberConfirm != null)
+            {
+                var numberConfirm = user.NumberConfirm;
+                var result = await _userService.EmailConfirm(numberConfirm, loginRequest.Email);
+                Assert.NotNull(result);
+                Assert.True(result.IsSuccessed);
+            }
+
+        }
+
+        [Fact]
+        public async Task EmailConfirm_ValidInput_ReturnsOkResult()
+        {
+            // Arrange
+            var userServiceMock = new Mock<IUserService>();
+            userServiceMock.Setup(x => x.EmailConfirm(It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync(new ApiSuccessResult<bool> { IsSuccessed = true });
+
+            var controller = new UserController(userServiceMock.Object);
+
+            // Act
+            var result = await controller.EmailConfirm("123456");
+
+            // Assert
+            Assert.IsType<OkObjectResult>(result);
+            var okResult = (OkObjectResult)result;
+            Assert.True(okResult.StatusCode == 200);
+            Assert.True((bool)okResult.Value); // Assuming your result is a boolean value
+        }
+
         private Mock<DbSet<T>> GetQueryableMock<T>(IQueryable<T> data) where T : class
         {
             var mockSet = new Mock<DbSet<T>>();
@@ -133,4 +172,6 @@ namespace VNH.UnitTest
 
 
     }
+
+
 }

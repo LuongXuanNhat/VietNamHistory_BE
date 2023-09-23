@@ -11,10 +11,5 @@
         {
             IsSuccessed = true;
         }
-        public ApiSuccessResult(string message)
-        {
-            IsSuccessed = true;
-            Message = message;
-        }
     }
 }
