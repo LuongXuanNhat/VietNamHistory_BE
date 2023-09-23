@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VNH.Application.DTOs.Catalog.Users;
 using VNH.Application.DTOs.Common.ResponseNotification;
+using VNH.Domain;
 
 namespace VNH.Application.Services.Catalog.Users
 {
@@ -15,5 +16,13 @@ namespace VNH.Application.Services.Catalog.Users
         Task<ApiResult<bool>> Register(RegisterRequest request);
         Task<ApiResult<bool>> EmailConfirm(string numberConfirm, string email);
         ClaimsPrincipal ValidateToken(string jwtToken);
+        Task<ApiResult<LoginRequest>> ForgetPassword(string email);
+        Task<ApiResult<ResetPassDTO>> ConfirmCode(LoginRequest loginRequest);
+        Task<ApiResult<bool>> ResetPassword(ResetPassDTO resetPass);
+        Task LockAccount(User user);
+
+
+
+        // SendConfirmCodeToEmail
     }
 }
