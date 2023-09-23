@@ -1,6 +1,4 @@
-﻿
-
-namespace VNH.Application.DTOs.Common
+﻿namespace VNH.Application.DTOs.Common.ResponseNotification
 {
     public class ApiErrorResult<T> : ApiResult<T>
     {

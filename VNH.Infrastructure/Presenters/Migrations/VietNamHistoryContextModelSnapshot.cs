@@ -17,10 +17,10 @@ namespace VNH.Infrastructure.Presenters.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.22")
+                .HasAnnotation("ProductVersion", "7.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
@@ -28,7 +28,7 @@ namespace VNH.Infrastructure.Presenters.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("nvarchar(max)");
@@ -50,7 +50,7 @@ namespace VNH.Infrastructure.Presenters.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("nvarchar(max)");
@@ -957,21 +957,21 @@ namespace VNH.Infrastructure.Presenters.Migrations
                         new
                         {
                             Id = new Guid("a18be9c0-aa65-4af8-bd17-00bd9344e575"),
-                            ConcurrencyStamp = "6da30627-e97b-4de1-9573-5615ecd29697",
+                            ConcurrencyStamp = "1990d4e8-d097-4818-bae3-494f1fce4e75",
                             Name = "admin",
                             NormalizedName = "admin"
                         },
                         new
                         {
                             Id = new Guid("cfafcfcd-d796-43f4-8ac0-ead43bd2f18a"),
-                            ConcurrencyStamp = "8700a897-d7aa-4013-8688-5f8a83b461a5",
+                            ConcurrencyStamp = "ff0c81ac-c1b0-4944-8499-6572f8a01fb1",
                             Name = "teacher",
                             NormalizedName = "teacher"
                         },
                         new
                         {
                             Id = new Guid("5d4e4081-91f8-4fc0-b8eb-9860b7849604"),
-                            ConcurrencyStamp = "d12c03db-90a8-4400-8efa-40ca011a87c3",
+                            ConcurrencyStamp = "7719d625-38cf-4fba-8a5b-95cee89d31d0",
                             Name = "student",
                             NormalizedName = "student"
                         });
@@ -1121,6 +1121,9 @@ namespace VNH.Infrastructure.Presenters.Migrations
                     b.Property<string>("NormalizedUserName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("NumberConfirm")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
 
@@ -1151,7 +1154,7 @@ namespace VNH.Infrastructure.Presenters.Migrations
                         {
                             Id = new Guid("d1f771da-b318-42f8-a003-5a15614216f5"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "985e159a-97b0-4efc-932c-ec1cbe1eb46d",
+                            ConcurrencyStamp = "f41f9a45-a8b6-4b73-a701-b1fb847d12e7",
                             DateOfBirth = new DateTime(2002, 3, 18, 0, 0, 0, 0, DateTimeKind.Local),
                             Email = "admin@gmail.com",
                             EmailConfirmed = true,
@@ -1160,7 +1163,7 @@ namespace VNH.Infrastructure.Presenters.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "onionwebdev@gmail.com",
                             NormalizedUserName = "admin",
-                            PasswordHash = "AQAAAAEAACcQAAAAEFEsCTKz2Ne33x4x/IjWtPdicJ27lUm2gzrUkAaiVonckLc08tCz772f1XRZ3n33nw==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEGdd7pJko9anzihiNRuzA8Qo+4QMedis3bK5kdDwRSx20eiYPPMjB1N9cwCzYSTkXg==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             Status = false,

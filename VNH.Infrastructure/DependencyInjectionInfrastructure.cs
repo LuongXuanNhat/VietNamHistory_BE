@@ -10,6 +10,9 @@ using VNH.Infrastructure.Presenters.Migrations;
 using Serilog.Events;
 using Serilog;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using VNH.Application.DTOs.Common.SendEmail;
+using VNH.Application.Interfaces.Email;
+using VNH.Infrastructure.Presenters.Email;
 
 namespace VNH.Infrastructure
 {
@@ -23,7 +26,7 @@ namespace VNH.Infrastructure
                 .ReadFrom.Configuration(configuration)
                 .Enrich.FromLogContext()
                 .WriteTo.Console()
-                .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day)
+                .WriteTo.File("log.txt", rollingInterval: RollingInterval.Day)
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
                 .CreateLogger();
 
@@ -36,6 +39,7 @@ namespace VNH.Infrastructure
             .AddEntityFrameworkStores<VietNamHistoryContext>()
             .AddDefaultTokenProviders();
 
+            // Mail settings
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                  .AddCookie(options =>
                  {
@@ -43,6 +47,12 @@ namespace VNH.Infrastructure
                      options.LogoutPath = "/User/Signup";
                      options.AccessDeniedPath = "/User/Forbidden/";
                  });
+
+            services.AddOptions();                                         
+            var mailsettings = configuration.GetSection("MailSettings");  
+            services.Configure<MailSettings>(mailsettings);
+            services.AddTransient<ISendMailService, SendMailService>();
+
             return services;
         }
     }

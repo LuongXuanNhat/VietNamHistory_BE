@@ -49,8 +49,7 @@ namespace VNH.Domain
         public DateTime? DateOfBirth { get; set; }
         [StringLength(50)]
         public Gender Gender { get; set; }
-        public bool Status { get; set; } = false;
-
+        public string NumberConfirm { get; set; } // Confirm Email
         [InverseProperty("User")]
         public virtual ICollection<AnswerVote> AnswerVotes { get; set; }
         [InverseProperty("Author")]

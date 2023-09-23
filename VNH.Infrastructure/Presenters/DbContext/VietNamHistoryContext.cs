@@ -64,7 +64,7 @@ namespace VNH.Infrastructure.Presenters.Migrations
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Data Source=.;Initial Catalog=VietNamHistory;Integrated Security=True");
+                optionsBuilder.UseSqlServer("Data Source=.;Initial Catalog=VietNamHistory;Integrated Security=True;Encrypt=true;TrustServerCertificate=true;");
             }
         }
 

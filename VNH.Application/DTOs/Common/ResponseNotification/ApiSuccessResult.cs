@@ -1,6 +1,4 @@
-﻿
-
-namespace VNH.Application.DTOs.Common
+﻿namespace VNH.Application.DTOs.Common.ResponseNotification
 {
     public class ApiSuccessResult<T> : ApiResult<T>
     {
@@ -12,11 +10,6 @@ namespace VNH.Application.DTOs.Common
         public ApiSuccessResult()
         {
             IsSuccessed = true;
-        }
-        public ApiSuccessResult(string message)
-        {
-            IsSuccessed = true;
-            Message = message;
         }
     }
 }
