@@ -147,7 +147,6 @@ namespace VNH.Infrastructure.Presenters.Migrations
                     Fullname = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     DateOfBirth = table.Column<DateTime>(type: "datetime", nullable: true),
                     Gender = table.Column<int>(type: "int", maxLength: 50, nullable: false),
-                    Status = table.Column<bool>(type: "bit", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -161,7 +160,8 @@ namespace VNH.Infrastructure.Presenters.Migrations
                     TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
                     LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
+                    AccessFailedCount = table.Column<int>(type: "int", nullable: false),
+                    NumberConfirm = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {

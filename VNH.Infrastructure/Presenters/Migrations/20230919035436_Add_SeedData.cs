@@ -34,8 +34,8 @@ namespace VNH.Infrastructure.Presenters.Migrations
 
             migrationBuilder.InsertData(
                 table: "User",
-                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "DateOfBirth", "Email", "EmailConfirmed", "Fullname", "Gender", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "Status", "TwoFactorEnabled", "UserName" },
-                values: new object[] { new Guid("d1f771da-b318-42f8-a003-5a15614216f5"), 0, "985e159a-97b0-4efc-932c-ec1cbe1eb46d", new DateTime(2002, 3, 18, 0, 0, 0, 0, DateTimeKind.Local), "admin@gmail.com", true, "Lương Xuân Nhất", 0, false, null, "onionwebdev@gmail.com", "admin", "AQAAAAEAACcQAAAAEFEsCTKz2Ne33x4x/IjWtPdicJ27lUm2gzrUkAaiVonckLc08tCz772f1XRZ3n33nw==", null, false, "", false, false, "admin" });
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "DateOfBirth", "Email", "EmailConfirmed", "Fullname", "Gender", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[] { new Guid("d1f771da-b318-42f8-a003-5a15614216f5"), 0, "985e159a-97b0-4efc-932c-ec1cbe1eb46d", new DateTime(2002, 3, 18, 0, 0, 0, 0, DateTimeKind.Local), "admin@gmail.com", true, "Lương Xuân Nhất", 0, false, null, "onionwebdev@gmail.com", "admin", "AQAAAAEAACcQAAAAEFEsCTKz2Ne33x4x/IjWtPdicJ27lUm2gzrUkAaiVonckLc08tCz772f1XRZ3n33nw==", null, false, "", false, "admin" });
 
             migrationBuilder.InsertData(
                 table: "UserRoles",

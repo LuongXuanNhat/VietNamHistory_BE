@@ -46,7 +46,6 @@ namespace VNH.Domain
         [Column(TypeName = "datetime")]
         [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? DateOfBirth { get; set; }
-        [StringLength(50)]
         public Gender Gender { get; set; }
         public string NumberConfirm { get; set; } // Confirm Email
         [InverseProperty("User")]
