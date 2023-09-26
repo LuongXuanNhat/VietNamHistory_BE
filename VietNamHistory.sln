@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VNH.Infrastructure", "VNH.I
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VNH.Application", "VNH.Application\VNH.Application.csproj", "{44617069-6A0D-4958-AF8D-69792E9E94F5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VNH.UnitTest", "VNH.UnitTest\VNH.UnitTest.csproj", "{BC906807-FC49-44A4-96DB-B3625997A0BF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VNH.UnitTest", "VNH.UnitTest\VNH.UnitTest.csproj", "{BC906807-FC49-44A4-96DB-B3625997A0BF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
