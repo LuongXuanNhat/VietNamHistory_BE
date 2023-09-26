@@ -3,10 +3,14 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace VNH.Infrastructure.Presenters.Migrations
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
+namespace VNH.Infrastructure.Migrations
 {
-    public partial class initDatabase : Migration
+    /// <inheritdoc />
+    public partial class InitDatabase : Migration
     {
+        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -37,8 +41,6 @@ namespace VNH.Infrastructure.Presenters.Migrations
                 {
                     table.PrimaryKey("PK_AppUserLogins", x => x.UserId);
                 });
-
-            
 
             migrationBuilder.CreateTable(
                 name: "AppUserTokens",
@@ -125,8 +127,6 @@ namespace VNH.Infrastructure.Presenters.Migrations
                     table.PrimaryKey("PK_Roles", x => x.Id);
                 });
 
-            
-
             migrationBuilder.CreateTable(
                 name: "Tag",
                 columns: table => new
@@ -146,7 +146,8 @@ namespace VNH.Infrastructure.Presenters.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Fullname = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     DateOfBirth = table.Column<DateTime>(type: "datetime", nullable: true),
-                    Gender = table.Column<int>(type: "int", maxLength: 50, nullable: false),
+                    Gender = table.Column<int>(type: "int", nullable: false),
+                    NumberConfirm = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -160,8 +161,7 @@ namespace VNH.Infrastructure.Presenters.Migrations
                     TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
                     LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    AccessFailedCount = table.Column<int>(type: "int", nullable: false),
-                    NumberConfirm = table.Column<int>(type: "int", nullable: true)
+                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -182,6 +182,7 @@ namespace VNH.Infrastructure.Presenters.Migrations
                 {
                     table.PrimaryKey("PK_UserClaims", x => x.Id);
                 });
+
             migrationBuilder.CreateTable(
                 name: "UserRoles",
                 columns: table => new
@@ -191,7 +192,7 @@ namespace VNH.Infrastructure.Presenters.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AppUserRoles", x => new { x.UserId, x.RoleId });
+                    table.PrimaryKey("PK_UserRoles", x => new { x.UserId, x.RoleId });
 
                     table.ForeignKey(
                         name: "FK_AppUserRoles_Roles_RoleId",
@@ -207,6 +208,7 @@ namespace VNH.Infrastructure.Presenters.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
             migrationBuilder.CreateTable(
                 name: "Answer",
                 columns: table => new
@@ -926,6 +928,26 @@ namespace VNH.Infrastructure.Presenters.Migrations
                         principalColumn: "Id");
                 });
 
+            migrationBuilder.InsertData(
+                table: "Roles",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[,]
+                {
+                    { new Guid("5d4e4081-91f8-4fc0-b8eb-9860b7849604"), "f328002f-15b8-4eb4-8453-6243af11b0dd", "student", "student" },
+                    { new Guid("a18be9c0-aa65-4af8-bd17-00bd9344e575"), "12f78230-a4c5-478d-8b4b-9a56d0f618db", "admin", "admin" },
+                    { new Guid("cfafcfcd-d796-43f4-8ac0-ead43bd2f18a"), "29343db2-d20a-4b54-9071-da021f00f9cb", "teacher", "teacher" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "User",
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "DateOfBirth", "Email", "EmailConfirmed", "Fullname", "Gender", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "NumberConfirm", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[] { new Guid("d1f771da-b318-42f8-a003-5a15614216f5"), 0, "14d18772-730b-41ca-bc3f-80ccbc7ce4da", new DateTime(2002, 3, 18, 0, 0, 0, 0, DateTimeKind.Local), "admin@gmail.com", true, "Lương Xuân Nhất", 0, false, null, "onionwebdev@gmail.com", "admin", null, "AQAAAAEAACcQAAAAEHmqCu6W5TT0vGKr+9qbekcax+FmUEzQP1zUtUMjLmcJxCjEMm5RGAonoiYIjYFj7Q==", null, false, "", false, "admin" });
+
+            migrationBuilder.InsertData(
+                table: "UserRoles",
+                columns: new[] { "RoleId", "UserId" },
+                values: new object[] { new Guid("a18be9c0-aa65-4af8-bd17-00bd9344e575"), new Guid("d1f771da-b318-42f8-a003-5a15614216f5") });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Answer_AuthorId",
                 table: "Answer",
@@ -1177,6 +1199,7 @@ namespace VNH.Infrastructure.Presenters.Migrations
                 column: "TopicId");
         }
 
+        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
@@ -1187,9 +1210,6 @@ namespace VNH.Infrastructure.Presenters.Migrations
 
             migrationBuilder.DropTable(
                 name: "AppUserLogins");
-
-            migrationBuilder.DropTable(
-                name: "AppUserRoles");
 
             migrationBuilder.DropTable(
                 name: "AppUserTokens");
@@ -1259,6 +1279,9 @@ namespace VNH.Infrastructure.Presenters.Migrations
 
             migrationBuilder.DropTable(
                 name: "UserClaims");
+
+            migrationBuilder.DropTable(
+                name: "UserRoles");
 
             migrationBuilder.DropTable(
                 name: "CourseComment");

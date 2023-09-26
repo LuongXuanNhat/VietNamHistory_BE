@@ -3,26 +3,24 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VNH.Infrastructure.Presenters.Migrations;
 
 #nullable disable
 
-namespace VNH.Infrastructure.Presenters.Migrations
+namespace VNH.Infrastructure.Migrations
 {
     [DbContext(typeof(VietNamHistoryContext))]
-    [Migration("20230919024118_initDatabase")]
-    partial class initDatabase
+    partial class VietNamHistoryContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.22")
+                .HasAnnotation("ProductVersion", "7.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
@@ -30,7 +28,7 @@ namespace VNH.Infrastructure.Presenters.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("nvarchar(max)");
@@ -52,7 +50,7 @@ namespace VNH.Infrastructure.Presenters.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("nvarchar(max)");
@@ -98,7 +96,14 @@ namespace VNH.Infrastructure.Presenters.Migrations
 
                     b.HasKey("UserId", "RoleId");
 
-                    b.ToTable("AppUserRoles", (string)null);
+                    b.ToTable("UserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = new Guid("d1f771da-b318-42f8-a003-5a15614216f5"),
+                            RoleId = new Guid("a18be9c0-aa65-4af8-bd17-00bd9344e575")
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
@@ -947,6 +952,29 @@ namespace VNH.Infrastructure.Presenters.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Roles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("a18be9c0-aa65-4af8-bd17-00bd9344e575"),
+                            ConcurrencyStamp = "12f78230-a4c5-478d-8b4b-9a56d0f618db",
+                            Name = "admin",
+                            NormalizedName = "admin"
+                        },
+                        new
+                        {
+                            Id = new Guid("cfafcfcd-d796-43f4-8ac0-ead43bd2f18a"),
+                            ConcurrencyStamp = "29343db2-d20a-4b54-9071-da021f00f9cb",
+                            Name = "teacher",
+                            NormalizedName = "teacher"
+                        },
+                        new
+                        {
+                            Id = new Guid("5d4e4081-91f8-4fc0-b8eb-9860b7849604"),
+                            ConcurrencyStamp = "f328002f-15b8-4eb4-8453-6243af11b0dd",
+                            Name = "student",
+                            NormalizedName = "student"
+                        });
                 });
 
             modelBuilder.Entity("VNH.Domain.Search", b =>
@@ -1078,7 +1106,6 @@ namespace VNH.Infrastructure.Presenters.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("Gender")
-                        .HasMaxLength(50)
                         .HasColumnType("int");
 
                     b.Property<bool>("LockoutEnabled")
@@ -1093,6 +1120,9 @@ namespace VNH.Infrastructure.Presenters.Migrations
                     b.Property<string>("NormalizedUserName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("NumberConfirm")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
 
@@ -1105,9 +1135,6 @@ namespace VNH.Infrastructure.Presenters.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("Status")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
@@ -1117,6 +1144,27 @@ namespace VNH.Infrastructure.Presenters.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("User");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("d1f771da-b318-42f8-a003-5a15614216f5"),
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "14d18772-730b-41ca-bc3f-80ccbc7ce4da",
+                            DateOfBirth = new DateTime(2002, 3, 18, 0, 0, 0, 0, DateTimeKind.Local),
+                            Email = "admin@gmail.com",
+                            EmailConfirmed = true,
+                            Fullname = "Lương Xuân Nhất",
+                            Gender = 0,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "onionwebdev@gmail.com",
+                            NormalizedUserName = "admin",
+                            PasswordHash = "AQAAAAEAACcQAAAAEHmqCu6W5TT0vGKr+9qbekcax+FmUEzQP1zUtUMjLmcJxCjEMm5RGAonoiYIjYFj7Q==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "",
+                            TwoFactorEnabled = false,
+                            UserName = "admin"
+                        });
                 });
 
             modelBuilder.Entity("VNH.Domain.Answer", b =>

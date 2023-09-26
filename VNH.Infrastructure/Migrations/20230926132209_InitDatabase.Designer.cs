@@ -3,17 +3,20 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VNH.Infrastructure.Presenters.Migrations;
 
 #nullable disable
 
-namespace VNH.Infrastructure.Presenters.Migrations
+namespace VNH.Infrastructure.Migrations
 {
     [DbContext(typeof(VietNamHistoryContext))]
-    partial class VietNamHistoryContextModelSnapshot : ModelSnapshot
+    [Migration("20230926132209_InitDatabase")]
+    partial class InitDatabase
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -957,21 +960,21 @@ namespace VNH.Infrastructure.Presenters.Migrations
                         new
                         {
                             Id = new Guid("a18be9c0-aa65-4af8-bd17-00bd9344e575"),
-                            ConcurrencyStamp = "1990d4e8-d097-4818-bae3-494f1fce4e75",
+                            ConcurrencyStamp = "12f78230-a4c5-478d-8b4b-9a56d0f618db",
                             Name = "admin",
                             NormalizedName = "admin"
                         },
                         new
                         {
                             Id = new Guid("cfafcfcd-d796-43f4-8ac0-ead43bd2f18a"),
-                            ConcurrencyStamp = "ff0c81ac-c1b0-4944-8499-6572f8a01fb1",
+                            ConcurrencyStamp = "29343db2-d20a-4b54-9071-da021f00f9cb",
                             Name = "teacher",
                             NormalizedName = "teacher"
                         },
                         new
                         {
                             Id = new Guid("5d4e4081-91f8-4fc0-b8eb-9860b7849604"),
-                            ConcurrencyStamp = "7719d625-38cf-4fba-8a5b-95cee89d31d0",
+                            ConcurrencyStamp = "f328002f-15b8-4eb4-8453-6243af11b0dd",
                             Name = "student",
                             NormalizedName = "student"
                         });
@@ -1106,7 +1109,6 @@ namespace VNH.Infrastructure.Presenters.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("Gender")
-                        .HasMaxLength(50)
                         .HasColumnType("int");
 
                     b.Property<bool>("LockoutEnabled")
@@ -1136,9 +1138,6 @@ namespace VNH.Infrastructure.Presenters.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("Status")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
@@ -1154,7 +1153,7 @@ namespace VNH.Infrastructure.Presenters.Migrations
                         {
                             Id = new Guid("d1f771da-b318-42f8-a003-5a15614216f5"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "f41f9a45-a8b6-4b73-a701-b1fb847d12e7",
+                            ConcurrencyStamp = "14d18772-730b-41ca-bc3f-80ccbc7ce4da",
                             DateOfBirth = new DateTime(2002, 3, 18, 0, 0, 0, 0, DateTimeKind.Local),
                             Email = "admin@gmail.com",
                             EmailConfirmed = true,
@@ -1163,10 +1162,9 @@ namespace VNH.Infrastructure.Presenters.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "onionwebdev@gmail.com",
                             NormalizedUserName = "admin",
-                            PasswordHash = "AQAAAAEAACcQAAAAEGdd7pJko9anzihiNRuzA8Qo+4QMedis3bK5kdDwRSx20eiYPPMjB1N9cwCzYSTkXg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEHmqCu6W5TT0vGKr+9qbekcax+FmUEzQP1zUtUMjLmcJxCjEMm5RGAonoiYIjYFj7Q==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
-                            Status = false,
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });

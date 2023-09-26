@@ -167,7 +167,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Users
                     UserName = request.Email,
                     Email = request.Email,
                     NumberConfirm = confirmNumber,
-                    LockoutEnabled = true
+                    LockoutEnabled = false
                 };
 
                 var result = await _userManager.CreateAsync(user, request.Password);
