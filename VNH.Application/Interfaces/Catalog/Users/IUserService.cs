@@ -20,6 +20,8 @@ namespace VNH.Application.Services.Catalog.Users
         Task<ApiResult<ResetPassDTO>> ConfirmCode(LoginRequest loginRequest);
         Task<ApiResult<bool>> ResetPassword(ResetPassDTO resetPass);
         Task LockAccount(User user);
+        Task<ApiResult<UserInforDTO>> GetUserInfor(string email);
+        Task<ApiResult<UserInforDTO>> Update(UserInforDTO request);
 
 
 

@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using VNH.Application.DTOs.Common.SendEmail;
 using VNH.Application.Interfaces.Email;
 using VNH.Infrastructure.Presenters.Email;
+using AutoMapper;
 
 namespace VNH.Infrastructure
 {

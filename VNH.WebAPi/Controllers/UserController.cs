@@ -113,5 +113,30 @@ namespace VNH.WebAPi.Controllers
             return Ok(result);
 
         }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetUserInfor()
+        {
+            var result = await _userService.GetUserInfor(User.Identity.Name);
+            if (!result.IsSuccessed)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
+
+        [HttpPut]
+        [Authorize]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> Update([FromForm] UserInforDTO request)
+        {
+            var result = await _userService.Update(request);
+            if (!result.IsSuccessed)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
     }
 }

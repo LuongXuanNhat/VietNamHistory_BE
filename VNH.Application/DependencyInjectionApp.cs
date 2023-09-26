@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using VNH.Application.Services.Catalog.Users;
 
 namespace VNH.Application
 {
@@ -7,7 +6,7 @@ namespace VNH.Application
     {
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
-
+            services.AddAutoMapper(typeof(DependencyInjectionApp));
             return services;
         }
     }

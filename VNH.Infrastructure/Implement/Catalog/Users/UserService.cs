@@ -16,14 +16,15 @@ using VNH.Infrastructure.Presenters.Migrations;
 using VNH.Application.DTOs.Common.ResponseNotification;
 using VNH.Application.DTOs.Common.SendEmail;
 using VNH.Application.Interfaces.Email;
-using System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Logging;
+using AutoMapper;
 
 namespace VNH.Infrastructure.Implement.Catalog.Users
 {
     public class UserService : IUserService
     {
+        private readonly IMapper _mapper;
         public readonly ISendMailService _sendmailservice;
         public readonly ILogger<UserService> _logger;
         private readonly IConfiguration _config;
@@ -37,10 +38,12 @@ namespace VNH.Infrastructure.Implement.Catalog.Users
                 UserManager<User> userManager, 
                 SignInManager<User> signInManager,
                 IConfiguration configuration,
-                ISendMailService sendmailservice)
+                ISendMailService sendmailservice,
+                IMapper mapper)
         {
             _dataContext = context;
             _logger = logger;
+            _mapper = mapper;
             _userManager = userManager;
             _signInManager = signInManager;
             _config = configuration;
@@ -249,6 +252,30 @@ namespace VNH.Infrastructure.Implement.Catalog.Users
             user.AccessFailedCount = 5;
             _dataContext.User.Update(user);
             await _dataContext.SaveChangesAsync();
+        }
+
+        public async Task<ApiResult<UserInforDTO>> GetUserInfor(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null) return new ApiErrorResult<UserInforDTO>("Lỗi");
+            return new ApiSuccessResult<UserInforDTO>(_mapper.Map<UserInforDTO>(user));
+        }
+
+        public async Task<ApiResult<UserInforDTO>> Update(UserInforDTO request)
+        {
+            var user = await _userManager.FindByEmailAsync(request.Email);
+            if (user == null) return new ApiErrorResult<UserInforDTO>("Lỗi");
+            _mapper.Map(request, user);
+            var updateResult = await _userManager.UpdateAsync(user);
+            if (updateResult.Succeeded)
+            {
+                var updatedUserDTO = _mapper.Map<UserInforDTO>(user);
+                return new ApiSuccessResult<UserInforDTO>(updatedUserDTO);
+            }
+            else
+            {
+                return new ApiErrorResult<UserInforDTO>("Lỗi khi cập nhật thông tin người dùng");
+            }
         }
     }
 }
