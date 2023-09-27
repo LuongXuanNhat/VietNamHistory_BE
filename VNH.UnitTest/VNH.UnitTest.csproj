@@ -32,4 +32,8 @@
     <ProjectReference Include="..\VNH.WebAPi\VNH.WebAPi.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="TestApi\" />
+  </ItemGroup>
+
 </Project>
