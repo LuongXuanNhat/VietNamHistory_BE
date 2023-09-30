@@ -104,6 +104,12 @@ namespace VNH.WebAPi
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+            app.UseCors(builder =>
+            {
+                builder.AllowAnyOrigin()
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+            });
             app.UseStaticFiles();
             app.UseAuthentication();
             app.UseSession();

@@ -7,6 +7,8 @@ using Microsoft.Extensions.Caching.Distributed;
 using VNH.Application.Common.Contants;
 using VNH.Application.DTOs.Catalog.Users;
 using VNH.Application.Interfaces.Catalog.IAccountService;
+using Microsoft.AspNetCore.Authentication.Facebook;
+using System.Security.Claims;
 
 namespace VNH.WebAPi.Controllers
 {
@@ -16,9 +18,11 @@ namespace VNH.WebAPi.Controllers
     {
         private readonly IAccountService _account;
         private readonly IDistributedCache _cache;
-        public AccountController(IAccountService account, IDistributedCache cache) {
+        private readonly IConfiguration _configuration;
+        public AccountController(IAccountService account, IDistributedCache cache, IConfiguration configuration) {
             _account = account;
             _cache = cache;
+            _configuration = configuration;
         }
 
         [HttpPost("Login")]
@@ -49,6 +53,50 @@ namespace VNH.WebAPi.Controllers
             };
             await _cache.SetStringAsync("my_token_key", SystemConstants.Token, cacheOptions);
             return Ok(result);
+        }
+
+        [HttpPost("LoginFacebook")]
+        [AllowAnonymous]
+        public async Task<IActionResult> LoginFacebook()
+        {
+
+            //string appId = _configuration.GetValue<string>("Authentication:Facebook:AppId"); ;
+            //string redirectUri = "/Home";
+            //string facebookLoginUrl = $"https://www.facebook.com/v10.0/dialog/oauth?client_id={appId}&redirect_uri={redirectUri}";
+
+            //return Redirect(facebookLoginUrl);
+            var properties = new AuthenticationProperties
+            {
+                RedirectUri = Url.Action("FacebookReponse")
+            };
+            return Challenge(properties, FacebookDefaults.AuthenticationScheme);
+        }
+
+        [HttpGet("ExternalLoginCallback")]
+        public async Task<IActionResult> ExternalLoginCallback()
+        {
+            var properties = new AuthenticationProperties
+            {
+                RedirectUri = Url.Action("FacebookReponse")
+            };
+            return Challenge(properties, FacebookDefaults.AuthenticationScheme);
+        }
+
+        [HttpGet("facebook-response")]
+        public async Task<IActionResult> FacebookReponse()
+        {
+            var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            var claims = result.Principal.Identities
+            .FirstOrDefault().Claims.Select(claim => new
+            {
+                claim.Issuer,
+                claim.OriginalIssuer,
+                claim.Type,
+                claim.Value
+            });
+
+            return Ok(claims);
+
         }
 
         [HttpGet("Logout")]

@@ -16,6 +16,10 @@ using VNH.Infrastructure.Presenters.Email;
 using AutoMapper;
 using VNH.Application.Interfaces.Common;
 using VNH.Infrastructure.Implement.Common;
+using VNH.Application.Interfaces.Catalog.IAccountService;
+using VNH.Infrastructure.Implement.Catalog.Account;
+using Microsoft.Extensions.Options;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace VNH.Infrastructure
 {
@@ -56,11 +60,25 @@ namespace VNH.Infrastructure
                 options.Lockout.AllowedForNewUsers = false;
             });
 
+            // Facebook
+            services.AddAuthentication().AddFacebook(facebookOptions =>
+            {
+                facebookOptions.AppId = configuration.GetValue<string>("Authentication:Facebook:AppId");
+                facebookOptions.AppSecret = configuration.GetValue<string>("Authentication:Facebook:AppSecret");
+                facebookOptions.CallbackPath = "/Home";
+                facebookOptions.AccessDeniedPath = "/Login";
+            });
+
+
             services.AddOptions();                                         
             var mailsettings = configuration.GetSection("MailSettings");  
             services.Configure<MailSettings>(mailsettings);
-            services.AddTransient<ISendMailService, SendMailService>();
+            services.AddSingleton<ISendMailService, SendMailService>();
             services.AddSingleton<IImageService, ImageService>();
+            services.AddScoped<IAccountService, AccountService>();
+
+            //services.AddAuthentication()
+            //    .AddGoogle();
 
             return services;
         }
