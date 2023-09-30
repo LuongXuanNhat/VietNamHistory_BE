@@ -47,6 +47,7 @@ namespace VNH.Domain
         [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? DateOfBirth { get; set; }
         public Gender Gender { get; set; }
+        public byte[] Image { get; set; }
         public string NumberConfirm { get; set; } // Confirm Email
         [InverseProperty("User")]
         public virtual ICollection<AnswerVote> AnswerVotes { get; set; }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace VNH.Application.DTOs.Catalog.Users
 {
-    public class ResetPassDTO
+    public class ResetPassDto
     {
         public string Email { get; set; }
         public string Password { get; set; }

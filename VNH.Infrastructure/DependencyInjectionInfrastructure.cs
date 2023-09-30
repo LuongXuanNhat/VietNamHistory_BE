@@ -14,6 +14,8 @@ using VNH.Application.DTOs.Common.SendEmail;
 using VNH.Application.Interfaces.Email;
 using VNH.Infrastructure.Presenters.Email;
 using AutoMapper;
+using VNH.Application.Interfaces.Common;
+using VNH.Infrastructure.Implement.Common;
 
 namespace VNH.Infrastructure
 {
@@ -58,6 +60,7 @@ namespace VNH.Infrastructure
             var mailsettings = configuration.GetSection("MailSettings");  
             services.Configure<MailSettings>(mailsettings);
             services.AddTransient<ISendMailService, SendMailService>();
+            services.AddSingleton<IImageService, ImageService>();
 
             return services;
         }
