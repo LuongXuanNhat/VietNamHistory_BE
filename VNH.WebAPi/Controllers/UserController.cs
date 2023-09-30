@@ -23,16 +23,11 @@ namespace VNH.WebAPi.Controllers
             _userService = userService;
         }
 
-        [HttpPost("Login")]
+        [HttpGet("Login")]
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
             var result = await _userService.Authenticate(request);
-
-            if (string.IsNullOrEmpty(result.ResultObj))
-            {
-                return BadRequest(result);
-            }
             var userPrincipal = _userService.ValidateToken(result.ResultObj);
 
             var authProperties = new AuthenticationProperties // Lưu cookie khi vào lại mà không logout
@@ -47,13 +42,21 @@ namespace VNH.WebAPi.Controllers
                         userPrincipal,
                         authProperties);
 
-            // Lưu cache token
             var cacheOptions = new DistributedCacheEntryOptions()
             {
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1)
             };
             await _cache.SetStringAsync("my_token_key", SystemConstants.Token, cacheOptions);
             return Ok(result);
+        }
+
+        [HttpGet("Logout")]
+        [Authorize]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            HttpContext.Session.Remove("Token");
+            return Ok("Đăng xuất thành công");
         }
 
         [HttpPost("Signup")]
@@ -92,6 +95,7 @@ namespace VNH.WebAPi.Controllers
         }
 
         [HttpPost("ForgetPassword/ConfirmCode")]
+        [AllowAnonymous]
         public async Task<IActionResult> ConfirmCode(LoginRequest request)
         {
             var result = await _userService.ConfirmCode(request);

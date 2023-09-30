@@ -48,6 +48,11 @@ namespace VNH.Infrastructure
                      options.LogoutPath = "/User/Signup";
                      options.AccessDeniedPath = "/User/Forbidden/";
                  });
+            // Identity settings
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.Lockout.AllowedForNewUsers = false;
+            });
 
             services.AddOptions();                                         
             var mailsettings = configuration.GetSection("MailSettings");  

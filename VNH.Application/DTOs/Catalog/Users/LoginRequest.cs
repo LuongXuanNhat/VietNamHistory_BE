@@ -10,6 +10,8 @@ namespace VNH.Application.DTOs.Catalog.Users
     {
         public LoginRequest()
         {
+            Email = string.Empty;
+            Password = string.Empty;
         }
 
         public LoginRequest(string email, string password)

@@ -52,29 +52,34 @@ namespace VNH.Infrastructure.Implement.Catalog.Users
         public async Task<ApiResult<string>> Authenticate(LoginRequest request)
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
-            if (user == null) return new ApiErrorResult<string>("Tài khoản không tồn tại");
-            if (user.LockoutEnabled.Equals(true))
+
+            var errorMessages = new Dictionary<Func<bool>, string>
             {
-                if (user.AccessFailedCount == -1)
-                {
-                    return new ApiErrorResult<string>("Tài khoản bị khóa vĩnh viễn");
-                }
-                return new ApiErrorResult<string>("Tài khoản bị khóa");
+                { () => user == null, "Tài khoản không tồn tại" },
+                { () => user.LockoutEnabled && user.AccessFailedCount == -1, "Tài khoản bị khóa vĩnh viễn" },
+                { () => user.LockoutEnabled, "Tài khoản bị khóa" },
+                { () => true, "Sai mật khẩu" }
+            };
+
+            var errorMessage = errorMessages.First(kv => kv.Key()).Value;
+            if (errorMessage != "Sai mật khẩu")
+            {
+                return new ApiErrorResult<string>(errorMessage);
             }
+
             var accessFailedCount = user.AccessFailedCount;
             var result = await _signInManager.PasswordSignInAsync(user, request.Password, true, true);
+
             if (accessFailedCount == 4 && !result.Succeeded)
             {
                 await LockAccount(user);
                 return new ApiErrorResult<string>("Bạn đã nhập sai mật khẩu liên tục 5 lần! Tài khoản của bạn đã bị khóa. Để lấy lại tài khoản vui lòng thực hiện quên mật khẩu");
             }
-            if (!result.Succeeded) return new ApiErrorResult<string>("Sai mật khẩu");
-            var token = await GetToKen(user);
 
-            return new ApiSuccessResult<string>(token); 
+            return new ApiSuccessResult<string>(await GetToken(user));
         }
 
-        public async Task<string> GetToKen(User user)
+        public async Task<string> GetToken(User user)
         {
             var roles = await _userManager.GetRolesAsync(user);
             var claims = new[]
@@ -97,15 +102,15 @@ namespace VNH.Infrastructure.Implement.Catalog.Users
 
 
         // Confirm Code to Reset Password
-        public async Task<ApiResult<ResetPassDTO>> ConfirmCode(LoginRequest request)
+        public async Task<ApiResult<ResetPassDTO>> ConfirmCode(LoginRequest loginRequest)
         {
-            var user = await _userManager.FindByEmailAsync(request.Email);
-            if (user != null && user.NumberConfirm.Equals(request.Password))
+            var user = await _userManager.FindByEmailAsync(loginRequest.Email);
+            if (user != null && user.NumberConfirm.Equals(loginRequest.Password))
             {
                 var token = await _userManager.GeneratePasswordResetTokenAsync(user);
                 var result = new ResetPassDTO()
                 {
-                    Email = request.Email,
+                    Email = loginRequest.Email,
                     Token = token
                 };
                 return new ApiSuccessResult<ResetPassDTO>(result);
@@ -213,16 +218,14 @@ namespace VNH.Infrastructure.Implement.Catalog.Users
         public ClaimsPrincipal ValidateToken(string jwtToken)
         {
             IdentityModelEventSource.ShowPII = true;
-
-            SecurityToken validatedToken;
-            TokenValidationParameters validationParameters = new TokenValidationParameters();
+            TokenValidationParameters validationParameters = new();
 
             validationParameters.ValidateLifetime = true;
             validationParameters.ValidAudience = _config["Tokens:Issuer"];
             validationParameters.ValidIssuer = _config["Tokens:Issuer"];
             validationParameters.IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Tokens:Key"]));
 
-            ClaimsPrincipal principal = new JwtSecurityTokenHandler().ValidateToken(jwtToken, validationParameters, out validatedToken);
+            ClaimsPrincipal principal = new JwtSecurityTokenHandler().ValidateToken(jwtToken, validationParameters, out SecurityToken validatedToken);
 
             return principal;
         }
