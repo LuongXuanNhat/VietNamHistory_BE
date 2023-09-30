@@ -23,14 +23,17 @@ namespace VNH.WebAPi.Controllers
             _userService = userService;
         }
 
-        [HttpGet("Login")]
+        [HttpPost("Login")]
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
             var result = await _userService.Authenticate(request);
+            if (!result.IsSuccessed)
+            {
+                return BadRequest(result);
+            }
             var userPrincipal = _userService.ValidateToken(result.ResultObj);
-
-            var authProperties = new AuthenticationProperties // Lưu cookie khi vào lại mà không logout
+            var authProperties = new AuthenticationProperties
             {
                 ExpiresUtc = DateTimeOffset.UtcNow.AddHours(1),
                 IsPersistent = true
@@ -107,7 +110,7 @@ namespace VNH.WebAPi.Controllers
         }
 
         [HttpPost("ResetPassword")]
-        public async Task<IActionResult> ResetPassword(ResetPassDTO resetPass)
+        public async Task<IActionResult> ResetPassword(ResetPassDto resetPass)
         {
             var result = await _userService.ResetPassword(resetPass);
             if (!result.IsSuccessed)
@@ -120,9 +123,9 @@ namespace VNH.WebAPi.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetUserInfor()
+        public async Task<IActionResult> GetUserDetail()
         {
-            var result = await _userService.GetUserInfor(User.Identity.Name);
+            var result = await _userService.GetUserDetail(User.Identity.Name);
             if (!result.IsSuccessed)
             {
                 return BadRequest(result);
@@ -133,7 +136,7 @@ namespace VNH.WebAPi.Controllers
         [HttpPut]
         [Authorize]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> Update([FromForm] UserInforDTO request)
+        public async Task<IActionResult> Update([FromForm] UserUpdateDto request)
         {
             var result = await _userService.Update(request);
             if (!result.IsSuccessed)

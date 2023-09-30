@@ -514,6 +514,7 @@ namespace VNH.Infrastructure.Presenters.Migrations
             modelBuilder.Entity<User>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(e => e.Image).HasMaxLength(3 * 1024 * 1024);
 
           
             });

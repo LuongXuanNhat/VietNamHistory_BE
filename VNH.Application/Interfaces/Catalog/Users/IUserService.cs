@@ -17,11 +17,11 @@ namespace VNH.Application.Services.Catalog.Users
         Task<ApiResult<bool>> EmailConfirm(string numberConfirm, string email);
         ClaimsPrincipal ValidateToken(string jwtToken);
         Task<ApiResult<LoginRequest>> ForgetPassword(string email);
-        Task<ApiResult<ResetPassDTO>> ConfirmCode(LoginRequest loginRequest);
-        Task<ApiResult<bool>> ResetPassword(ResetPassDTO resetPass);
+        Task<ApiResult<ResetPassDto>> ConfirmCode(LoginRequest loginRequest);
+        Task<ApiResult<bool>> ResetPassword(ResetPassDto resetPass);
         Task LockAccount(User user);
-        Task<ApiResult<UserInforDTO>> GetUserInfor(string email);
-        Task<ApiResult<UserInforDTO>> Update(UserInforDTO request);
+        Task<ApiResult<UserDetailDto>> GetUserDetail(string email);
+        Task<ApiResult<UserDetailDto>> Update(UserUpdateDto request);
 
 
 

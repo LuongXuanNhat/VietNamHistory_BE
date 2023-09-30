@@ -19,12 +19,14 @@ using VNH.Application.Interfaces.Email;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Logging;
 using AutoMapper;
+using VNH.Application.Interfaces.Common;
 
 namespace VNH.Infrastructure.Implement.Catalog.Users
 {
     public class UserService : IUserService
     {
         private readonly IMapper _mapper;
+        private readonly IImageService _image;
         public readonly ISendMailService _sendmailservice;
         public readonly ILogger<UserService> _logger;
         private readonly IConfiguration _config;
@@ -39,11 +41,12 @@ namespace VNH.Infrastructure.Implement.Catalog.Users
                 SignInManager<User> signInManager,
                 IConfiguration configuration,
                 ISendMailService sendmailservice,
-                IMapper mapper)
+                IMapper mapper, IImageService image)
         {
             _dataContext = context;
             _logger = logger;
             _mapper = mapper;
+            _image = image;
             _userManager = userManager;
             _signInManager = signInManager;
             _config = configuration;
@@ -58,11 +61,10 @@ namespace VNH.Infrastructure.Implement.Catalog.Users
                 { () => user == null, "Tài khoản không tồn tại" },
                 { () => user.LockoutEnabled && user.AccessFailedCount == -1, "Tài khoản bị khóa vĩnh viễn" },
                 { () => user.LockoutEnabled, "Tài khoản bị khóa" },
-                { () => true, "Sai mật khẩu" }
+                { () => true, "ok" },
             };
-
             var errorMessage = errorMessages.First(kv => kv.Key()).Value;
-            if (errorMessage != "Sai mật khẩu")
+            if (!errorMessage.Equals("ok"))
             {
                 return new ApiErrorResult<string>(errorMessage);
             }
@@ -70,12 +72,15 @@ namespace VNH.Infrastructure.Implement.Catalog.Users
             var accessFailedCount = user.AccessFailedCount;
             var result = await _signInManager.PasswordSignInAsync(user, request.Password, true, true);
 
-            if (accessFailedCount == 4 && !result.Succeeded)
+            if (!result.Succeeded)
             {
-                await LockAccount(user);
-                return new ApiErrorResult<string>("Bạn đã nhập sai mật khẩu liên tục 5 lần! Tài khoản của bạn đã bị khóa. Để lấy lại tài khoản vui lòng thực hiện quên mật khẩu");
+                if (accessFailedCount == 4)
+                {
+                    await LockAccount(user);
+                    return new ApiErrorResult<string>("Bạn đã nhập sai mật khẩu liên tục 5 lần! Tài khoản của bạn đã bị khóa. Để lấy lại tài khoản vui lòng thực hiện quên mật khẩu");
+                }
+                return new ApiErrorResult<string>("Sai mật khẩu");
             }
-
             return new ApiSuccessResult<string>(await GetToken(user));
         }
 
@@ -102,20 +107,20 @@ namespace VNH.Infrastructure.Implement.Catalog.Users
 
 
         // Confirm Code to Reset Password
-        public async Task<ApiResult<ResetPassDTO>> ConfirmCode(LoginRequest loginRequest)
+        public async Task<ApiResult<ResetPassDto>> ConfirmCode(LoginRequest loginRequest)
         {
             var user = await _userManager.FindByEmailAsync(loginRequest.Email);
             if (user != null && user.NumberConfirm.Equals(loginRequest.Password))
             {
                 var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var result = new ResetPassDTO()
+                var result = new ResetPassDto()
                 {
                     Email = loginRequest.Email,
                     Token = token
                 };
-                return new ApiSuccessResult<ResetPassDTO>(result);
+                return new ApiSuccessResult<ResetPassDto>(result);
             }
-            return new ApiErrorResult<ResetPassDTO>("Mã xác nhận không chính xác");
+            return new ApiErrorResult<ResetPassDto>("Mã xác nhận không chính xác");
         }
 
         [Authorize]
@@ -230,7 +235,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Users
             return principal;
         }
 
-        public async Task<ApiResult<bool>> ResetPassword(ResetPassDTO resetPass)
+        public async Task<ApiResult<bool>> ResetPassword(ResetPassDto resetPass)
         {
             var user = await _userManager.FindByEmailAsync(resetPass.Email);
             if (user == null) return new ApiErrorResult<bool>("Lỗi");
@@ -257,27 +262,33 @@ namespace VNH.Infrastructure.Implement.Catalog.Users
             await _dataContext.SaveChangesAsync();
         }
 
-        public async Task<ApiResult<UserInforDTO>> GetUserInfor(string email)
+        public async Task<ApiResult<UserDetailDto>> GetUserDetail(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
-            if (user == null) return new ApiErrorResult<UserInforDTO>("Lỗi");
-            return new ApiSuccessResult<UserInforDTO>(_mapper.Map<UserInforDTO>(user));
+            if (user == null) return new ApiErrorResult<UserDetailDto>("Lỗi");
+            var userDetail = _mapper.Map<UserDetailDto>(user);
+            userDetail.Image = _image.ConvertByteArrayToString(user.Image, Encoding.UTF8);
+            return new ApiSuccessResult<UserDetailDto>(userDetail);
         }
 
-        public async Task<ApiResult<UserInforDTO>> Update(UserInforDTO request)
+        public async Task<ApiResult<UserDetailDto>> Update(UserUpdateDto request)
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
-            if (user == null) return new ApiErrorResult<UserInforDTO>("Lỗi");
+            // if (user == null) return new ApiErrorResult<UserDetailDto>("Lỗi cập nhập");
+
             _mapper.Map(request, user);
+            user.Image = await _image.ConvertFormFileToByteArray(request.Image);
+
             var updateResult = await _userManager.UpdateAsync(user);
             if (updateResult.Succeeded)
             {
-                var updatedUserDTO = _mapper.Map<UserInforDTO>(user);
-                return new ApiSuccessResult<UserInforDTO>(updatedUserDTO);
+                var userDetail = _mapper.Map<UserDetailDto>(user);
+                userDetail.Image = _image.ConvertByteArrayToString(user.Image, Encoding.UTF8);
+                return new ApiSuccessResult<UserDetailDto>(userDetail);
             }
             else
             {
-                return new ApiErrorResult<UserInforDTO>("Lỗi khi cập nhật thông tin người dùng");
+                return new ApiErrorResult<UserDetailDto>("Lỗi khi cập nhật thông tin người dùng");
             }
         }
     }
