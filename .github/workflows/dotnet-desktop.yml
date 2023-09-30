@@ -92,7 +92,22 @@ jobs:
       run: |
         $pfx_cert_byte = [System.Convert]::FromBase64String("${{ secrets.Base64_Encoded_Pfx }}")
         $certificatePath = Join-Path -Path $env:Wap_Project_Directory -ChildPath GitHubActionsWorkflow.pfx
-        [IO.File]::WriteAllBytes("$certificatePath", $pfx_cert_byte)
+    
+        # Ensure the directory exists or create it
+        if (-not (Test-Path -Path $env:Wap_Project_Directory -PathType Container)) {
+            New-Item -Path $env:Wap_Project_Directory -ItemType Directory
+        }
+    
+        # Try to write the certificate data to the file
+        try {
+            [IO.File]::WriteAllBytes("$certificatePath", $pfx_cert_byte)
+            Write-Host "Certificate successfully written to $certificatePath"
+        }
+        catch {
+            Write-Host "Error writing the certificate: $_"
+            exit 1  # Exit the script with an error code
+        }
+
 
     # Create the app package by building and packaging the Windows Application Packaging project
     - name: Create the app package
