@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 using VNH.Application.DTOs.Catalog.Users;
 using VNH.Application.DTOs.Common.ResponseNotification;
 using VNH.Application.DTOs.Common.SendEmail;
-using VNH.Application.Interfaces.Catalog.IAccountService;
+using VNH.Application.Interfaces.Catalog.Accounts;
 using VNH.Application.Interfaces.Common;
 using VNH.Application.Interfaces.Email;
 using VNH.Domain;
@@ -259,6 +259,22 @@ namespace VNH.Infrastructure.Implement.Catalog.Account
             user.AccessFailedCount = 5;
             _dataContext.User.Update(user);
             await _dataContext.SaveChangesAsync();
+        }
+
+        public async Task<ApiResult<bool>> ChangePassword(ChangePasswordDto changePasswodDto)
+        {
+            var user = await _userManager.FindByEmailAsync(changePasswodDto.Email);
+            var passwordCheckResult = await _userManager.CheckPasswordAsync(user, changePasswodDto.Password);
+            if (!passwordCheckResult)
+            {
+            return new ApiErrorResult<bool>("Mật khẩu hiện tại không đúng");
+            } 
+            var changePasswordResult = await _userManager.ChangePasswordAsync(user, changePasswodDto.Password, changePasswodDto.NewPassword);
+            if (changePasswordResult.Succeeded)
+            {
+                return new ApiSuccessResult<bool>();
+            }
+            return new ApiErrorResult<bool>("Đổi mật khẩu không thành công");
         }
     }
 }

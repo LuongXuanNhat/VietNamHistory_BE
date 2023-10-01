@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using VNH.Application.Services.Catalog.Users;
@@ -13,14 +12,14 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using VNH.Application.DTOs.Common.SendEmail;
 using VNH.Application.Interfaces.Email;
 using VNH.Infrastructure.Presenters.Email;
-using AutoMapper;
 using VNH.Application.Interfaces.Common;
 using VNH.Infrastructure.Implement.Common;
-using VNH.Application.Interfaces.Catalog.IAccountService;
 using VNH.Infrastructure.Implement.Catalog.Account;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.Identity.UI.Services;
+using VNH.Application.Interfaces.Catalog.Accounts;
+using VNH.Application.Interfaces.Catalog.Topics;
+using VNH.Infrastructure.Implement.Catalog.Topics;
 
 namespace VNH.Infrastructure
 {
@@ -93,6 +92,8 @@ namespace VNH.Infrastructure
 
             services.AddSingleton<IImageService, ImageService>();
             services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<ITopicService, TopicService>();
+
 
 
             return services;

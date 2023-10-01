@@ -12,7 +12,7 @@ namespace VNH.Infrastructure.Implement.Common
     {
         public string ConvertByteArrayToString(byte[] byteArray, Encoding encoding)
         {
-            return encoding.GetString(byteArray);
+            return encoding.GetString(byteArray) ?? string.Empty;
         }
 
         public async Task<byte[]> ConvertFormFileToByteArray(IFormFile formFile)
