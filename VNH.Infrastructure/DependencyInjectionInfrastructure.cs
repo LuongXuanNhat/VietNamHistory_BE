@@ -16,6 +16,14 @@ using VNH.Infrastructure.Presenters.Email;
 using AutoMapper;
 using VNH.Application.Interfaces.Common;
 using VNH.Infrastructure.Implement.Common;
+using VNH.Application.Interfaces.Catalog.IAccountService;
+using VNH.Infrastructure.Implement.Catalog.Account;
+using Microsoft.Extensions.Options;
+using static Org.BouncyCastle.Math.EC.ECCurve;
+using Microsoft.AspNetCore.Authentication.Facebook;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace VNH.Infrastructure
 {
@@ -56,11 +64,38 @@ namespace VNH.Infrastructure
                 options.Lockout.AllowedForNewUsers = false;
             });
 
+            // Facebook, Google
+            services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders = ForwardedHeaders.XForwardedProto;
+            });
+            services.AddAuthentication()
+                .AddGoogle(googleOptions =>
+                {
+                    googleOptions.ClientId = configuration.GetValue<string>("Authentication:Google:AppId");
+                    googleOptions.ClientSecret = configuration.GetValue<string>("Authentication:Google:AppSecret");
+                    //googleOptions.CallbackPath = "/Home";
+                    //googleOptions.AccessDeniedPath = "/Login";
+                    //googleOptions.SaveTokens = true;
+                })
+                .AddFacebook(facebookOptions =>
+                {
+                    facebookOptions.AppId = configuration.GetValue<string>("Authentication:Facebook:AppId");
+                    facebookOptions.AppSecret = configuration.GetValue<string>("Authentication:Facebook:AppSecret");
+                    //facebookOptions.CallbackPath = "/Home";
+                    //facebookOptions.AccessDeniedPath = "/Login";
+                    //facebookOptions.SaveTokens = true;
+
+                });
+
+
             services.AddOptions();                                         
             var mailsettings = configuration.GetSection("MailSettings");  
             services.Configure<MailSettings>(mailsettings);
-            services.AddTransient<ISendMailService, SendMailService>();
+            services.AddSingleton<ISendMailService, SendMailService>();
             services.AddSingleton<IImageService, ImageService>();
+            services.AddScoped<IAccountService, AccountService>();
+
 
             return services;
         }
