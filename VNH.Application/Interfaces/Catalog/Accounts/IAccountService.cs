@@ -8,7 +8,7 @@ using VNH.Application.DTOs.Catalog.Users;
 using VNH.Application.DTOs.Common.ResponseNotification;
 using VNH.Domain;
 
-namespace VNH.Application.Interfaces.Catalog.IAccountService
+namespace VNH.Application.Interfaces.Catalog.Accounts
 {
     public interface IAccountService
     {
@@ -20,5 +20,6 @@ namespace VNH.Application.Interfaces.Catalog.IAccountService
         Task<ApiResult<ResetPassDto>> ConfirmCode(LoginRequest loginRequest);
         Task<ApiResult<bool>> ResetPassword(ResetPassDto resetPass);
         Task LockAccount(User user);
+        Task<ApiResult<bool>> ChangePassword(ChangePasswordDto changePasswodDto);
     }
 }

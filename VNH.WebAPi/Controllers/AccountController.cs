@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using VNH.Application.Common.Contants;
 using VNH.Application.DTOs.Catalog.Users;
-using VNH.Application.Interfaces.Catalog.IAccountService;
 using Microsoft.AspNetCore.Authentication.Facebook;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
@@ -14,6 +13,8 @@ using VNH.Domain;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Text;
 using System.Text.Encodings.Web;
+using Microsoft.AspNetCore.Authentication.Google;
+using VNH.Application.Interfaces.Catalog.Accounts;
 
 namespace VNH.WebAPi.Controllers
 {
@@ -24,8 +25,6 @@ namespace VNH.WebAPi.Controllers
         private readonly IAccountService _account;
         private readonly IDistributedCache _cache;
         private readonly IConfiguration _configuration;
-       // private readonly IEmailSender _emailSender;
-      //  private readonly ILogger<ExternalLoginModel> _logger;
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
 
@@ -39,7 +38,6 @@ namespace VNH.WebAPi.Controllers
             _configuration = configuration;
             _signInManager = signInManager;
             _userManager = userManager;
-          //  _emailSender = emailSender;
         }
 
         [HttpPost("Login")]
@@ -76,17 +74,11 @@ namespace VNH.WebAPi.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> LoginGoogle()
         {
-            //var properties = new AuthenticationProperties
-            //{
-            //    RedirectUri = Url.Action("LoginExpand")
-            //};
-            //return Challenge(properties, GoogleDefaults.AuthenticationScheme);
-
-            var provider = "Google";
-
-            var redirectUrl = "/api/ExternalLogin/CallBack";
-            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
-            return new ChallengeResult(provider, properties);
+            var properties = new AuthenticationProperties
+            {
+                RedirectUri = Url.Action("LoginExpand")
+            };
+            return Challenge(properties, GoogleDefaults.AuthenticationScheme);
         }
         [HttpGet]
         [Route("CallBack")]
@@ -95,13 +87,11 @@ namespace VNH.WebAPi.Controllers
             var returnUrl = Url.Content("~/");
             if (remoteError != null)
             {
-                //ErrorMessage = $"Error from external provider: {remoteError}";
                 return Redirect("/Identity/Account/Login");
             }
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)
             {
-                //ErrorMessage = "Error loading external login information.";
                 return Redirect("/Identity/Account/Login");
             }
 
@@ -137,7 +127,6 @@ namespace VNH.WebAPi.Controllers
                     if (result2.Succeeded)
                     {
                         await _signInManager.SignInAsync(user, isPersistent: false);
-                     //   _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
 
                         var userId = await _userManager.GetUserIdAsync(user);
                         var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
@@ -147,9 +136,6 @@ namespace VNH.WebAPi.Controllers
                             pageHandler: null,
                             values: new { area = "Identity", userId = userId, code = code },
                             protocol: Request.Scheme);
-
-                        //await _emailSender.SendEmailAsync(Email, "Confirm your email",
-                        //    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
                         return Redirect("/");
                     }
@@ -174,15 +160,6 @@ namespace VNH.WebAPi.Controllers
             return Challenge(properties, FacebookDefaults.AuthenticationScheme);
         }
 
-        [HttpGet("ExternalLoginCallback")]
-        public async Task<IActionResult> ExternalLoginCallback()
-        {
-            var properties = new AuthenticationProperties
-            {
-                RedirectUri = Url.Action("LoginExpand")
-            };
-            return Challenge(properties, FacebookDefaults.AuthenticationScheme);
-        }
 
         [HttpGet("login-expand-response")]
         public async Task<IActionResult> LoginExpand()
@@ -267,6 +244,18 @@ namespace VNH.WebAPi.Controllers
             }
             return Ok(result);
 
+        }
+
+        [HttpPost("ChangePassword")]
+        [Authorize]
+        public async Task<IActionResult> ChanggPassword(ChangePasswordDto changePasswodDto)
+        {
+            var result = await _account.ChangePassword(changePasswodDto);
+            if (!result.IsSuccessed)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
         }
     }
 }
