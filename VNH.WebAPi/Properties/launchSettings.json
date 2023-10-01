@@ -8,7 +8,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "dotnetRunMessages": true,
-      "applicationUrl": "https://localhost:7138;http://localhost:5285"
+      "applicationUrl": "https://localhost:7138"
     },
     "IIS Express": {
       "commandName": "IISExpress",
@@ -16,7 +16,8 @@
       "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "ancmHostingModel": "OutOfProcess"
     },
     "Profile 1": {
       "commandName": "IISExpress",
@@ -32,8 +33,8 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "https://localhost:7138",
-      "sslPort": 44327
+      "applicationUrl": "https://localhost:7137",
+      "sslPort": 0
     }
   }
 }

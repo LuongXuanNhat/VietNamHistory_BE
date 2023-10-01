@@ -94,6 +94,18 @@ namespace VNH.WebAPi
                     IssuerSigningKey = new SymmetricSecurityKey(signingKeyBytes)
                 };
             });
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder
+                        .AllowAnyOrigin() 
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+                });
+            });
+
             #endregion
 
             var app = builder.Build();
@@ -104,13 +116,9 @@ namespace VNH.WebAPi
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-            app.UseCors(builder =>
-            {
-                builder.AllowAnyOrigin()
-                  .AllowAnyHeader()
-                  .AllowAnyMethod();
-            });
+            app.UseCors();
             app.UseStaticFiles();
+            app.UseForwardedHeaders();
             app.UseAuthentication();
             app.UseSession();
             app.UseHttpsRedirection();

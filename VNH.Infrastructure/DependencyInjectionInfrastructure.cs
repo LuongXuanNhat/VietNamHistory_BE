@@ -20,6 +20,10 @@ using VNH.Application.Interfaces.Catalog.IAccountService;
 using VNH.Infrastructure.Implement.Catalog.Account;
 using Microsoft.Extensions.Options;
 using static Org.BouncyCastle.Math.EC.ECCurve;
+using Microsoft.AspNetCore.Authentication.Facebook;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace VNH.Infrastructure
 {
@@ -60,14 +64,29 @@ namespace VNH.Infrastructure
                 options.Lockout.AllowedForNewUsers = false;
             });
 
-            // Facebook
-            services.AddAuthentication().AddFacebook(facebookOptions =>
+            // Facebook, Google
+            services.Configure<ForwardedHeadersOptions>(options =>
             {
-                facebookOptions.AppId = configuration.GetValue<string>("Authentication:Facebook:AppId");
-                facebookOptions.AppSecret = configuration.GetValue<string>("Authentication:Facebook:AppSecret");
-                facebookOptions.CallbackPath = "/Home";
-                facebookOptions.AccessDeniedPath = "/Login";
+                options.ForwardedHeaders = ForwardedHeaders.XForwardedProto;
             });
+            services.AddAuthentication()
+                .AddGoogle(googleOptions =>
+                {
+                    googleOptions.ClientId = configuration.GetValue<string>("Authentication:Google:AppId");
+                    googleOptions.ClientSecret = configuration.GetValue<string>("Authentication:Google:AppSecret");
+                    //googleOptions.CallbackPath = "/Home";
+                    //googleOptions.AccessDeniedPath = "/Login";
+                    //googleOptions.SaveTokens = true;
+                })
+                .AddFacebook(facebookOptions =>
+                {
+                    facebookOptions.AppId = configuration.GetValue<string>("Authentication:Facebook:AppId");
+                    facebookOptions.AppSecret = configuration.GetValue<string>("Authentication:Facebook:AppSecret");
+                    //facebookOptions.CallbackPath = "/Home";
+                    //facebookOptions.AccessDeniedPath = "/Login";
+                    //facebookOptions.SaveTokens = true;
+
+                });
 
 
             services.AddOptions();                                         
@@ -77,8 +96,6 @@ namespace VNH.Infrastructure
             services.AddSingleton<IImageService, ImageService>();
             services.AddScoped<IAccountService, AccountService>();
 
-            //services.AddAuthentication()
-            //    .AddGoogle();
 
             return services;
         }
