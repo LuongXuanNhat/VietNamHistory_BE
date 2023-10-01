@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace VNH.WebAPi
 {
@@ -22,6 +23,8 @@ namespace VNH.WebAPi
             builder.Services.AddApplication();
 
             // Add DI
+
+
             builder.Services.AddDistributedMemoryCache();
             builder.Services.AddSession(options =>
             {

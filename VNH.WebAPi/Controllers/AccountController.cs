@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Authentication.Facebook;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using VNH.Domain;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -25,7 +24,7 @@ namespace VNH.WebAPi.Controllers
         private readonly IAccountService _account;
         private readonly IDistributedCache _cache;
         private readonly IConfiguration _configuration;
-        private readonly IEmailSender _emailSender;
+       // private readonly IEmailSender _emailSender;
       //  private readonly ILogger<ExternalLoginModel> _logger;
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
@@ -33,14 +32,14 @@ namespace VNH.WebAPi.Controllers
 
         public AccountController(IAccountService account, IDistributedCache cache, 
                 IConfiguration configuration, SignInManager<User> signInManager,
-                UserManager<User> userManager, IEmailSender emailSender)
+                UserManager<User> userManager)
         {
             _account = account;
             _cache = cache;
             _configuration = configuration;
             _signInManager = signInManager;
             _userManager = userManager;
-            _emailSender = emailSender;
+          //  _emailSender = emailSender;
         }
 
         [HttpPost("Login")]
@@ -149,8 +148,8 @@ namespace VNH.WebAPi.Controllers
                             values: new { area = "Identity", userId = userId, code = code },
                             protocol: Request.Scheme);
 
-                        await _emailSender.SendEmailAsync(Email, "Confirm your email",
-                            $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                        //await _emailSender.SendEmailAsync(Email, "Confirm your email",
+                        //    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
                         return Redirect("/");
                     }

@@ -18,12 +18,9 @@ using VNH.Application.Interfaces.Common;
 using VNH.Infrastructure.Implement.Common;
 using VNH.Application.Interfaces.Catalog.IAccountService;
 using VNH.Infrastructure.Implement.Catalog.Account;
-using Microsoft.Extensions.Options;
-using static Org.BouncyCastle.Math.EC.ECCurve;
-using Microsoft.AspNetCore.Authentication.Facebook;
-using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace VNH.Infrastructure
 {
@@ -93,6 +90,7 @@ namespace VNH.Infrastructure
             var mailsettings = configuration.GetSection("MailSettings");  
             services.Configure<MailSettings>(mailsettings);
             services.AddSingleton<ISendMailService, SendMailService>();
+
             services.AddSingleton<IImageService, ImageService>();
             services.AddScoped<IAccountService, AccountService>();
 
