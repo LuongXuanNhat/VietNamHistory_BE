@@ -58,10 +58,9 @@ namespace VNH.Infrastructure.Implement.Catalog.Users
         public async Task<ApiResult<UserDetailDto>> Update(UserUpdateDto request)
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
-            // if (user == null) return new ApiErrorResult<UserDetailDto>("Lỗi cập nhập");
 
             _mapper.Map(request, user);
-            user.Image = await _image.ConvertFormFileToByteArray(request.Image);
+            user.Image = (request.Image is not null) ? await _image.ConvertFormFileToByteArray(request.Image) : null;
 
             var updateResult = await _userManager.UpdateAsync(user);
             if (updateResult.Succeeded)

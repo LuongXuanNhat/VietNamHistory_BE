@@ -203,7 +203,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Account
 
         private async Task SendConfirmCodeToEmail(string email, string confirmNumber)
         {
-            MailContent content = new MailContent
+            MailContent content = new()
             {
                 To = email,
                 Subject = "Yêu cầu xác nhận email từ [Người Kể Sử]",
@@ -275,6 +275,19 @@ namespace VNH.Infrastructure.Implement.Catalog.Account
                 return new ApiSuccessResult<bool>();
             }
             return new ApiErrorResult<bool>("Đổi mật khẩu không thành công");
+        }
+
+        public async Task<ApiResult<string>> LoginExtend(string email, string name)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user is null)
+            {
+                var newAccount = new User { UserName = email, Email = email };
+                var createdResult = await _userManager.CreateAsync(newAccount);
+                return createdResult.Succeeded ? new ApiSuccessResult<string>(await GetToken(newAccount)) : new ApiErrorResult<string>("Lỗi đăng nhập, hiện tại chưa xử lý được");
+            }
+            await _signInManager.SignInAsync(user, isPersistent: false);
+            return new ApiSuccessResult<string>(await GetToken(user));
         }
     }
 }

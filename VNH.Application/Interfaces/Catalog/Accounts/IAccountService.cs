@@ -21,5 +21,6 @@ namespace VNH.Application.Interfaces.Catalog.Accounts
         Task<ApiResult<bool>> ResetPassword(ResetPassDto resetPass);
         Task LockAccount(User user);
         Task<ApiResult<bool>> ChangePassword(ChangePasswordDto changePasswodDto);
+        Task<ApiResult<string>> LoginExtend(string email, string name);
     }
 }

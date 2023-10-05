@@ -10,7 +10,7 @@ namespace VNH.Infrastructure.Implement.Common
 {
     public class ImageService : IImageService
     {
-        public string ConvertByteArrayToString(byte[] byteArray, Encoding encoding)
+        public string ConvertByteArrayToString(byte[]? byteArray, Encoding encoding)
         {
             return encoding.GetString(byteArray) ?? string.Empty;
         }

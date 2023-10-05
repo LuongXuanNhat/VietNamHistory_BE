@@ -1,20 +1,17 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using VNH.Application.Common.Contants;
 using VNH.Application.DTOs.Catalog.Users;
-using Microsoft.AspNetCore.Authentication.Facebook;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using VNH.Domain;
-using Microsoft.AspNetCore.WebUtilities;
-using System.Text;
-using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication.Google;
 using VNH.Application.Interfaces.Catalog.Accounts;
+using Facebook;
+using System.Net;
 
 namespace VNH.WebAPi.Controllers
 {
@@ -70,112 +67,64 @@ namespace VNH.WebAPi.Controllers
             return Ok(result);
         }
 
+        [HttpGet("LoginFacebook")]
+        public IActionResult LoginFacebook()
+        {
+            var redirectUri = "https://localhost:7138/FacebookCallback";
+            var facebookAuthUrl = $"https://www.facebook.com/v18.0/dialog/oauth?client_id=885411713156137&scope=email&response_type=code&redirect_uri={Uri.EscapeDataString(redirectUri)}&state=12345agd";
+
+            return Redirect(facebookAuthUrl);
+        }
+
+        [HttpGet("FacebookCallback")]
+        public async Task<IActionResult> FacebookCallback()
+        {
+           // var result = HttpContext.AuthenticateAsync(FacebookDefaults.AuthenticationScheme).Result;
+            var code = HttpContext.Request.Query["code"].ToString();
+            var state = HttpContext.Request.Query["state"].ToString();
+
+            if (!string.IsNullOrEmpty(code))
+            {
+                // Lấy access token từ mã truy cập
+                var fbClient = new FacebookClient();
+                dynamic result = await fbClient.GetTaskAsync(
+                    "oauth/access_token",
+                    new
+                    {
+                        client_id = "885411713156137", // Replace with your App ID
+                        client_secret = "a10c56a5001e725be954f9504c8c81df", // Replace with your App Secret
+                        code = code,
+                        redirect_uri = "https://localhost:7138/FacebookCallback"
+                    }
+                );
+
+                var accessToken = result.access_token;
+
+                // Use the access token to make API calls to Facebook
+                fbClient.AccessToken = accessToken;
+                dynamic fbUser = await fbClient.GetTaskAsync("me?fields=name,email");
+
+                // Extract user information
+                string name = fbUser.name;
+                string email = fbUser.email;
+                var login = await _account.LoginExtend(email, name);
+
+                return result is not null ? Ok(login) : BadRequest(login);
+            }
+            return Unauthorized("Đăng nhập không thành công");
+        }
+
+
+
         [HttpPost("LoginGoogle")]
         [AllowAnonymous]
-        public async Task<IActionResult> LoginGoogle()
+        public IActionResult LoginGoogle()
         {
             var properties = new AuthenticationProperties
             {
                 RedirectUri = Url.Action("LoginExpand")
             };
             return Challenge(properties, GoogleDefaults.AuthenticationScheme);
-        }
-        [HttpGet]
-        [Route("CallBack")]
-        public async Task<IActionResult> CallBack(string remoteError = null)
-        {
-            var returnUrl = Url.Content("~/");
-            if (remoteError != null)
-            {
-                return Redirect("/Identity/Account/Login");
-            }
-            var info = await _signInManager.GetExternalLoginInfoAsync();
-            if (info == null)
-            {
-                return Redirect("/Identity/Account/Login");
-            }
-
-            // Sign in the user with this external login provider if the user already has a login.
-            var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
-            if (result.Succeeded)
-            {
-              //  _logger.LogInformation("{Name} logged in with {LoginProvider} provider.", info.Principal.Identity.Name, info.LoginProvider);
-                return Redirect("/");
-            }
-            if (result.IsLockedOut)
-            {
-                return Redirect("/Identity/Account/Login");
-            }
-            else
-            {
-                // If the user does not have an account, then ask the user to create an account.
-                //ReturnUrl = returnUrl;
-                //LoginProvider = info.LoginProvider;
-                var Email = "";
-                var Name = info.Principal.Identity.Name;
-
-                if (info.Principal.HasClaim(c => c.Type == ClaimTypes.Email))
-                {
-                    Email = info.Principal.FindFirstValue(ClaimTypes.Email);
-                }
-
-                var user = new User { UserName = Email, Email = Name };
-                var result2 = await _userManager.CreateAsync(user);
-                if (result2.Succeeded)
-                {
-                    result2 = await _userManager.AddLoginAsync(user, info);
-                    if (result2.Succeeded)
-                    {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-
-                        var userId = await _userManager.GetUserIdAsync(user);
-                        var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                        var callbackUrl = Url.Page(
-                            "/Account/ConfirmEmail",
-                            pageHandler: null,
-                            values: new { area = "Identity", userId = userId, code = code },
-                            protocol: Request.Scheme);
-
-                        return Redirect("/");
-                    }
-                }
-                foreach (var error in result2.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
-
-                return Redirect("/");
-            }
-        }
-
-        [HttpPost("LoginFacebook")]
-        [AllowAnonymous]
-        public async Task<IActionResult> LoginFacebook()
-        {
-            var properties = new AuthenticationProperties
-            {
-                RedirectUri = Url.Action("LoginExpand")
-            };
-            return Challenge(properties, FacebookDefaults.AuthenticationScheme);
-        }
-
-
-        [HttpGet("login-expand-response")]
-        public async Task<IActionResult> LoginExpand()
-        {
-            var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            var claims = result.Principal.Identities.FirstOrDefault()
-                .Claims.Select(claim => new
-                {
-                    claim.Issuer,
-                    claim.OriginalIssuer,
-                    claim.Type,
-                    claim.Value
-                });
-
-            return Ok(claims);
-
         }
 
         [HttpGet("Logout")]

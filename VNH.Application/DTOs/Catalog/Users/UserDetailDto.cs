@@ -16,7 +16,7 @@ namespace VNH.Application.DTOs.Catalog.Users
         public DateTime? DateOfBirth { get; set; }
         [StringLength(50)]
         public Gender Gender { get; set; }
-        public string Image { get; set; } = string.Empty;
+        public string? Image { get; set; } = string.Empty;
         public virtual string Email { get; set; } = string.Empty;
         public virtual string PhoneNumber { get; set; } = string.Empty;
     }
