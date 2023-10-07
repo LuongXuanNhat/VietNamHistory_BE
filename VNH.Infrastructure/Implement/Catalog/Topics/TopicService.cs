@@ -1,13 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VNH.Application.DTOs.Catalog.Topics;
 using VNH.Application.DTOs.Common.ResponseNotification;
-using VNH.Application.Interfaces.Catalog.Accounts;
 using VNH.Application.Interfaces.Catalog.Topics;
 using VNH.Domain;
 using VNH.Infrastructure.Presenters.Migrations;
@@ -48,7 +42,14 @@ namespace VNH.Infrastructure.Implement.Catalog.Topics
 
         public async Task<ApiResult<bool>> DeleteTopic(Guid topicId)
         {
-            throw new NotImplementedException();
+            var topic = await _dbContext.Topics.FirstOrDefaultAsync(x => x.Id == topicId);
+            if (topic is null)
+            {
+                return new ApiErrorResult<bool>("Không tìm thấy chủ đề cần xóa");
+            }
+            _dbContext.Topics.Remove(topic);
+            await _dbContext.SaveChangesAsync();
+            return new ApiSuccessResult<bool>();
         }
 
         public async Task<ApiResult<List<TopicReponseDto>>> GetAllTopic()
@@ -57,22 +58,29 @@ namespace VNH.Infrastructure.Implement.Catalog.Topics
             var topicResponse = new List<TopicReponseDto>();
             foreach (var item in topics)
             {
-                var topic = new TopicReponseDto();
-                topic.Id = item.Id;
-                topic.Title = item.Title;
+                var topic = new TopicReponseDto
+                {
+                    Id = item.Id,
+                    Title = item.Title
+                };
                 topicResponse.Add(topic);
             }
             return new ApiSuccessResult<List<TopicReponseDto>>(topicResponse);
         }
 
-        public async Task<ApiResult<bool>> GetTopic(Guid topicId)
+        public async Task<ApiResult<bool>> UpdateTopic(Guid topicId, string topicTitle)
         {
-            throw new NotImplementedException();
-        }
+            var topic = await _dbContext.Topics.FirstOrDefaultAsync(x => x.Id == topicId);
+            if (topic != null)
+            {
+                topic.Title = topicTitle;
+                topic.UpdatedAt = DateTime.Now;
+                _dbContext.Topics.Update(topic);
+                await _dbContext.SaveChangesAsync();
+                return new ApiSuccessResult<bool>();
+            }
+            return new ApiErrorResult<bool>("Lỗi cập nhập");
 
-        public async Task<ApiResult<bool>> UpdateTopic(Guid topicId, string topic)
-        {
-            throw new NotImplementedException();
         }
     }
 }

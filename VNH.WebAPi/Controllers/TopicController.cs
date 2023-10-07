@@ -26,12 +26,33 @@ namespace VNH.WebAPi.Controllers
             }
             return Ok(result);
         }
-
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> CreateTopic(string topic)
         {
             var result = await _topicService.CreateTopic(topic, User.Identity.Name);
+            if (!result.IsSuccessed)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
+        [HttpPut]
+        [Authorize]
+        public async Task<IActionResult> UpdateTopic(Guid topicId ,string topic)
+        {
+            var result = await _topicService.UpdateTopic(topicId, topic);
+            if (!result.IsSuccessed)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
+        [HttpDelete]
+        [Authorize]
+        public async Task<IActionResult> DeleteTopic(Guid topicId )
+        {
+            var result = await _topicService.DeleteTopic(topicId);
             if (!result.IsSuccessed)
             {
                 return BadRequest(result);

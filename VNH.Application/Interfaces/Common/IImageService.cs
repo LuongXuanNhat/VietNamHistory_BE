@@ -10,6 +10,6 @@ namespace VNH.Application.Interfaces.Common
     public interface IImageService
     {
         Task<byte[]> ConvertFormFileToByteArray(IFormFile formFile);
-        string ConvertByteArrayToString(byte[] byteArray, Encoding encoding);
+        string ConvertByteArrayToString(byte[]? byteArray, Encoding encoding);
     }
 }

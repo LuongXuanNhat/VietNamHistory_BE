@@ -1,13 +1,10 @@
-using Microsoft.AspNetCore.Hosting;
-using Serilog.Events;
-using Serilog;
 using VNH.Application;
 using VNH.Infrastructure;
-using Microsoft.Extensions.Configuration;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Extensions.Options;
 
 namespace VNH.WebAPi
 {
@@ -78,8 +75,10 @@ namespace VNH.WebAPi
 
             builder.Services.AddAuthentication(opt =>
             {
+                opt.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                
             })
             .AddJwtBearer(options =>
             {
@@ -98,16 +97,7 @@ namespace VNH.WebAPi
                 };
             });
 
-            builder.Services.AddCors(options =>
-            {
-                options.AddDefaultPolicy(builder =>
-                {
-                    builder
-                        .AllowAnyOrigin() 
-                        .AllowAnyMethod()
-                        .AllowAnyHeader();
-                });
-            });
+         
 
             #endregion
 
@@ -119,7 +109,18 @@ namespace VNH.WebAPi
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-            app.UseCors();
+            app.UseForwardedHeaders();
+            app.UseHttpLogging();
+
+            app.Use(async (context, next) =>
+            {
+                // Connection: RemoteIp
+                app.Logger.LogInformation("Request RemoteIp: {RemoteIpAddress}",
+                    context.Connection.RemoteIpAddress);
+
+                await next(context);
+            });
+            app.UseCors("AllowAngularDev");
             app.UseStaticFiles();
             app.UseForwardedHeaders();
             app.UseAuthentication();
@@ -127,6 +128,11 @@ namespace VNH.WebAPi
             app.UseHttpsRedirection();
             app.UseAuthorization();
             app.MapControllers();
+            app.UseHttpsRedirection();
+            app.UseCookiePolicy(new CookiePolicyOptions()
+            {
+                MinimumSameSitePolicy = SameSiteMode.Lax
+            });
 
             app.Run();
         }

@@ -20,6 +20,8 @@ using Microsoft.AspNetCore.HttpOverrides;
 using VNH.Application.Interfaces.Catalog.Accounts;
 using VNH.Application.Interfaces.Catalog.Topics;
 using VNH.Infrastructure.Implement.Catalog.Topics;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpLogging;
 
 namespace VNH.Infrastructure
 {
@@ -46,13 +48,19 @@ namespace VNH.Infrastructure
             .AddEntityFrameworkStores<VietNamHistoryContext>()
             .AddDefaultTokenProviders();
 
-            // Mail settings
+ 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                  .AddCookie(options =>
                  {
                      options.LoginPath = "/User/Login";
                      options.LogoutPath = "/User/Signup";
                      options.AccessDeniedPath = "/User/Forbidden/";
+
+                     options.CookieManager = new ChunkingCookieManager();
+
+                     options.Cookie.HttpOnly = true;
+                     options.Cookie.SameSite = SameSiteMode.None;
+                     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                  });
             // Identity settings
             services.Configure<IdentityOptions>(options =>
@@ -66,26 +74,38 @@ namespace VNH.Infrastructure
                 options.ForwardedHeaders = ForwardedHeaders.XForwardedProto;
             });
             services.AddAuthentication()
-                .AddGoogle(googleOptions =>
-                {
-                    googleOptions.ClientId = configuration.GetValue<string>("Authentication:Google:AppId");
-                    googleOptions.ClientSecret = configuration.GetValue<string>("Authentication:Google:AppSecret");
-                    //googleOptions.CallbackPath = "/Home";
-                    //googleOptions.AccessDeniedPath = "/Login";
-                    //googleOptions.SaveTokens = true;
-                })
-                .AddFacebook(facebookOptions =>
-                {
-                    facebookOptions.AppId = configuration.GetValue<string>("Authentication:Facebook:AppId");
-                    facebookOptions.AppSecret = configuration.GetValue<string>("Authentication:Facebook:AppSecret");
-                    //facebookOptions.CallbackPath = "/Home";
-                    //facebookOptions.AccessDeniedPath = "/Login";
-                    //facebookOptions.SaveTokens = true;
+            .AddGoogle(googleOptions =>
+            {
+                googleOptions.ClientId = configuration.GetValue<string>("Authentication:Google:AppId");
+                googleOptions.ClientSecret = configuration.GetValue<string>("Authentication:Google:AppSecret");
+                // googleOptions.CallbackPath = "/signin-google";
+                //googleOptions.AccessDeniedPath = "/Login";
+                //googleOptions.SaveTokens = true;
+            })
+            .AddFacebook(facebookOptions =>
+            {
+                facebookOptions.AppId = configuration.GetValue<string>("Authentication:Facebook:AppId");
+                facebookOptions.AppSecret = configuration.GetValue<string>("Authentication:Facebook:AppSecret");
+               // facebookOptions.CallbackPath = "/FacebookCallback";
+                //facebookOptions.SaveTokens = true;
 
+            });
+            services.AddHttpLogging(options =>
+            {
+                options.LoggingFields = HttpLoggingFields.RequestPropertiesAndHeaders;
+            });
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAngularDev", builder =>
+                {
+                    builder.WithOrigins("http://localhost:4200")
+                           .AllowAnyHeader()
+                           .AllowAnyMethod()
+                           .AllowCredentials();
                 });
-
-
-            services.AddOptions();                                         
+            });
+            services.AddOptions();
+            services.AddSession();
             var mailsettings = configuration.GetSection("MailSettings");  
             services.Configure<MailSettings>(mailsettings);
             services.AddSingleton<ISendMailService, SendMailService>();
@@ -94,7 +114,7 @@ namespace VNH.Infrastructure
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<ITopicService, TopicService>();
 
-
+            
 
             return services;
         }
