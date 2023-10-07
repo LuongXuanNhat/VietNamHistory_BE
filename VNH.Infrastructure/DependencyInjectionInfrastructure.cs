@@ -78,7 +78,7 @@ namespace VNH.Infrastructure
             {
                 googleOptions.ClientId = configuration.GetValue<string>("Authentication:Google:AppId");
                 googleOptions.ClientSecret = configuration.GetValue<string>("Authentication:Google:AppSecret");
-                googleOptions.CallbackPath = "/signin-google";
+                // googleOptions.CallbackPath = "/signin-google";
                 //googleOptions.AccessDeniedPath = "/Login";
                 //googleOptions.SaveTokens = true;
             })

@@ -71,7 +71,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Account
 
             if (!result.Succeeded)
             {
-                if (accessFailedCount == 4)
+                if (accessFailedCount is 4)
                 {
                     await LockAccount(user);
                     return new ApiErrorResult<string>("Bạn đã nhập sai mật khẩu liên tục 5 lần! Tài khoản của bạn đã bị khóa. Để lấy lại tài khoản vui lòng thực hiện quên mật khẩu");
@@ -124,7 +124,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Account
         public async Task<ApiResult<bool>> EmailConfirm(string numberConfirm, string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
-            if (user == null) return new ApiErrorResult<bool>("Lỗi");
+            if (user is null) return new ApiErrorResult<bool>("Lỗi");
             if (user.NumberConfirm.Equals(numberConfirm))
             {
                 user.EmailConfirmed = true;
@@ -138,11 +138,11 @@ namespace VNH.Infrastructure.Implement.Catalog.Account
         public async Task<ApiResult<LoginRequest>> ForgetPassword(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
-            if (user == null)
+            if (user is null)
             {
                 return new ApiErrorResult<LoginRequest>("Không tìm thấy tài khoản");
             }
-            if (user.AccessFailedCount == -1)
+            if (user.AccessFailedCount is -1)
             {
                 return new ApiErrorResult<LoginRequest>("Tài khoản bị khóa vĩnh viễn");
             }
@@ -221,12 +221,13 @@ namespace VNH.Infrastructure.Implement.Catalog.Account
         public ClaimsPrincipal ValidateToken(string jwtToken)
         {
             IdentityModelEventSource.ShowPII = true;
-            TokenValidationParameters validationParameters = new();
-
-            validationParameters.ValidateLifetime = true;
-            validationParameters.ValidAudience = _config["Tokens:Issuer"];
-            validationParameters.ValidIssuer = _config["Tokens:Issuer"];
-            validationParameters.IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Tokens:Key"]));
+            TokenValidationParameters validationParameters = new()
+            {
+                ValidateLifetime = true,
+                ValidAudience = _config["Tokens:Issuer"],
+                ValidIssuer = _config["Tokens:Issuer"],
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Tokens:Key"]))
+            };
 
             ClaimsPrincipal principal = new JwtSecurityTokenHandler().ValidateToken(jwtToken, validationParameters, out SecurityToken validatedToken);
 
@@ -236,14 +237,14 @@ namespace VNH.Infrastructure.Implement.Catalog.Account
         public async Task<ApiResult<bool>> ResetPassword(ResetPassDto resetPass)
         {
             var user = await _userManager.FindByEmailAsync(resetPass.Email);
-            if (user == null) return new ApiErrorResult<bool>("Lỗi");
+            if (user is null) return new ApiErrorResult<bool>("Lỗi");
             var resetPasswordResult = await _userManager.ResetPasswordAsync(user, resetPass.Token, resetPass.Password);
             if (!resetPasswordResult.Succeeded)
             {
                 _logger.LogError("Xảy ra lỗi trong quá trình xử lý | ", resetPasswordResult.Errors.Select(e => e.Description));
                 return new ApiErrorResult<bool>("Lỗi!");
             }
-            if (user.AccessFailedCount == 5)
+            if (user.AccessFailedCount is 5)
             {
                 user.LockoutEnabled = false;
                 user.AccessFailedCount = 0;

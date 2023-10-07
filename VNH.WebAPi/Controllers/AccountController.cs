@@ -5,13 +5,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using VNH.Application.Common.Contants;
 using VNH.Application.DTOs.Catalog.Users;
-using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using VNH.Domain;
 using Microsoft.AspNetCore.Authentication.Google;
 using VNH.Application.Interfaces.Catalog.Accounts;
 using Facebook;
-using System.Net;
+using VNH.WebAPi.ViewModels.Catalog;
+using Microsoft.AspNetCore.Authentication.OAuth;
+using Newtonsoft.Json;
 
 namespace VNH.WebAPi.Controllers
 {
@@ -22,19 +23,13 @@ namespace VNH.WebAPi.Controllers
         private readonly IAccountService _account;
         private readonly IDistributedCache _cache;
         private readonly IConfiguration _configuration;
-        private readonly SignInManager<User> _signInManager;
-        private readonly UserManager<User> _userManager;
 
 
-        public AccountController(IAccountService account, IDistributedCache cache, 
-                IConfiguration configuration, SignInManager<User> signInManager,
-                UserManager<User> userManager)
+        public AccountController(IAccountService account, IDistributedCache cache, IConfiguration configuration)
         {
             _account = account;
             _cache = cache;
             _configuration = configuration;
-            _signInManager = signInManager;
-            _userManager = userManager;
         }
 
         [HttpPost("Login")]
@@ -70,7 +65,7 @@ namespace VNH.WebAPi.Controllers
         [HttpGet("LoginFacebook")]
         public IActionResult LoginFacebook()
         {
-            var redirectUri = "https://localhost:7138/FacebookCallback";
+            var redirectUri = _configuration["redirectUriFb"];
             var facebookAuthUrl = $"https://www.facebook.com/v18.0/dialog/oauth?client_id=885411713156137&scope=email&response_type=code&redirect_uri={Uri.EscapeDataString(redirectUri)}&state=12345agd";
 
             return Redirect(facebookAuthUrl);
@@ -79,7 +74,6 @@ namespace VNH.WebAPi.Controllers
         [HttpGet("FacebookCallback")]
         public async Task<IActionResult> FacebookCallback()
         {
-           // var result = HttpContext.AuthenticateAsync(FacebookDefaults.AuthenticationScheme).Result;
             var code = HttpContext.Request.Query["code"].ToString();
             var state = HttpContext.Request.Query["state"].ToString();
 
@@ -116,16 +110,128 @@ namespace VNH.WebAPi.Controllers
 
 
 
-        [HttpPost("LoginGoogle")]
+        [HttpGet("LoginGoogle")]
         [AllowAnonymous]
         public IActionResult LoginGoogle()
         {
             var properties = new AuthenticationProperties
             {
-                RedirectUri = Url.Action("LoginExpand")
+                RedirectUri = Url.Action("GoogleCallback")
             };
             return Challenge(properties, GoogleDefaults.AuthenticationScheme);
         }
+
+        [HttpGet("GoogleCallback")]
+        public async Task<IActionResult> GoogleCallback(string code)
+        {
+            var redirect_uri = _configuration["redirectUriGg"];
+            // Đổi mã xác thực lấy access token
+            var tokenResult = await ExchangeCodeForAccessTokenAsync(code, redirect_uri , "750387254646-70b6gucofhsbe9deuk6rc11qutb3i8go.apps.googleusercontent.com", "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");
+
+            // Lấy thông tin cơ bản của người dùng từ Google bằng access token
+            var basicUserInfo = await GetBasicUserInfoAsync(tokenResult.AccessToken);
+
+            if (basicUserInfo.IsSuccessful)
+            {
+                // Lưu thông tin cơ bản vào session
+                HttpContext.Session.SetString("UserEmail", basicUserInfo.Email);
+                HttpContext.Session.SetString("UserName", basicUserInfo.Name);
+
+                return RedirectToAction("Home");
+            }
+            else
+            {
+                return RedirectToAction("Login");
+            }
+        }
+
+        private async Task<BasicUserInfoResult> GetBasicUserInfoAsync(object accessToken)
+        {
+            try
+            {
+                // Tạo đối tượng HttpClient để gửi yêu cầu HTTP GET
+                using var httpClient = new HttpClient();
+                // Đặt đường dẫn API Google để lấy thông tin cơ bản của người dùng
+                var googleApiUrl = _configuration["googleApiUrlUser"];
+
+                // Đặt thông số truy vấn, bao gồm access token
+                var queryString = $"access_token={accessToken}";
+                var requestUrl = $"{googleApiUrl}?{queryString}";
+
+                // Gửi yêu cầu HTTP GET
+                var response = await httpClient.GetAsync(requestUrl);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    // Đọc phản hồi và chuyển đổi thành đối tượng BasicUserInfoResult
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    var basicUserInfo = Newtonsoft.Json.JsonConvert.DeserializeObject<BasicUserInfoResult>(responseContent);
+                    basicUserInfo.IsSuccessful = true;
+                    return basicUserInfo;
+                }
+                else
+                {
+                    return new BasicUserInfoResult
+                    {
+                        IsSuccessful = false,
+                        ErrorMessage = "Không thể lấy thông tin cơ bản từ Google."
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new BasicUserInfoResult
+                {
+                    IsSuccessful = false,
+                    ErrorMessage = $"Lỗi: {ex.Message}"
+                };
+            }
+        }
+
+        private async Task<OAuthTokenResponse?> ExchangeCodeForAccessTokenAsync(string code, string redirectUri, string clientId, string clientSecret)
+        {
+            try
+            {
+                // Tạo đối tượng HttpClient để gửi yêu cầu HTTP POST
+                using var httpClient = new HttpClient();
+                // Đặt đường dẫn API Google để trao đổi mã code
+                var tokenUrlOfGoogle = _configuration["tokenUrlOfGoogle"];
+
+                // Đặt thông số truy vấn, bao gồm mã code, redirect URI, clientId và clientSecret
+                var content = new FormUrlEncodedContent(new[]
+                {
+                    new KeyValuePair<string, string>("code", code),
+                    new KeyValuePair<string, string>("redirect_uri", redirectUri),
+                    new KeyValuePair<string, string>("client_id", clientId),
+                    new KeyValuePair<string, string>("client_secret", clientSecret),
+                    new KeyValuePair<string, string>("grant_type", "authorization_code")
+                });
+
+                // Gửi yêu cầu HTTP POST
+                var response = await httpClient.PostAsync(tokenUrlOfGoogle, content);
+
+                // Kiểm tra nếu yêu cầu thành công
+                if (response.IsSuccessStatusCode)
+                {
+                    // Đọc phản hồi và chuyển đổi thành đối tượng OAuthTokenResponse
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    var tokenResponse = Newtonsoft.Json.JsonConvert.DeserializeObject<OAuthTokenResponse>(responseContent);
+                    return tokenResponse;
+                }
+                else
+                {
+                    // Xử lý lỗi nếu có
+                    // ...
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return null;
+            }
+        }
+
 
         [HttpGet("Logout")]
         [Authorize]
