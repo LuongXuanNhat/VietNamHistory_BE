@@ -14,7 +14,6 @@ namespace VNH.Domain
         public Post()
         {
             PostComments = new HashSet<PostComment>();
-            PostDetails = new HashSet<PostDetail>();
             PostLikes = new HashSet<PostLike>();
             PostReportDetails = new HashSet<PostReportDetail>();
             PostSaves = new HashSet<PostSave>();
@@ -25,15 +24,16 @@ namespace VNH.Domain
         public string Id { get; set; }
         [Required]
         [StringLength(255)]
-        [Unicode(false)]
         public string Title { get; set; }
         public string Content { get; set; }
-        public Guid? TopicId { get; set; }
+        public Guid TopicId { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime? CreatedAt { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime? UpdatedAt { get; set; }
         public Guid? UserId { get; set; }
+        public byte[] Image { get; set; }
+        public int ViewNumber { get; set; }
 
         [ForeignKey("TopicId")]
         [InverseProperty("Posts")]
@@ -44,12 +44,12 @@ namespace VNH.Domain
         [InverseProperty("Post")]
         public virtual ICollection<PostComment> PostComments { get; set; }
         [InverseProperty("Post")]
-        public virtual ICollection<PostDetail> PostDetails { get; set; }
-        [InverseProperty("Post")]
         public virtual ICollection<PostLike> PostLikes { get; set; }
         [InverseProperty("Post")]
         public virtual ICollection<PostReportDetail> PostReportDetails { get; set; }
         [InverseProperty("Post")]
         public virtual ICollection<PostSave> PostSaves { get; set; }
+        [InverseProperty("Post")]
+        public virtual ICollection<TopicDetail> TopicDetails { get; set; }
     }
 }

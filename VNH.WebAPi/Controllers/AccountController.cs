@@ -44,7 +44,7 @@ namespace VNH.WebAPi.Controllers
             var userPrincipal = _account.ValidateToken(result.ResultObj);
             var authProperties = new AuthenticationProperties
             {
-                ExpiresUtc = DateTimeOffset.UtcNow.AddHours(1),
+                ExpiresUtc = DateTimeOffset.UtcNow.AddHours(12),
                 IsPersistent = true
             };
 

@@ -8,7 +8,7 @@ namespace VNH.Application.DTOs.Catalog.Users
 {
     public class UserDetailDto
     {
-        [StringLength(100)]
+        [StringLength(200)]
         public string Fullname { get; set; } = string.Empty;
         public virtual string UserName { get; set; } = string.Empty;
         [Column(TypeName = "datetime")]

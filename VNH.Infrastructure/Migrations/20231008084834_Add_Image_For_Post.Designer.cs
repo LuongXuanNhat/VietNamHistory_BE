@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VNH.Infrastructure.Presenters.Migrations;
 
@@ -11,9 +12,11 @@ using VNH.Infrastructure.Presenters.Migrations;
 namespace VNH.Infrastructure.Migrations
 {
     [DbContext(typeof(VietNamHistoryContext))]
-    partial class VietNamHistoryContextModelSnapshot : ModelSnapshot
+    [Migration("20231008084834_Add_Image_For_Post")]
+    partial class Add_Image_For_Post
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -419,26 +422,6 @@ namespace VNH.Infrastructure.Migrations
                     b.ToTable("NotificationDetails");
                 });
 
-            modelBuilder.Entity("VNH.Domain.Entities.PostTag", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("PostId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("TagId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("PostTags");
-                });
-
             modelBuilder.Entity("VNH.Domain.Exercise", b =>
                 {
                     b.Property<Guid>("Id")
@@ -580,7 +563,8 @@ namespace VNH.Infrastructure.Migrations
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(255)");
 
                     b.Property<Guid?>("TopicId")
                         .HasColumnType("uniqueidentifier");
@@ -590,9 +574,6 @@ namespace VNH.Infrastructure.Migrations
 
                     b.Property<Guid?>("UserId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("ViewNumber")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -631,6 +612,39 @@ namespace VNH.Infrastructure.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("PostComment");
+                });
+
+            modelBuilder.Entity("VNH.Domain.PostDetail", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("CommentNumber")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("LikeNumber")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PostId")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int?>("SaveNumber")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("ViewNumber")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PostId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PostDetail");
                 });
 
             modelBuilder.Entity("VNH.Domain.PostLike", b =>
@@ -949,21 +963,21 @@ namespace VNH.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("a18be9c0-aa65-4af8-bd17-00bd9344e575"),
-                            ConcurrencyStamp = "401d6154-2636-43b3-9bea-aeeabf22059d",
+                            ConcurrencyStamp = "8fe87b67-b2a0-45ae-956e-2580e6d57e17",
                             Name = "admin",
                             NormalizedName = "admin"
                         },
                         new
                         {
                             Id = new Guid("cfafcfcd-d796-43f4-8ac0-ead43bd2f18a"),
-                            ConcurrencyStamp = "797616a3-2c7e-46ef-9ada-815baffd9561",
+                            ConcurrencyStamp = "a959ef38-7cdc-4c6d-917a-bd91a377a035",
                             Name = "teacher",
                             NormalizedName = "teacher"
                         },
                         new
                         {
                             Id = new Guid("5d4e4081-91f8-4fc0-b8eb-9860b7849604"),
-                            ConcurrencyStamp = "8b191a8f-577f-4fc8-bc55-0f5dc37bacc5",
+                            ConcurrencyStamp = "cd439efb-2423-4761-b7c0-a573a6708277",
                             Name = "student",
                             NormalizedName = "student"
                         });
@@ -1058,15 +1072,15 @@ namespace VNH.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("PostId")
-                        .HasColumnType("nvarchar(255)");
+                    b.Property<Guid?>("TagId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("TopicId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PostId");
+                    b.HasIndex("TagId");
 
                     b.HasIndex("TopicId");
 
@@ -1146,7 +1160,7 @@ namespace VNH.Infrastructure.Migrations
                         {
                             Id = new Guid("d1f771da-b318-42f8-a003-5a15614216f5"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "12148b6f-9ac9-4994-ad50-54e01ec9ebaf",
+                            ConcurrencyStamp = "c79934b3-789e-48f9-82c8-5d954c51a842",
                             DateOfBirth = new DateTime(2002, 3, 18, 0, 0, 0, 0, DateTimeKind.Local),
                             Email = "admin@gmail.com",
                             EmailConfirmed = true,
@@ -1155,7 +1169,7 @@ namespace VNH.Infrastructure.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "onionwebdev@gmail.com",
                             NormalizedUserName = "admin",
-                            PasswordHash = "AQAAAAEAACcQAAAAEAUppGPkCUVQwexu08dnuALfftIE+P1ES7w6SfOM4cEcfqQFaXXIPGlnoOpY6AyHJA==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEN27ePca+IQwcXO1o8v/7C5sG75wmTUA2nCw/yP/836pS+uR06sHq15D9O44xo9K6Q==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -1388,6 +1402,23 @@ namespace VNH.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("VNH.Domain.PostDetail", b =>
+                {
+                    b.HasOne("VNH.Domain.Post", "Post")
+                        .WithMany("PostDetails")
+                        .HasForeignKey("PostId")
+                        .HasConstraintName("FK__PostDetai__PostI__0D7A0286");
+
+                    b.HasOne("VNH.Domain.User", "User")
+                        .WithMany("PostDetails")
+                        .HasForeignKey("UserId")
+                        .HasConstraintName("FK__PostDetai__UserI__0E6E26BF");
+
+                    b.Navigation("Post");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("VNH.Domain.PostLike", b =>
                 {
                     b.HasOne("VNH.Domain.Post", "Post")
@@ -1599,9 +1630,9 @@ namespace VNH.Infrastructure.Migrations
 
             modelBuilder.Entity("VNH.Domain.TopicDetail", b =>
                 {
-                    b.HasOne("VNH.Domain.Post", "Post")
+                    b.HasOne("VNH.Domain.Tag", "Tag")
                         .WithMany("TopicDetails")
-                        .HasForeignKey("PostId")
+                        .HasForeignKey("TagId")
                         .HasConstraintName("FK__TopicDeta__TagId__07C12930");
 
                     b.HasOne("VNH.Domain.Topic", "Topic")
@@ -1609,7 +1640,7 @@ namespace VNH.Infrastructure.Migrations
                         .HasForeignKey("TopicId")
                         .HasConstraintName("FK__TopicDeta__Topic__06CD04F7");
 
-                    b.Navigation("Post");
+                    b.Navigation("Tag");
 
                     b.Navigation("Topic");
                 });
@@ -1663,13 +1694,13 @@ namespace VNH.Infrastructure.Migrations
                 {
                     b.Navigation("PostComments");
 
+                    b.Navigation("PostDetails");
+
                     b.Navigation("PostLikes");
 
                     b.Navigation("PostReportDetails");
 
                     b.Navigation("PostSaves");
-
-                    b.Navigation("TopicDetails");
                 });
 
             modelBuilder.Entity("VNH.Domain.PostComment", b =>
@@ -1701,6 +1732,8 @@ namespace VNH.Infrastructure.Migrations
             modelBuilder.Entity("VNH.Domain.Tag", b =>
                 {
                     b.Navigation("QuestionTags");
+
+                    b.Navigation("TopicDetails");
                 });
 
             modelBuilder.Entity("VNH.Domain.Topic", b =>
@@ -1735,6 +1768,8 @@ namespace VNH.Infrastructure.Migrations
                     b.Navigation("NotificationDetails");
 
                     b.Navigation("PostComments");
+
+                    b.Navigation("PostDetails");
 
                     b.Navigation("PostLikes");
 

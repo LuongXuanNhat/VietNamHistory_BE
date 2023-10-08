@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VNH.Infrastructure.Presenters.Migrations;
 
@@ -11,9 +12,11 @@ using VNH.Infrastructure.Presenters.Migrations;
 namespace VNH.Infrastructure.Migrations
 {
     [DbContext(typeof(VietNamHistoryContext))]
-    partial class VietNamHistoryContextModelSnapshot : ModelSnapshot
+    [Migration("20231008105651_Update_PostTag")]
+    partial class Update_PostTag
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -580,7 +583,8 @@ namespace VNH.Infrastructure.Migrations
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(255)");
 
                     b.Property<Guid?>("TopicId")
                         .HasColumnType("uniqueidentifier");
@@ -949,21 +953,21 @@ namespace VNH.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("a18be9c0-aa65-4af8-bd17-00bd9344e575"),
-                            ConcurrencyStamp = "401d6154-2636-43b3-9bea-aeeabf22059d",
+                            ConcurrencyStamp = "2b9bd8e9-edd2-404c-8d06-65004776f292",
                             Name = "admin",
                             NormalizedName = "admin"
                         },
                         new
                         {
                             Id = new Guid("cfafcfcd-d796-43f4-8ac0-ead43bd2f18a"),
-                            ConcurrencyStamp = "797616a3-2c7e-46ef-9ada-815baffd9561",
+                            ConcurrencyStamp = "5f685c47-d2a1-46b5-a64f-b558690ac30e",
                             Name = "teacher",
                             NormalizedName = "teacher"
                         },
                         new
                         {
                             Id = new Guid("5d4e4081-91f8-4fc0-b8eb-9860b7849604"),
-                            ConcurrencyStamp = "8b191a8f-577f-4fc8-bc55-0f5dc37bacc5",
+                            ConcurrencyStamp = "e8dbeef0-f7ca-476e-a766-af8a1a223227",
                             Name = "student",
                             NormalizedName = "student"
                         });
@@ -1058,15 +1062,15 @@ namespace VNH.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("PostId")
-                        .HasColumnType("nvarchar(255)");
+                    b.Property<Guid?>("TagId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("TopicId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PostId");
+                    b.HasIndex("TagId");
 
                     b.HasIndex("TopicId");
 
@@ -1146,7 +1150,7 @@ namespace VNH.Infrastructure.Migrations
                         {
                             Id = new Guid("d1f771da-b318-42f8-a003-5a15614216f5"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "12148b6f-9ac9-4994-ad50-54e01ec9ebaf",
+                            ConcurrencyStamp = "516c66b2-0c79-4c93-86d8-623b5cfc0f2c",
                             DateOfBirth = new DateTime(2002, 3, 18, 0, 0, 0, 0, DateTimeKind.Local),
                             Email = "admin@gmail.com",
                             EmailConfirmed = true,
@@ -1155,7 +1159,7 @@ namespace VNH.Infrastructure.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "onionwebdev@gmail.com",
                             NormalizedUserName = "admin",
-                            PasswordHash = "AQAAAAEAACcQAAAAEAUppGPkCUVQwexu08dnuALfftIE+P1ES7w6SfOM4cEcfqQFaXXIPGlnoOpY6AyHJA==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEK2/PMmwihbH7KlPqrZvmKi7fvB4UuCevNuC/jZM8HXJQBYMiD2r3L75Pulm8Dx3DA==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -1599,9 +1603,9 @@ namespace VNH.Infrastructure.Migrations
 
             modelBuilder.Entity("VNH.Domain.TopicDetail", b =>
                 {
-                    b.HasOne("VNH.Domain.Post", "Post")
+                    b.HasOne("VNH.Domain.Tag", "Tag")
                         .WithMany("TopicDetails")
-                        .HasForeignKey("PostId")
+                        .HasForeignKey("TagId")
                         .HasConstraintName("FK__TopicDeta__TagId__07C12930");
 
                     b.HasOne("VNH.Domain.Topic", "Topic")
@@ -1609,7 +1613,7 @@ namespace VNH.Infrastructure.Migrations
                         .HasForeignKey("TopicId")
                         .HasConstraintName("FK__TopicDeta__Topic__06CD04F7");
 
-                    b.Navigation("Post");
+                    b.Navigation("Tag");
 
                     b.Navigation("Topic");
                 });
@@ -1668,8 +1672,6 @@ namespace VNH.Infrastructure.Migrations
                     b.Navigation("PostReportDetails");
 
                     b.Navigation("PostSaves");
-
-                    b.Navigation("TopicDetails");
                 });
 
             modelBuilder.Entity("VNH.Domain.PostComment", b =>
@@ -1701,6 +1703,8 @@ namespace VNH.Infrastructure.Migrations
             modelBuilder.Entity("VNH.Domain.Tag", b =>
                 {
                     b.Navigation("QuestionTags");
+
+                    b.Navigation("TopicDetails");
                 });
 
             modelBuilder.Entity("VNH.Domain.Topic", b =>

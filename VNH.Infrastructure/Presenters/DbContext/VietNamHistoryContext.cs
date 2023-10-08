@@ -38,8 +38,8 @@ namespace VNH.Infrastructure.Presenters.Migrations
         public virtual DbSet<Lesson> Lessons { get; set; }
         public virtual DbSet<News> News { get; set; }
         public virtual DbSet<Post> Posts { get; set; }
+        public virtual DbSet<PostTag> PostTags { get; set; }
         public virtual DbSet<PostComment> PostComments { get; set; }
-        public virtual DbSet<PostDetail> PostDetails { get; set; }
         public virtual DbSet<PostLike> PostLikes { get; set; }
         public virtual DbSet<PostReport> PostReports { get; set; }
         public virtual DbSet<PostReportDetail> PostReportDetails { get; set; }
@@ -279,20 +279,7 @@ namespace VNH.Infrastructure.Presenters.Migrations
                     .HasConstraintName("FK__PostComme__UserI__10566F31");
             });
 
-            modelBuilder.Entity<PostDetail>(entity =>
-            {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.HasOne(d => d.Post)
-                    .WithMany(p => p.PostDetails)
-                    .HasForeignKey(d => d.PostId)
-                    .HasConstraintName("FK__PostDetai__PostI__0D7A0286");
-
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.PostDetails)
-                    .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK__PostDetai__UserI__0E6E26BF");
-            });
+            
 
             modelBuilder.Entity<PostLike>(entity =>
             {
@@ -332,6 +319,11 @@ namespace VNH.Infrastructure.Presenters.Migrations
                     .WithMany(p => p.PostReportDetails)
                     .HasForeignKey(d => d.UserId)
                     .HasConstraintName("FK__PostRepor__UserI__160F4887");
+            });
+
+            modelBuilder.Entity<PostTag>(entity =>
+            {
+
             });
 
             modelBuilder.Entity<PostSave>(entity =>
@@ -500,9 +492,9 @@ namespace VNH.Infrastructure.Presenters.Migrations
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
-                entity.HasOne(d => d.Tag)
+                entity.HasOne(d => d.Post)
                     .WithMany(p => p.TopicDetails)
-                    .HasForeignKey(d => d.TagId)
+                    .HasForeignKey(d => d.PostId)
                     .HasConstraintName("FK__TopicDeta__TagId__07C12930");
 
                 entity.HasOne(d => d.Topic)

@@ -13,8 +13,8 @@ namespace VNH.Domain
     {
         public Tag()
         {
-            QuestionTags = new HashSet<QuestionTag>();
-            TopicDetails = new HashSet<TopicDetail>();
+            Id = Guid.NewGuid();
+            ////QuestionTags = new HashSet<QuestionTag>();
         }
 
         [Key]
@@ -24,7 +24,5 @@ namespace VNH.Domain
 
         [InverseProperty("Tag")]
         public virtual ICollection<QuestionTag> QuestionTags { get; set; }
-        [InverseProperty("Tag")]
-        public virtual ICollection<TopicDetail> TopicDetails { get; set; }
     }
 }
