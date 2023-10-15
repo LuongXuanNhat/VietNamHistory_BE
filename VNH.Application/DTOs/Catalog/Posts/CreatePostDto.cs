@@ -4,6 +4,7 @@ namespace VNH.Application.DTOs.Catalog.Posts
 {
     public class CreatePostDto
     {
+        public string Id { get; set; } = string.Empty;
         public string Title { get; set; }
         public string Content { get; set; }
         public IFormFile Image { get; set; }

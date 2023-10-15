@@ -582,7 +582,7 @@ namespace VNH.Infrastructure.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<Guid?>("TopicId")
+                    b.Property<Guid>("TopicId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -949,21 +949,21 @@ namespace VNH.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("a18be9c0-aa65-4af8-bd17-00bd9344e575"),
-                            ConcurrencyStamp = "401d6154-2636-43b3-9bea-aeeabf22059d",
+                            ConcurrencyStamp = "0424ca3b-ef17-4a16-ac55-064c162a20d9",
                             Name = "admin",
                             NormalizedName = "admin"
                         },
                         new
                         {
                             Id = new Guid("cfafcfcd-d796-43f4-8ac0-ead43bd2f18a"),
-                            ConcurrencyStamp = "797616a3-2c7e-46ef-9ada-815baffd9561",
+                            ConcurrencyStamp = "389a485c-fb2f-43fe-b328-36e42b4f8485",
                             Name = "teacher",
                             NormalizedName = "teacher"
                         },
                         new
                         {
                             Id = new Guid("5d4e4081-91f8-4fc0-b8eb-9860b7849604"),
-                            ConcurrencyStamp = "8b191a8f-577f-4fc8-bc55-0f5dc37bacc5",
+                            ConcurrencyStamp = "13768890-e26f-485b-96ee-f349736d90b6",
                             Name = "student",
                             NormalizedName = "student"
                         });
@@ -1146,7 +1146,7 @@ namespace VNH.Infrastructure.Migrations
                         {
                             Id = new Guid("d1f771da-b318-42f8-a003-5a15614216f5"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "12148b6f-9ac9-4994-ad50-54e01ec9ebaf",
+                            ConcurrencyStamp = "7f4ed517-bab5-4ede-a2e9-f6f1d5834222",
                             DateOfBirth = new DateTime(2002, 3, 18, 0, 0, 0, 0, DateTimeKind.Local),
                             Email = "admin@gmail.com",
                             EmailConfirmed = true,
@@ -1155,7 +1155,7 @@ namespace VNH.Infrastructure.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "onionwebdev@gmail.com",
                             NormalizedUserName = "admin",
-                            PasswordHash = "AQAAAAEAACcQAAAAEAUppGPkCUVQwexu08dnuALfftIE+P1ES7w6SfOM4cEcfqQFaXXIPGlnoOpY6AyHJA==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEHN4O6oUDhG4htJ8wFfYj+9FRktpK8ABJjScT/PquEAofmozEg3Ll7wz6eLrt6ySDw==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -1359,6 +1359,8 @@ namespace VNH.Infrastructure.Migrations
                     b.HasOne("VNH.Domain.Topic", "Topic")
                         .WithMany("Posts")
                         .HasForeignKey("TopicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
                         .HasConstraintName("FK__Post__TopicId__76969D2E");
 
                     b.HasOne("VNH.Domain.User", "User")

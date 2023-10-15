@@ -140,7 +140,7 @@ namespace VNH.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "User",
+                name: "UserShort",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -204,7 +204,7 @@ namespace VNH.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_AppUserRoles_AspNetUsers_UserId",
                         column: x => x.UserId,
-                        principalTable: "User",
+                        principalTable: "UserShort",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -226,7 +226,7 @@ namespace VNH.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK__Answer__AuthorId__1AD3FDA4",
                         column: x => x.AuthorId,
-                        principalTable: "User",
+                        principalTable: "UserShort",
                         principalColumn: "Id");
                 });
 
@@ -247,7 +247,7 @@ namespace VNH.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK__Course__UserId__787EE5A0",
                         column: x => x.UserId,
-                        principalTable: "User",
+                        principalTable: "UserShort",
                         principalColumn: "Id");
                 });
 
@@ -272,7 +272,7 @@ namespace VNH.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK__Document__UserId__0A9D95DB",
                         column: x => x.UserId,
-                        principalTable: "User",
+                        principalTable: "UserShort",
                         principalColumn: "Id");
                 });
 
@@ -299,7 +299,7 @@ namespace VNH.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK__NotificationDetail__UserId__1EA48E88",
                         column: x => x.UserId,
-                        principalTable: "User",
+                        principalTable: "UserShort",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -322,7 +322,7 @@ namespace VNH.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK__Question__Author__18EBB532",
                         column: x => x.AuthorId,
-                        principalTable: "User",
+                        principalTable: "UserShort",
                         principalColumn: "Id");
                 });
 
@@ -340,12 +340,12 @@ namespace VNH.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK__Search__UserId__17F790F9",
                         column: x => x.UserId,
-                        principalTable: "User",
+                        principalTable: "UserShort",
                         principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
-                name: "Topic",
+                name: "TopicName",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -360,7 +360,7 @@ namespace VNH.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK__Topic__AuthorId__05D8E0BE",
                         column: x => x.AuthorId,
-                        principalTable: "User",
+                        principalTable: "UserShort",
                         principalColumn: "Id");
                 });
 
@@ -383,7 +383,7 @@ namespace VNH.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK__AnswerVot__UserI__1EA48E88",
                         column: x => x.UserId,
-                        principalTable: "User",
+                        principalTable: "UserShort",
                         principalColumn: "Id");
                 });
 
@@ -403,7 +403,7 @@ namespace VNH.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK__SubAnswer__Autho__1CBC4616",
                         column: x => x.AuthorId,
-                        principalTable: "User",
+                        principalTable: "UserShort",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK__SubAnswer__PreAn__1BC821DD",
@@ -434,7 +434,7 @@ namespace VNH.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK__CourseCom__UserI__797309D9",
                         column: x => x.UserId,
-                        principalTable: "User",
+                        principalTable: "UserShort",
                         principalColumn: "Id");
                 });
 
@@ -458,7 +458,7 @@ namespace VNH.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK__CourseRat__UserI__7E37BEF6",
                         column: x => x.UserId,
-                        principalTable: "User",
+                        principalTable: "UserShort",
                         principalColumn: "Id");
                 });
 
@@ -481,7 +481,7 @@ namespace VNH.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK__CourseSav__UserI__03F0984C",
                         column: x => x.UserId,
-                        principalTable: "User",
+                        principalTable: "UserShort",
                         principalColumn: "Id");
                 });
 
@@ -525,7 +525,7 @@ namespace VNH.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK__DocumentS__UserI__0B91BA14",
                         column: x => x.UserId,
-                        principalTable: "User",
+                        principalTable: "UserShort",
                         principalColumn: "Id");
                 });
 
@@ -548,7 +548,7 @@ namespace VNH.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK__QuestionL__UserI__208CD6FA",
                         column: x => x.UserId,
-                        principalTable: "User",
+                        principalTable: "UserShort",
                         principalColumn: "Id");
                 });
 
@@ -578,7 +578,7 @@ namespace VNH.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK__QuestionR__UserI__236943A5",
                         column: x => x.UserId,
-                        principalTable: "User",
+                        principalTable: "UserShort",
                         principalColumn: "Id");
                 });
 
@@ -601,7 +601,7 @@ namespace VNH.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK__QuestionS__UserI__245D67DE",
                         column: x => x.UserId,
-                        principalTable: "User",
+                        principalTable: "UserShort",
                         principalColumn: "Id");
                 });
 
@@ -645,12 +645,12 @@ namespace VNH.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK__Post__TopicId__76969D2E",
                         column: x => x.TopicId,
-                        principalTable: "Topic",
+                        principalTable: "TopicName",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK__Post__UserId__778AC167",
                         column: x => x.UserId,
-                        principalTable: "User",
+                        principalTable: "UserShort",
                         principalColumn: "Id");
                 });
 
@@ -673,7 +673,7 @@ namespace VNH.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK__TopicDeta__Topic__06CD04F7",
                         column: x => x.TopicId,
-                        principalTable: "Topic",
+                        principalTable: "TopicName",
                         principalColumn: "Id");
                 });
 
@@ -699,7 +699,7 @@ namespace VNH.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK__CourseSub__UserI__7B5B524B",
                         column: x => x.UserId,
-                        principalTable: "User",
+                        principalTable: "UserShort",
                         principalColumn: "Id");
                 });
 
@@ -748,7 +748,7 @@ namespace VNH.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK__PostComme__UserI__10566F31",
                         column: x => x.UserId,
-                        principalTable: "User",
+                        principalTable: "UserShort",
                         principalColumn: "Id");
                 });
 
@@ -775,7 +775,7 @@ namespace VNH.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK__PostDetai__UserI__0E6E26BF",
                         column: x => x.UserId,
-                        principalTable: "User",
+                        principalTable: "UserShort",
                         principalColumn: "Id");
                 });
 
@@ -798,7 +798,7 @@ namespace VNH.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK__PostLike__UserId__14270015",
                         column: x => x.UserId,
-                        principalTable: "User",
+                        principalTable: "UserShort",
                         principalColumn: "Id");
                 });
 
@@ -828,7 +828,7 @@ namespace VNH.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK__PostRepor__UserI__160F4887",
                         column: x => x.UserId,
-                        principalTable: "User",
+                        principalTable: "UserShort",
                         principalColumn: "Id");
                 });
 
@@ -851,7 +851,7 @@ namespace VNH.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK__PostSave__UserId__09A971A2",
                         column: x => x.UserId,
-                        principalTable: "User",
+                        principalTable: "UserShort",
                         principalColumn: "Id");
                 });
 
@@ -876,7 +876,7 @@ namespace VNH.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK__ExerciseD__UserI__01142BA1",
                         column: x => x.UserId,
-                        principalTable: "User",
+                        principalTable: "UserShort",
                         principalColumn: "Id");
                 });
 
@@ -924,7 +924,7 @@ namespace VNH.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK__PostSubCo__UserI__123EB7A3",
                         column: x => x.UserId,
-                        principalTable: "User",
+                        principalTable: "UserShort",
                         principalColumn: "Id");
                 });
 
@@ -939,7 +939,7 @@ namespace VNH.Infrastructure.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "User",
+                table: "UserShort",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "DateOfBirth", "Email", "EmailConfirmed", "Fullname", "Gender", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "NumberConfirm", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
                 values: new object[] { new Guid("d1f771da-b318-42f8-a003-5a15614216f5"), 0, "14d18772-730b-41ca-bc3f-80ccbc7ce4da", new DateTime(2002, 3, 18, 0, 0, 0, 0, DateTimeKind.Local), "admin@gmail.com", true, "Lương Xuân Nhất", 0, false, null, "onionwebdev@gmail.com", "admin", null, "AQAAAAEAACcQAAAAEHmqCu6W5TT0vGKr+9qbekcax+FmUEzQP1zUtUMjLmcJxCjEMm5RGAonoiYIjYFj7Q==", null, false, "", false, "admin" });
 
@@ -1185,7 +1185,7 @@ namespace VNH.Infrastructure.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_Topic_AuthorId",
-                table: "Topic",
+                table: "TopicName",
                 column: "AuthorId");
 
             migrationBuilder.CreateIndex(
@@ -1320,13 +1320,13 @@ namespace VNH.Infrastructure.Migrations
                 name: "Lesson");
 
             migrationBuilder.DropTable(
-                name: "Topic");
+                name: "TopicName");
 
             migrationBuilder.DropTable(
                 name: "Course");
 
             migrationBuilder.DropTable(
-                name: "User");
+                name: "UserShort");
         }
     }
 }

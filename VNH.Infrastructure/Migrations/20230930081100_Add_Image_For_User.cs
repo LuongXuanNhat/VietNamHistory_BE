@@ -13,7 +13,7 @@ namespace VNH.Infrastructure.Migrations
         {
             migrationBuilder.AddColumn<byte[]>(
                 name: "Image",
-                table: "User",
+                table: "UserShort",
                 type: "varbinary(max)",
                 maxLength: 3145728,
                 nullable: true);   
@@ -24,7 +24,7 @@ namespace VNH.Infrastructure.Migrations
         {
             migrationBuilder.DropColumn(
                 name: "Image",
-                table: "User");   
+                table: "UserShort");   
         }
     }
 }

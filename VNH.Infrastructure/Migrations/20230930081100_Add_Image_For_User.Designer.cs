@@ -1039,7 +1039,7 @@ namespace VNH.Infrastructure.Migrations
                     b.ToTable("Tag");
                 });
 
-            modelBuilder.Entity("VNH.Domain.Topic", b =>
+            modelBuilder.Entity("VNH.Domain.TopicName", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -1061,7 +1061,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("AuthorId");
 
-                    b.ToTable("Topic");
+                    b.ToTable("TopicName");
                 });
 
             modelBuilder.Entity("VNH.Domain.TopicDetail", b =>
@@ -1084,7 +1084,7 @@ namespace VNH.Infrastructure.Migrations
                     b.ToTable("TopicDetail");
                 });
 
-            modelBuilder.Entity("VNH.Domain.User", b =>
+            modelBuilder.Entity("VNH.Domain.UserShort", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -1150,7 +1150,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("User");
+                    b.ToTable("UserShort");
 
                     b.HasData(
                         new
@@ -1176,7 +1176,7 @@ namespace VNH.Infrastructure.Migrations
 
             modelBuilder.Entity("VNH.Domain.Answer", b =>
                 {
-                    b.HasOne("VNH.Domain.User", "Author")
+                    b.HasOne("VNH.Domain.UserShort", "Author")
                         .WithMany("Answers")
                         .HasForeignKey("AuthorId")
                         .HasConstraintName("FK__Answer__AuthorId__1AD3FDA4");
@@ -1191,24 +1191,24 @@ namespace VNH.Infrastructure.Migrations
                         .HasForeignKey("AnswerId")
                         .HasConstraintName("FK__AnswerVot__Answe__1DB06A4F");
 
-                    b.HasOne("VNH.Domain.User", "User")
+                    b.HasOne("VNH.Domain.UserShort", "UserShort")
                         .WithMany("AnswerVotes")
                         .HasForeignKey("UserId")
                         .HasConstraintName("FK__AnswerVot__UserI__1EA48E88");
 
                     b.Navigation("Answer");
 
-                    b.Navigation("User");
+                    b.Navigation("UserShort");
                 });
 
             modelBuilder.Entity("VNH.Domain.Course", b =>
                 {
-                    b.HasOne("VNH.Domain.User", "User")
+                    b.HasOne("VNH.Domain.UserShort", "UserShort")
                         .WithMany("Courses")
                         .HasForeignKey("UserId")
                         .HasConstraintName("FK__Course__UserId__787EE5A0");
 
-                    b.Navigation("User");
+                    b.Navigation("UserShort");
                 });
 
             modelBuilder.Entity("VNH.Domain.CourseComment", b =>
@@ -1218,14 +1218,14 @@ namespace VNH.Infrastructure.Migrations
                         .HasForeignKey("CourseId")
                         .HasConstraintName("FK__CourseCom__Cours__7A672E12");
 
-                    b.HasOne("VNH.Domain.User", "User")
+                    b.HasOne("VNH.Domain.UserShort", "UserShort")
                         .WithMany("CourseComments")
                         .HasForeignKey("UserId")
                         .HasConstraintName("FK__CourseCom__UserI__797309D9");
 
                     b.Navigation("Course");
 
-                    b.Navigation("User");
+                    b.Navigation("UserShort");
                 });
 
             modelBuilder.Entity("VNH.Domain.CourseRating", b =>
@@ -1235,14 +1235,14 @@ namespace VNH.Infrastructure.Migrations
                         .HasForeignKey("CourseId")
                         .HasConstraintName("FK__CourseRat__Cours__7D439ABD");
 
-                    b.HasOne("VNH.Domain.User", "User")
+                    b.HasOne("VNH.Domain.UserShort", "UserShort")
                         .WithMany("CourseRatings")
                         .HasForeignKey("UserId")
                         .HasConstraintName("FK__CourseRat__UserI__7E37BEF6");
 
                     b.Navigation("Course");
 
-                    b.Navigation("User");
+                    b.Navigation("UserShort");
                 });
 
             modelBuilder.Entity("VNH.Domain.CourseSave", b =>
@@ -1252,14 +1252,14 @@ namespace VNH.Infrastructure.Migrations
                         .HasForeignKey("CourseId")
                         .HasConstraintName("FK__CourseSav__Cours__04E4BC85");
 
-                    b.HasOne("VNH.Domain.User", "User")
+                    b.HasOne("VNH.Domain.UserShort", "UserShort")
                         .WithMany("CourseSaves")
                         .HasForeignKey("UserId")
                         .HasConstraintName("FK__CourseSav__UserI__03F0984C");
 
                     b.Navigation("Course");
 
-                    b.Navigation("User");
+                    b.Navigation("UserShort");
                 });
 
             modelBuilder.Entity("VNH.Domain.CourseSubComment", b =>
@@ -1269,24 +1269,24 @@ namespace VNH.Infrastructure.Migrations
                         .HasForeignKey("PreCommentId")
                         .HasConstraintName("FK__CourseSub__PreCo__7C4F7684");
 
-                    b.HasOne("VNH.Domain.User", "User")
+                    b.HasOne("VNH.Domain.UserShort", "UserShort")
                         .WithMany("CourseSubComments")
                         .HasForeignKey("UserId")
                         .HasConstraintName("FK__CourseSub__UserI__7B5B524B");
 
                     b.Navigation("PreComment");
 
-                    b.Navigation("User");
+                    b.Navigation("UserShort");
                 });
 
             modelBuilder.Entity("VNH.Domain.Document", b =>
                 {
-                    b.HasOne("VNH.Domain.User", "User")
+                    b.HasOne("VNH.Domain.UserShort", "UserShort")
                         .WithMany("Documents")
                         .HasForeignKey("UserId")
                         .HasConstraintName("FK__Document__UserId__0A9D95DB");
 
-                    b.Navigation("User");
+                    b.Navigation("UserShort");
                 });
 
             modelBuilder.Entity("VNH.Domain.DocumentSave", b =>
@@ -1296,14 +1296,14 @@ namespace VNH.Infrastructure.Migrations
                         .HasForeignKey("DocumentId")
                         .HasConstraintName("FK__DocumentS__Docum__0C85DE4D");
 
-                    b.HasOne("VNH.Domain.User", "User")
+                    b.HasOne("VNH.Domain.UserShort", "UserShort")
                         .WithMany("DocumentSaves")
                         .HasForeignKey("UserId")
                         .HasConstraintName("FK__DocumentS__UserI__0B91BA14");
 
                     b.Navigation("Document");
 
-                    b.Navigation("User");
+                    b.Navigation("UserShort");
                 });
 
             modelBuilder.Entity("VNH.Domain.Entities.NotificationDetail", b =>
@@ -1315,7 +1315,7 @@ namespace VNH.Infrastructure.Migrations
                         .IsRequired()
                         .HasConstraintName("FK__NotificationDetail__NotificationId__1EQ48E88");
 
-                    b.HasOne("VNH.Domain.User", "User")
+                    b.HasOne("VNH.Domain.UserShort", "UserShort")
                         .WithMany("NotificationDetails")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1324,7 +1324,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.Navigation("Notification");
 
-                    b.Navigation("User");
+                    b.Navigation("UserShort");
                 });
 
             modelBuilder.Entity("VNH.Domain.Exercise", b =>
@@ -1345,14 +1345,14 @@ namespace VNH.Infrastructure.Migrations
                         .HasForeignKey("ExerciseId")
                         .HasConstraintName("FK__ExerciseD__Exerc__02084FDA");
 
-                    b.HasOne("VNH.Domain.User", "User")
+                    b.HasOne("VNH.Domain.UserShort", "UserShort")
                         .WithMany("ExerciseDetails")
                         .HasForeignKey("UserId")
                         .HasConstraintName("FK__ExerciseD__UserI__01142BA1");
 
                     b.Navigation("Exercise");
 
-                    b.Navigation("User");
+                    b.Navigation("UserShort");
                 });
 
             modelBuilder.Entity("VNH.Domain.Lesson", b =>
@@ -1367,19 +1367,19 @@ namespace VNH.Infrastructure.Migrations
 
             modelBuilder.Entity("VNH.Domain.Post", b =>
                 {
-                    b.HasOne("VNH.Domain.Topic", "Topic")
+                    b.HasOne("VNH.Domain.TopicName", "TopicName")
                         .WithMany("Posts")
                         .HasForeignKey("TopicId")
                         .HasConstraintName("FK__Post__TopicId__76969D2E");
 
-                    b.HasOne("VNH.Domain.User", "User")
+                    b.HasOne("VNH.Domain.UserShort", "UserShort")
                         .WithMany("Posts")
                         .HasForeignKey("UserId")
                         .HasConstraintName("FK__Post__UserId__778AC167");
 
-                    b.Navigation("Topic");
+                    b.Navigation("TopicName");
 
-                    b.Navigation("User");
+                    b.Navigation("UserShort");
                 });
 
             modelBuilder.Entity("VNH.Domain.PostComment", b =>
@@ -1389,14 +1389,14 @@ namespace VNH.Infrastructure.Migrations
                         .HasForeignKey("PostId")
                         .HasConstraintName("FK__PostComme__PostI__0F624AF8");
 
-                    b.HasOne("VNH.Domain.User", "User")
+                    b.HasOne("VNH.Domain.UserShort", "UserShort")
                         .WithMany("PostComments")
                         .HasForeignKey("UserId")
                         .HasConstraintName("FK__PostComme__UserI__10566F31");
 
                     b.Navigation("Post");
 
-                    b.Navigation("User");
+                    b.Navigation("UserShort");
                 });
 
             modelBuilder.Entity("VNH.Domain.PostDetail", b =>
@@ -1406,14 +1406,14 @@ namespace VNH.Infrastructure.Migrations
                         .HasForeignKey("PostId")
                         .HasConstraintName("FK__PostDetai__PostI__0D7A0286");
 
-                    b.HasOne("VNH.Domain.User", "User")
+                    b.HasOne("VNH.Domain.UserShort", "UserShort")
                         .WithMany("PostDetails")
                         .HasForeignKey("UserId")
                         .HasConstraintName("FK__PostDetai__UserI__0E6E26BF");
 
                     b.Navigation("Post");
 
-                    b.Navigation("User");
+                    b.Navigation("UserShort");
                 });
 
             modelBuilder.Entity("VNH.Domain.PostLike", b =>
@@ -1423,14 +1423,14 @@ namespace VNH.Infrastructure.Migrations
                         .HasForeignKey("PostId")
                         .HasConstraintName("FK__PostLike__PostId__1332DBDC");
 
-                    b.HasOne("VNH.Domain.User", "User")
+                    b.HasOne("VNH.Domain.UserShort", "UserShort")
                         .WithMany("PostLikes")
                         .HasForeignKey("UserId")
                         .HasConstraintName("FK__PostLike__UserId__14270015");
 
                     b.Navigation("Post");
 
-                    b.Navigation("User");
+                    b.Navigation("UserShort");
                 });
 
             modelBuilder.Entity("VNH.Domain.PostReportDetail", b =>
@@ -1445,7 +1445,7 @@ namespace VNH.Infrastructure.Migrations
                         .HasForeignKey("ReportId")
                         .HasConstraintName("FK__PostRepor__Repor__151B244E");
 
-                    b.HasOne("VNH.Domain.User", "User")
+                    b.HasOne("VNH.Domain.UserShort", "UserShort")
                         .WithMany("PostReportDetails")
                         .HasForeignKey("UserId")
                         .HasConstraintName("FK__PostRepor__UserI__160F4887");
@@ -1454,7 +1454,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.Navigation("Report");
 
-                    b.Navigation("User");
+                    b.Navigation("UserShort");
                 });
 
             modelBuilder.Entity("VNH.Domain.PostSave", b =>
@@ -1464,14 +1464,14 @@ namespace VNH.Infrastructure.Migrations
                         .HasForeignKey("PostId")
                         .HasConstraintName("FK__PostSave__PostId__08B54D69");
 
-                    b.HasOne("VNH.Domain.User", "User")
+                    b.HasOne("VNH.Domain.UserShort", "UserShort")
                         .WithMany("PostSaves")
                         .HasForeignKey("UserId")
                         .HasConstraintName("FK__PostSave__UserId__09A971A2");
 
                     b.Navigation("Post");
 
-                    b.Navigation("User");
+                    b.Navigation("UserShort");
                 });
 
             modelBuilder.Entity("VNH.Domain.PostSubComment", b =>
@@ -1481,19 +1481,19 @@ namespace VNH.Infrastructure.Migrations
                         .HasForeignKey("PreCommentId")
                         .HasConstraintName("FK__PostSubCo__PreCo__114A936A");
 
-                    b.HasOne("VNH.Domain.User", "User")
+                    b.HasOne("VNH.Domain.UserShort", "UserShort")
                         .WithMany("PostSubComments")
                         .HasForeignKey("UserId")
                         .HasConstraintName("FK__PostSubCo__UserI__123EB7A3");
 
                     b.Navigation("PreComment");
 
-                    b.Navigation("User");
+                    b.Navigation("UserShort");
                 });
 
             modelBuilder.Entity("VNH.Domain.Question", b =>
                 {
-                    b.HasOne("VNH.Domain.User", "Author")
+                    b.HasOne("VNH.Domain.UserShort", "Author")
                         .WithMany("Questions")
                         .HasForeignKey("AuthorId")
                         .HasConstraintName("FK__Question__Author__18EBB532");
@@ -1508,14 +1508,14 @@ namespace VNH.Infrastructure.Migrations
                         .HasForeignKey("QuestionId")
                         .HasConstraintName("FK__QuestionL__Quest__1F98B2C1");
 
-                    b.HasOne("VNH.Domain.User", "User")
+                    b.HasOne("VNH.Domain.UserShort", "UserShort")
                         .WithMany("QuestionLikes")
                         .HasForeignKey("UserId")
                         .HasConstraintName("FK__QuestionL__UserI__208CD6FA");
 
                     b.Navigation("Question");
 
-                    b.Navigation("User");
+                    b.Navigation("UserShort");
                 });
 
             modelBuilder.Entity("VNH.Domain.QuestionReportDetail", b =>
@@ -1530,7 +1530,7 @@ namespace VNH.Infrastructure.Migrations
                         .HasForeignKey("QuestionReportId")
                         .HasConstraintName("FK__QuestionR__Quest__22751F6C");
 
-                    b.HasOne("VNH.Domain.User", "User")
+                    b.HasOne("VNH.Domain.UserShort", "UserShort")
                         .WithMany("QuestionReportDetails")
                         .HasForeignKey("UserId")
                         .HasConstraintName("FK__QuestionR__UserI__236943A5");
@@ -1539,7 +1539,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.Navigation("QuestionReport");
 
-                    b.Navigation("User");
+                    b.Navigation("UserShort");
                 });
 
             modelBuilder.Entity("VNH.Domain.QuestionSave", b =>
@@ -1549,14 +1549,14 @@ namespace VNH.Infrastructure.Migrations
                         .HasForeignKey("QuestionId")
                         .HasConstraintName("FK__QuestionS__Quest__25518C17");
 
-                    b.HasOne("VNH.Domain.User", "User")
+                    b.HasOne("VNH.Domain.UserShort", "UserShort")
                         .WithMany("QuestionSaves")
                         .HasForeignKey("UserId")
                         .HasConstraintName("FK__QuestionS__UserI__245D67DE");
 
                     b.Navigation("Question");
 
-                    b.Navigation("User");
+                    b.Navigation("UserShort");
                 });
 
             modelBuilder.Entity("VNH.Domain.QuestionTag", b =>
@@ -1590,17 +1590,17 @@ namespace VNH.Infrastructure.Migrations
 
             modelBuilder.Entity("VNH.Domain.Search", b =>
                 {
-                    b.HasOne("VNH.Domain.User", "User")
+                    b.HasOne("VNH.Domain.UserShort", "UserShort")
                         .WithMany("Searches")
                         .HasForeignKey("UserId")
                         .HasConstraintName("FK__Search__UserId__17F790F9");
 
-                    b.Navigation("User");
+                    b.Navigation("UserShort");
                 });
 
             modelBuilder.Entity("VNH.Domain.SubAnswer", b =>
                 {
-                    b.HasOne("VNH.Domain.User", "Author")
+                    b.HasOne("VNH.Domain.UserShort", "Author")
                         .WithMany("SubAnswers")
                         .HasForeignKey("AuthorId")
                         .HasConstraintName("FK__SubAnswer__Autho__1CBC4616");
@@ -1615,9 +1615,9 @@ namespace VNH.Infrastructure.Migrations
                     b.Navigation("PreAnswer");
                 });
 
-            modelBuilder.Entity("VNH.Domain.Topic", b =>
+            modelBuilder.Entity("VNH.Domain.TopicName", b =>
                 {
-                    b.HasOne("VNH.Domain.User", "Author")
+                    b.HasOne("VNH.Domain.UserShort", "Author")
                         .WithMany("Topics")
                         .HasForeignKey("AuthorId")
                         .HasConstraintName("FK__Topic__AuthorId__05D8E0BE");
@@ -1632,14 +1632,14 @@ namespace VNH.Infrastructure.Migrations
                         .HasForeignKey("TagId")
                         .HasConstraintName("FK__TopicDeta__TagId__07C12930");
 
-                    b.HasOne("VNH.Domain.Topic", "Topic")
+                    b.HasOne("VNH.Domain.TopicName", "TopicName")
                         .WithMany("TopicDetails")
                         .HasForeignKey("TopicId")
                         .HasConstraintName("FK__TopicDeta__Topic__06CD04F7");
 
                     b.Navigation("Tag");
 
-                    b.Navigation("Topic");
+                    b.Navigation("TopicName");
                 });
 
             modelBuilder.Entity("VNH.Domain.Answer", b =>
@@ -1733,14 +1733,14 @@ namespace VNH.Infrastructure.Migrations
                     b.Navigation("TopicDetails");
                 });
 
-            modelBuilder.Entity("VNH.Domain.Topic", b =>
+            modelBuilder.Entity("VNH.Domain.TopicName", b =>
                 {
                     b.Navigation("Posts");
 
                     b.Navigation("TopicDetails");
                 });
 
-            modelBuilder.Entity("VNH.Domain.User", b =>
+            modelBuilder.Entity("VNH.Domain.UserShort", b =>
                 {
                     b.Navigation("AnswerVotes");
 

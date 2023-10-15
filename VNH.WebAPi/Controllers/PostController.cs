@@ -15,10 +15,11 @@ namespace VNH.WebAPi.Controllers
             _postService = postService;
         }
 
-        [HttpGet("All")]
+        [HttpGet("Discover")]
         public async Task<IActionResult> Index()
         {
-            return Ok();
+            var result = await _postService.GetAll();
+            return result is null ? BadRequest(result) : Ok(result);
         }
 
         
@@ -28,22 +29,39 @@ namespace VNH.WebAPi.Controllers
         public async Task<IActionResult> CreatePost([FromForm] CreatePostDto requestDto)
         {
             var result = await _postService.Create(requestDto, User.Identity.Name);
-            if (result == null)
-            {
-                return BadRequest(result);
-            }
-            return Ok(result);
+            return result is null ? BadRequest(result) : Ok(result);
+        }
+
+        [HttpPut]
+        [Authorize]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UpdatePost([FromForm] CreatePostDto requestDto)
+        {
+            var result = await _postService.Update(requestDto, User.Identity.Name);
+            return result == null ? BadRequest(result) : Ok(result);
         }
 
         [HttpGet]
         public async Task<IActionResult> Detail(string Id)
         {
             var result = await _postService.Detail(Id);
-            if (result == null)
-            {
-                return BadRequest(result);
-            }
-            return Ok(result);
+            return result is null ? BadRequest(result) : Ok(result);
+        }
+
+        [HttpDelete]
+        [Authorize]
+        public async Task<IActionResult> Delete(string Id)
+        {
+            var result = await _postService.Delete(Id);
+            return result is null ? BadRequest(result) : Ok(result);
+        }
+
+        [HttpPost("Like")]
+        [Authorize]
+        public async Task<IActionResult> Like(string PostId, string UserId)
+        {
+            var result = await _postService.AddLikePost(PostId, UserId);
+            return result is null ? BadRequest(result) : Ok(result);
         }
     }
 }

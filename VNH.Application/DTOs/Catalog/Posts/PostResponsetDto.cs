@@ -11,9 +11,9 @@ namespace VNH.Application.DTOs.Catalog.Posts
         public string Title { get; set; }
         public string Content { get; set; }
         public string Image { get; set; }
-        public string Topic { get; set; }
+        public string TopicName { get; set; }
         public List<TagDto> Tags { get; set; } = new List<TagDto>();
-        public UserShortDto User { get; set; }
+        public UserShortDto UserShort { get; set; } = new UserShortDto();
         public int ViewNumber { get; set; } = 0;
         public int CommentNumber { get; set; } = 0;
         public int LikeNumber { get; set; } = 0;

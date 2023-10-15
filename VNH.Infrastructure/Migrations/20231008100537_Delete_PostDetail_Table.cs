@@ -42,7 +42,7 @@ namespace VNH.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK__PostDetai__UserI__0E6E26BF",
                         column: x => x.UserId,
-                        principalTable: "User",
+                        principalTable: "UserShort",
                         principalColumn: "Id");
                 });
             migrationBuilder.CreateIndex(

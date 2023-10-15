@@ -56,9 +56,9 @@ namespace VNH.Infrastructure
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                  .AddCookie(options =>
                  {
-                     options.LoginPath = "/User/Login";
-                     options.LogoutPath = "/User/Signup";
-                     options.AccessDeniedPath = "/User/Forbidden/";
+                     options.LoginPath = "/UserShort/Login";
+                     options.LogoutPath = "/UserShort/Signup";
+                     options.AccessDeniedPath = "/UserShort/Forbidden/";
 
                      options.CookieManager = new ChunkingCookieManager();
 
