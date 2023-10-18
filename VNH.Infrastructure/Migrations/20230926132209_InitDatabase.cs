@@ -86,7 +86,7 @@ namespace VNH.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "PostReport",
+                name: "Report",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -823,7 +823,7 @@ namespace VNH.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK__PostRepor__Repor__151B244E",
                         column: x => x.ReportId,
-                        principalTable: "PostReport",
+                        principalTable: "Report",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK__PostRepor__UserI__160F4887",
@@ -1293,7 +1293,7 @@ namespace VNH.Infrastructure.Migrations
                 name: "Notification");
 
             migrationBuilder.DropTable(
-                name: "PostReport");
+                name: "Report");
 
             migrationBuilder.DropTable(
                 name: "PostComment");

@@ -25,7 +25,7 @@ namespace VNH.Domain
         public virtual Post Post { get; set; }
         [ForeignKey("ReportId")]
         [InverseProperty("PostReportDetails")]
-        public virtual PostReport Report { get; set; }
+        public virtual Report Report { get; set; }
         [ForeignKey("UserId")]
         [InverseProperty("PostReportDetails")]
         public virtual User User { get; set; }

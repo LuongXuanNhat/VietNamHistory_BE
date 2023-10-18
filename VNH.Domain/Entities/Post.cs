@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
+using VNH.Domain.Entities;
 
 namespace VNH.Domain
 {
@@ -47,6 +48,8 @@ namespace VNH.Domain
         public virtual ICollection<PostLike> PostLikes { get; set; }
         [InverseProperty("Post")]
         public virtual ICollection<PostReportDetail> PostReportDetails { get; set; }
+        [InverseProperty("Post")]
+        public virtual ICollection<PostTag> PostTags { get; set; }
         [InverseProperty("Post")]
         public virtual ICollection<PostSave> PostSaves { get; set; }
         [InverseProperty("Post")]

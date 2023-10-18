@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using VNH.Application.DTOs.Catalog.Posts;
 using VNH.Application.Interfaces.Posts;
+using VNH.Domain;
 
 namespace VNH.WebAPi.Controllers
 {
@@ -58,10 +59,28 @@ namespace VNH.WebAPi.Controllers
 
         [HttpPost("Like")]
         [Authorize]
-        public async Task<IActionResult> Like(string PostId, string UserId)
+        public async Task<IActionResult> Like([FromForm] string PostId, [FromForm] string UserId)
         {
-            var result = await _postService.AddLikePost(PostId, UserId);
+            var result = await _postService.AddOrUnLikePost(PostId, UserId);
             return result is null ? BadRequest(result) : Ok(result);
         }
+
+        [HttpPost("Save")]
+        [Authorize]
+        public async Task<IActionResult> Save([FromForm] string PostId, [FromForm] string UserId)
+        {
+            var result = await _postService.AddOrRemoveSavePost(PostId, UserId);
+            return result is null ? BadRequest(result) : Ok(result);
+        }
+
+        [HttpPost("Report")]
+        [Authorize]
+        public async Task<IActionResult> Report([FromBody] ReportPostDto reportPostDto)
+        {
+            return Ok();
+        }
+        
+        
+
     }
 }

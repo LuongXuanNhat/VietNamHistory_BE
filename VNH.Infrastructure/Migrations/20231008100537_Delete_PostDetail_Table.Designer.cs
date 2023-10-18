@@ -635,7 +635,7 @@ namespace VNH.Infrastructure.Migrations
                     b.ToTable("PostLike");
                 });
 
-            modelBuilder.Entity("VNH.Domain.PostReport", b =>
+            modelBuilder.Entity("VNH.Domain.Report", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -654,7 +654,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PostReport");
+                    b.ToTable("Report");
                 });
 
             modelBuilder.Entity("VNH.Domain.PostReportDetail", b =>
@@ -1393,7 +1393,7 @@ namespace VNH.Infrastructure.Migrations
                         .HasForeignKey("PostId")
                         .HasConstraintName("FK__PostRepor__PostI__17036CC0");
 
-                    b.HasOne("VNH.Domain.PostReport", "Report")
+                    b.HasOne("VNH.Domain.Report", "Report")
                         .WithMany("PostReportDetails")
                         .HasForeignKey("ReportId")
                         .HasConstraintName("FK__PostRepor__Repor__151B244E");
@@ -1656,7 +1656,7 @@ namespace VNH.Infrastructure.Migrations
                     b.Navigation("PostSubComments");
                 });
 
-            modelBuilder.Entity("VNH.Domain.PostReport", b =>
+            modelBuilder.Entity("VNH.Domain.Report", b =>
                 {
                     b.Navigation("PostReportDetails");
                 });

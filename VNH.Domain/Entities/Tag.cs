@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
+using VNH.Domain.Entities;
 
 namespace VNH.Domain
 {
@@ -24,5 +25,7 @@ namespace VNH.Domain
 
         [InverseProperty("Tag")]
         public virtual ICollection<QuestionTag> QuestionTags { get; set; }
+        [InverseProperty("Tag")]
+        public virtual ICollection<PostTag> PostTags { get; set; }
     }
 }

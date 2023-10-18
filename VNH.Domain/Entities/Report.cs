@@ -8,10 +8,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace VNH.Domain
 {
-    [Table("PostReport")]
-    public partial class PostReport
+    [Table("Report")]
+    public partial class Report
     {
-        public PostReport()
+        public Report()
         {
             PostReportDetails = new HashSet<PostReportDetail>();
         }
@@ -28,5 +28,7 @@ namespace VNH.Domain
 
         [InverseProperty("Report")]
         public virtual ICollection<PostReportDetail> PostReportDetails { get; set; }
+        [InverseProperty("Report")]
+        public virtual ICollection<QuestionReportDetail> QuestionReportDetails { get; set; }
     }
 }
