@@ -23,7 +23,7 @@ namespace VNH.WebAPi.Controllers
             return result is null ? BadRequest(result) : Ok(result);
         }
 
-        
+
         [HttpPost]
         [Authorize]
         [Consumes("multipart/form-data")]
@@ -42,10 +42,10 @@ namespace VNH.WebAPi.Controllers
             return result == null ? BadRequest(result) : Ok(result);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Detail(string Id)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Detail(string id)
         {
-            var result = await _postService.Detail(Id);
+            var result = await _postService.Detail(id);
             return result is null ? BadRequest(result) : Ok(result);
         }
 
@@ -77,9 +77,17 @@ namespace VNH.WebAPi.Controllers
         [Authorize]
         public async Task<IActionResult> Report([FromBody] ReportPostDto reportPostDto)
         {
-            return Ok();
+            var result = await _postService.ReportPost(reportPostDto);
+            return result is null ? BadRequest(result) : Ok(result);
         }
-        
+
+        [HttpGet("Report")]
+        [Authorize(Roles = "admin, sensor")]
+        public async Task<IActionResult> GetReport()
+        {
+            var result = await _postService.GetReport();
+            return result is null ? BadRequest(result) : Ok(result);
+        }
         
 
     }

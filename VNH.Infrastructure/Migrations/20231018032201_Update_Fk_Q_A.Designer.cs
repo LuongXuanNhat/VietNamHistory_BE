@@ -12,8 +12,8 @@ using VNH.Infrastructure.Presenters.Migrations;
 namespace VNH.Infrastructure.Migrations
 {
     [DbContext(typeof(VietNamHistoryContext))]
-    [Migration("20231018011004_Update_Table")]
-    partial class Update_Table
+    [Migration("20231018032201_Update_Fk_Q_A")]
+    partial class Update_Fk_Q_A
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -149,9 +149,14 @@ namespace VNH.Infrastructure.Migrations
                     b.Property<DateTime?>("PubDate")
                         .HasColumnType("datetime");
 
+                    b.Property<Guid>("QuestionId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AuthorId");
+
+                    b.HasIndex("QuestionId");
 
                     b.ToTable("Answer");
                 });
@@ -934,21 +939,21 @@ namespace VNH.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("a18be9c0-aa65-4af8-bd17-00bd9344e575"),
-                            ConcurrencyStamp = "1d53ca53-b255-46f8-bee4-8803e002d041",
+                            ConcurrencyStamp = "2c3d1d52-774b-4e85-9266-910749dc241c",
                             Name = "admin",
                             NormalizedName = "admin"
                         },
                         new
                         {
                             Id = new Guid("cfafcfcd-d796-43f4-8ac0-ead43bd2f18a"),
-                            ConcurrencyStamp = "e7f9447e-af73-4931-ad2a-c02097c69199",
+                            ConcurrencyStamp = "b41c57ae-5ca0-4577-b13b-3a279a50ff66",
                             Name = "teacher",
                             NormalizedName = "teacher"
                         },
                         new
                         {
                             Id = new Guid("5d4e4081-91f8-4fc0-b8eb-9860b7849604"),
-                            ConcurrencyStamp = "48cd770f-4424-4b8d-b094-f87aae615ae4",
+                            ConcurrencyStamp = "d1ed4026-d502-4de6-b035-87d8950b6c5f",
                             Name = "student",
                             NormalizedName = "student"
                         });
@@ -1131,7 +1136,7 @@ namespace VNH.Infrastructure.Migrations
                         {
                             Id = new Guid("d1f771da-b318-42f8-a003-5a15614216f5"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "785e7713-02d8-4a8e-ab42-3ba3b85f7072",
+                            ConcurrencyStamp = "d1c93819-11ce-4df6-acef-1ae093f8f8bd",
                             DateOfBirth = new DateTime(2002, 3, 18, 0, 0, 0, 0, DateTimeKind.Local),
                             Email = "admin@gmail.com",
                             EmailConfirmed = true,
@@ -1140,7 +1145,7 @@ namespace VNH.Infrastructure.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "onionwebdev@gmail.com",
                             NormalizedUserName = "admin",
-                            PasswordHash = "AQAAAAEAACcQAAAAEG9oYjXw81bD5sOZ/MT31CfbBnzP9hPNDInixsTbchKEJ+tdUB9EOaWSpq4txVVQUg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEHgsneHS+BII5ynrJKBeKxsnj2qbWbjfP11usvXR3H6cfqOAk1JECHOoB6lSZNGiDQ==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -1155,7 +1160,16 @@ namespace VNH.Infrastructure.Migrations
                         .HasForeignKey("AuthorId")
                         .HasConstraintName("FK__Answer__AuthorId__1AD3FDA4");
 
+                    b.HasOne("VNH.Domain.Question", "Questions")
+                        .WithMany("Answers")
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK__Answer__QuestionId__1AD3FVA4");
+
                     b.Navigation("Author");
+
+                    b.Navigation("Questions");
                 });
 
             modelBuilder.Entity("VNH.Domain.AnswerVote", b =>
@@ -1687,6 +1701,8 @@ namespace VNH.Infrastructure.Migrations
 
             modelBuilder.Entity("VNH.Domain.Question", b =>
                 {
+                    b.Navigation("Answers");
+
                     b.Navigation("QuestionLikes");
 
                     b.Navigation("QuestionReportDetails");

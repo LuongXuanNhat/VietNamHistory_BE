@@ -8,11 +8,25 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace VNH.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitDatabase : Migration
+    public partial class Init_Database : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+               name: "Roles",
+               columns: table => new
+               {
+                   Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                   Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                   NormalizedName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                   ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true)
+               },
+               constraints: table =>
+               {
+                   table.PrimaryKey("PK_Roles", x => x.Id);
+               });
+
             migrationBuilder.CreateTable(
                 name: "AppRoleClaims",
                 columns: table => new
@@ -26,6 +40,13 @@ namespace VNH.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AppRoleClaims", x => x.Id);
+
+                    table.ForeignKey(
+                       name: "FK_AppRoleClaims_Roles_RoleId",
+                       column: x => x.RoleId,
+                       principalTable: "Roles",
+                       principalColumn: "Id",
+                       onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -96,36 +117,11 @@ namespace VNH.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PostReport", x => x.Id);
+                    table.PrimaryKey("PK_Report", x => x.Id);
+
                 });
 
-            migrationBuilder.CreateTable(
-                name: "QuestionReport",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_QuestionReport", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Roles",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    NormalizedName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Roles", x => x.Id);
-                });
+           
 
             migrationBuilder.CreateTable(
                 name: "Tag",
@@ -140,13 +136,14 @@ namespace VNH.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserShort",
+                name: "User",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Fullname = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     DateOfBirth = table.Column<DateTime>(type: "datetime", nullable: true),
                     Gender = table.Column<int>(type: "int", nullable: false),
+                    Image = table.Column<byte[]>(type: "varbinary(max)", maxLength: 3145728, nullable: true),
                     NumberConfirm = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -195,18 +192,12 @@ namespace VNH.Infrastructure.Migrations
                     table.PrimaryKey("PK_UserRoles", x => new { x.UserId, x.RoleId });
 
                     table.ForeignKey(
-                        name: "FK_AppUserRoles_Roles_RoleId",
-                        column: x => x.RoleId,
-                        principalTable: "Roles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                       name: "FK_AppUserRoles_Roles_RoleId",
+                       column: x => x.RoleId,
+                       principalTable: "Roles",
+                       principalColumn: "Id",
+                       onDelete: ReferentialAction.Cascade);
 
-                    table.ForeignKey(
-                        name: "FK_AppUserRoles_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "UserShort",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -226,8 +217,9 @@ namespace VNH.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK__Answer__AuthorId__1AD3FDA4",
                         column: x => x.AuthorId,
-                        principalTable: "UserShort",
-                        principalColumn: "Id");
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -247,8 +239,9 @@ namespace VNH.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK__Course__UserId__787EE5A0",
                         column: x => x.UserId,
-                        principalTable: "UserShort",
-                        principalColumn: "Id");
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -272,8 +265,8 @@ namespace VNH.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK__Document__UserId__0A9D95DB",
                         column: x => x.UserId,
-                        principalTable: "UserShort",
-                        principalColumn: "Id");
+                        principalTable: "User",
+                        principalColumn: "Id", onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -299,7 +292,7 @@ namespace VNH.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK__NotificationDetail__UserId__1EA48E88",
                         column: x => x.UserId,
-                        principalTable: "UserShort",
+                        principalTable: "User",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -322,8 +315,9 @@ namespace VNH.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK__Question__Author__18EBB532",
                         column: x => x.AuthorId,
-                        principalTable: "UserShort",
-                        principalColumn: "Id");
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -340,12 +334,13 @@ namespace VNH.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK__Search__UserId__17F790F9",
                         column: x => x.UserId,
-                        principalTable: "UserShort",
-                        principalColumn: "Id");
+                        principalTable: "User",
+                        principalColumn: "Id", 
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "TopicName",
+                name: "Topic",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -360,8 +355,9 @@ namespace VNH.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK__Topic__AuthorId__05D8E0BE",
                         column: x => x.AuthorId,
-                        principalTable: "UserShort",
-                        principalColumn: "Id");
+                        principalTable: "User",
+                        principalColumn: "Id", 
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -379,12 +375,14 @@ namespace VNH.Infrastructure.Migrations
                         name: "FK__AnswerVot__Answe__1DB06A4F",
                         column: x => x.AnswerId,
                         principalTable: "Answer",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK__AnswerVot__UserI__1EA48E88",
                         column: x => x.UserId,
-                        principalTable: "UserShort",
-                        principalColumn: "Id");
+                        principalTable: "User",
+                        principalColumn: "Id", 
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -403,13 +401,15 @@ namespace VNH.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK__SubAnswer__Autho__1CBC4616",
                         column: x => x.AuthorId,
-                        principalTable: "UserShort",
-                        principalColumn: "Id");
+                        principalTable: "User",
+                        principalColumn: "Id", 
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK__SubAnswer__PreAn__1BC821DD",
                         column: x => x.PreAnswerId,
                         principalTable: "Answer",
-                        principalColumn: "Id");
+                        principalColumn: "Id", 
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -430,12 +430,14 @@ namespace VNH.Infrastructure.Migrations
                         name: "FK__CourseCom__Cours__7A672E12",
                         column: x => x.CourseId,
                         principalTable: "Course",
-                        principalColumn: "Id");
+                        principalColumn: "Id", 
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK__CourseCom__UserI__797309D9",
                         column: x => x.UserId,
-                        principalTable: "UserShort",
-                        principalColumn: "Id");
+                        principalTable: "User",
+                        principalColumn: "Id", 
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -454,12 +456,14 @@ namespace VNH.Infrastructure.Migrations
                         name: "FK__CourseRat__Cours__7D439ABD",
                         column: x => x.CourseId,
                         principalTable: "Course",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK__CourseRat__UserI__7E37BEF6",
                         column: x => x.UserId,
-                        principalTable: "UserShort",
-                        principalColumn: "Id");
+                        principalTable: "User",
+                        principalColumn: "Id"
+                        , onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -477,12 +481,13 @@ namespace VNH.Infrastructure.Migrations
                         name: "FK__CourseSav__Cours__04E4BC85",
                         column: x => x.CourseId,
                         principalTable: "Course",
-                        principalColumn: "Id");
+                        principalColumn: "Id", onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK__CourseSav__UserI__03F0984C",
                         column: x => x.UserId,
-                        principalTable: "UserShort",
-                        principalColumn: "Id");
+                        principalTable: "User",
+                        principalColumn: "Id"
+                        , onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -503,7 +508,7 @@ namespace VNH.Infrastructure.Migrations
                         name: "FK__Lesson__CourseId__7F2BE32F",
                         column: x => x.CourseId,
                         principalTable: "Course",
-                        principalColumn: "Id");
+                        principalColumn: "Id", onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -521,12 +526,14 @@ namespace VNH.Infrastructure.Migrations
                         name: "FK__DocumentS__Docum__0C85DE4D",
                         column: x => x.DocumentId,
                         principalTable: "Document",
-                        principalColumn: "Id");
+                        principalColumn: "Id", onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK__DocumentS__UserI__0B91BA14",
                         column: x => x.UserId,
-                        principalTable: "UserShort",
-                        principalColumn: "Id");
+                        principalTable: "User",
+                        principalColumn: "Id"
+                        , onDelete: ReferentialAction.NoAction
+                        );
                 });
 
             migrationBuilder.CreateTable(
@@ -544,12 +551,13 @@ namespace VNH.Infrastructure.Migrations
                         name: "FK__QuestionL__Quest__1F98B2C1",
                         column: x => x.QuestionId,
                         principalTable: "Question",
-                        principalColumn: "Id");
+                        principalColumn: "Id", onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK__QuestionL__UserI__208CD6FA",
                         column: x => x.UserId,
-                        principalTable: "UserShort",
-                        principalColumn: "Id");
+                        principalTable: "User",
+                        principalColumn: "Id"
+                        , onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -558,7 +566,7 @@ namespace VNH.Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     QuestionId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    QuestionReportId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ReportId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true)
                 },
@@ -569,17 +577,18 @@ namespace VNH.Infrastructure.Migrations
                         name: "FK__QuestionR__Quest__2180FB33",
                         column: x => x.QuestionId,
                         principalTable: "Question",
-                        principalColumn: "Id");
+                        principalColumn: "Id", onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK__QuestionR__Quest__22751F6C",
-                        column: x => x.QuestionReportId,
-                        principalTable: "QuestionReport",
-                        principalColumn: "Id");
+                        column: x => x.ReportId,
+                        principalTable: "Report",
+                        principalColumn: "Id", onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK__QuestionR__UserI__236943A5",
                         column: x => x.UserId,
-                        principalTable: "UserShort",
-                        principalColumn: "Id");
+                        principalTable: "User",
+                        principalColumn: "Id"
+                        , onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -597,12 +606,12 @@ namespace VNH.Infrastructure.Migrations
                         name: "FK__QuestionS__Quest__25518C17",
                         column: x => x.QuestionId,
                         principalTable: "Question",
-                        principalColumn: "Id");
+                        principalColumn: "Id", onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK__QuestionS__UserI__245D67DE",
                         column: x => x.UserId,
-                        principalTable: "UserShort",
-                        principalColumn: "Id");
+                        principalTable: "User",
+                        principalColumn: "Id", onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -619,12 +628,12 @@ namespace VNH.Infrastructure.Migrations
                         name: "FK__QuestionT__TagId__2645B050",
                         column: x => x.TagId,
                         principalTable: "Tag",
-                        principalColumn: "Id");
+                        principalColumn: "Id", onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK__QuestionTag__Id__2739D489",
                         column: x => x.Id,
                         principalTable: "Question",
-                        principalColumn: "Id");
+                        principalColumn: "Id", onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -632,12 +641,14 @@ namespace VNH.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Title = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    TopicId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    TopicId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime", nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "datetime", nullable: true),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Image = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
+                    ViewNumber = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -645,36 +656,14 @@ namespace VNH.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK__Post__TopicId__76969D2E",
                         column: x => x.TopicId,
-                        principalTable: "TopicName",
-                        principalColumn: "Id");
+                        principalTable: "Topic",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK__Post__UserId__778AC167",
                         column: x => x.UserId,
-                        principalTable: "UserShort",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "TopicDetail",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TopicId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    TagId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TopicDetail", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK__TopicDeta__TagId__07C12930",
-                        column: x => x.TagId,
-                        principalTable: "Tag",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK__TopicDeta__Topic__06CD04F7",
-                        column: x => x.TopicId,
-                        principalTable: "TopicName",
-                        principalColumn: "Id");
+                        principalTable: "User",
+                        principalColumn: "Id", onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -695,12 +684,12 @@ namespace VNH.Infrastructure.Migrations
                         name: "FK__CourseSub__PreCo__7C4F7684",
                         column: x => x.PreCommentId,
                         principalTable: "CourseComment",
-                        principalColumn: "Id");
+                        principalColumn: "Id", onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK__CourseSub__UserI__7B5B524B",
                         column: x => x.UserId,
-                        principalTable: "UserShort",
-                        principalColumn: "Id");
+                        principalTable: "User",
+                        principalColumn: "Id", onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -723,7 +712,7 @@ namespace VNH.Infrastructure.Migrations
                         name: "FK__Exercise__Id__282DF8C2",
                         column: x => x.Id,
                         principalTable: "Lesson",
-                        principalColumn: "Id");
+                        principalColumn: "Id", onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -744,39 +733,12 @@ namespace VNH.Infrastructure.Migrations
                         name: "FK__PostComme__PostI__0F624AF8",
                         column: x => x.PostId,
                         principalTable: "Post",
-                        principalColumn: "Id");
+                        principalColumn: "Id", onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK__PostComme__UserI__10566F31",
                         column: x => x.UserId,
-                        principalTable: "UserShort",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "PostDetail",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    PostId = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    ViewNumber = table.Column<int>(type: "int", nullable: true),
-                    CommentNumber = table.Column<int>(type: "int", nullable: true),
-                    LikeNumber = table.Column<int>(type: "int", nullable: true),
-                    SaveNumber = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PostDetail", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK__PostDetai__PostI__0D7A0286",
-                        column: x => x.PostId,
-                        principalTable: "Post",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK__PostDetai__UserI__0E6E26BF",
-                        column: x => x.UserId,
-                        principalTable: "UserShort",
-                        principalColumn: "Id");
+                        principalTable: "User",
+                        principalColumn: "Id", onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -794,12 +756,12 @@ namespace VNH.Infrastructure.Migrations
                         name: "FK__PostLike__PostId__1332DBDC",
                         column: x => x.PostId,
                         principalTable: "Post",
-                        principalColumn: "Id");
+                        principalColumn: "Id", onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK__PostLike__UserId__14270015",
                         column: x => x.UserId,
-                        principalTable: "UserShort",
-                        principalColumn: "Id");
+                        principalTable: "User",
+                        principalColumn: "Id", onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -819,17 +781,17 @@ namespace VNH.Infrastructure.Migrations
                         name: "FK__PostRepor__PostI__17036CC0",
                         column: x => x.PostId,
                         principalTable: "Post",
-                        principalColumn: "Id");
+                        principalColumn: "Id", onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK__PostRepor__Repor__151B244E",
                         column: x => x.ReportId,
                         principalTable: "Report",
-                        principalColumn: "Id");
+                        principalColumn: "Id", onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK__PostRepor__UserI__160F4887",
                         column: x => x.UserId,
-                        principalTable: "UserShort",
-                        principalColumn: "Id");
+                        principalTable: "User",
+                        principalColumn: "Id", onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -847,12 +809,61 @@ namespace VNH.Infrastructure.Migrations
                         name: "FK__PostSave__PostId__08B54D69",
                         column: x => x.PostId,
                         principalTable: "Post",
-                        principalColumn: "Id");
+                        principalColumn: "Id", onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK__PostSave__UserId__09A971A2",
                         column: x => x.UserId,
-                        principalTable: "UserShort",
-                        principalColumn: "Id");
+                        principalTable: "User",
+                        principalColumn: "Id", onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PostTags",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PostId = table.Column<string>(type: "nvarchar(255)", nullable: false),
+                    TagId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PostTags", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PostTags_Post_PostId",
+                        column: x => x.PostId,
+                        principalTable: "Post",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PostTags_Tag_TagId",
+                        column: x => x.TagId,
+                        principalTable: "Tag",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TopicDetail",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TopicId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    PostId = table.Column<string>(type: "nvarchar(255)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TopicDetail", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK__TopicDeta__TagId__07C12930",
+                        column: x => x.PostId,
+                        principalTable: "Post",
+                        principalColumn: "Id", onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK__TopicDeta__Topic__06CD04F7",
+                        column: x => x.TopicId,
+                        principalTable: "Topic",
+                        principalColumn: "Id", onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -872,12 +883,12 @@ namespace VNH.Infrastructure.Migrations
                         name: "FK__ExerciseD__Exerc__02084FDA",
                         column: x => x.ExerciseId,
                         principalTable: "Exercise",
-                        principalColumn: "Id");
+                        principalColumn: "Id", onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK__ExerciseD__UserI__01142BA1",
                         column: x => x.UserId,
-                        principalTable: "UserShort",
-                        principalColumn: "Id");
+                        principalTable: "User",
+                        principalColumn: "Id", onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -899,7 +910,7 @@ namespace VNH.Infrastructure.Migrations
                         name: "FK__Quiz__Id__29221CFB",
                         column: x => x.Id,
                         principalTable: "Exercise",
-                        principalColumn: "Id");
+                        principalColumn: "Id", onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -920,12 +931,12 @@ namespace VNH.Infrastructure.Migrations
                         name: "FK__PostSubCo__PreCo__114A936A",
                         column: x => x.PreCommentId,
                         principalTable: "PostComment",
-                        principalColumn: "Id");
+                        principalColumn: "Id", onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK__PostSubCo__UserI__123EB7A3",
                         column: x => x.UserId,
-                        principalTable: "UserShort",
-                        principalColumn: "Id");
+                        principalTable: "User",
+                        principalColumn: "Id", onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.InsertData(
@@ -933,15 +944,15 @@ namespace VNH.Infrastructure.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { new Guid("5d4e4081-91f8-4fc0-b8eb-9860b7849604"), "f328002f-15b8-4eb4-8453-6243af11b0dd", "student", "student" },
-                    { new Guid("a18be9c0-aa65-4af8-bd17-00bd9344e575"), "12f78230-a4c5-478d-8b4b-9a56d0f618db", "admin", "admin" },
-                    { new Guid("cfafcfcd-d796-43f4-8ac0-ead43bd2f18a"), "29343db2-d20a-4b54-9071-da021f00f9cb", "teacher", "teacher" }
+                    { new Guid("5d4e4081-91f8-4fc0-b8eb-9860b7849604"), "02fde28e-4c7f-4023-821c-c654a4eb0080", "student", "student" },
+                    { new Guid("a18be9c0-aa65-4af8-bd17-00bd9344e575"), "1270383a-290a-4c5e-8826-562d998d4fae", "admin", "admin" },
+                    { new Guid("cfafcfcd-d796-43f4-8ac0-ead43bd2f18a"), "4ea95e9f-aa5a-4cef-b1e4-01332acf69e2", "teacher", "teacher" }
                 });
 
             migrationBuilder.InsertData(
-                table: "UserShort",
-                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "DateOfBirth", "Email", "EmailConfirmed", "Fullname", "Gender", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "NumberConfirm", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { new Guid("d1f771da-b318-42f8-a003-5a15614216f5"), 0, "14d18772-730b-41ca-bc3f-80ccbc7ce4da", new DateTime(2002, 3, 18, 0, 0, 0, 0, DateTimeKind.Local), "admin@gmail.com", true, "Lương Xuân Nhất", 0, false, null, "onionwebdev@gmail.com", "admin", null, "AQAAAAEAACcQAAAAEHmqCu6W5TT0vGKr+9qbekcax+FmUEzQP1zUtUMjLmcJxCjEMm5RGAonoiYIjYFj7Q==", null, false, "", false, "admin" });
+                table: "User",
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "DateOfBirth", "Email", "EmailConfirmed", "Fullname", "Gender", "Image", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "NumberConfirm", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[] { new Guid("d1f771da-b318-42f8-a003-5a15614216f5"), 0, "4c01e053-2305-475a-9e02-72a5d42690fa", new DateTime(2002, 3, 18, 0, 0, 0, 0, DateTimeKind.Local), "admin@gmail.com", true, "Lương Xuân Nhất", 0, null, false, null, "onionwebdev@gmail.com", "admin", null, "AQAAAAEAACcQAAAAEOw1VikrgkAjKdkOIzWPZF75vuWlYVlt26baQdSJNhrtHU8Kmb5+IUWoIvdjRbiPeQ==", null, false, "", false, "admin" });
 
             migrationBuilder.InsertData(
                 table: "UserRoles",
@@ -1069,16 +1080,6 @@ namespace VNH.Infrastructure.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PostDetail_PostId",
-                table: "PostDetail",
-                column: "PostId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PostDetail_UserId",
-                table: "PostDetail",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_PostLike_PostId",
                 table: "PostLike",
                 column: "PostId");
@@ -1124,6 +1125,16 @@ namespace VNH.Infrastructure.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PostTags_PostId",
+                table: "PostTags",
+                column: "PostId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PostTags_TagId",
+                table: "PostTags",
+                column: "TagId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Question_AuthorId",
                 table: "Question",
                 column: "AuthorId");
@@ -1144,9 +1155,9 @@ namespace VNH.Infrastructure.Migrations
                 column: "QuestionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_QuestionReportDetail_QuestionReportId",
+                name: "IX_QuestionReportDetail_ReportId",
                 table: "QuestionReportDetail",
-                column: "QuestionReportId");
+                column: "ReportId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_QuestionReportDetail_UserId",
@@ -1185,13 +1196,13 @@ namespace VNH.Infrastructure.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_Topic_AuthorId",
-                table: "TopicName",
+                table: "Topic",
                 column: "AuthorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TopicDetail_TagId",
+                name: "IX_TopicDetail_PostId",
                 table: "TopicDetail",
-                column: "TagId");
+                column: "PostId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TopicDetail_TopicId",
@@ -1236,9 +1247,6 @@ namespace VNH.Infrastructure.Migrations
                 name: "NotificationDetails");
 
             migrationBuilder.DropTable(
-                name: "PostDetail");
-
-            migrationBuilder.DropTable(
                 name: "PostLike");
 
             migrationBuilder.DropTable(
@@ -1249,6 +1257,9 @@ namespace VNH.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "PostSubComment");
+
+            migrationBuilder.DropTable(
+                name: "PostTags");
 
             migrationBuilder.DropTable(
                 name: "QuestionLike");
@@ -1293,13 +1304,13 @@ namespace VNH.Infrastructure.Migrations
                 name: "Notification");
 
             migrationBuilder.DropTable(
-                name: "Report");
-
-            migrationBuilder.DropTable(
                 name: "PostComment");
 
             migrationBuilder.DropTable(
-                name: "QuestionReport");
+                name: "Report");
+
+            migrationBuilder.DropTable(
+                name: "Tag");
 
             migrationBuilder.DropTable(
                 name: "Question");
@@ -1311,22 +1322,19 @@ namespace VNH.Infrastructure.Migrations
                 name: "Answer");
 
             migrationBuilder.DropTable(
-                name: "Tag");
-
-            migrationBuilder.DropTable(
                 name: "Post");
 
             migrationBuilder.DropTable(
                 name: "Lesson");
 
             migrationBuilder.DropTable(
-                name: "TopicName");
+                name: "Topic");
 
             migrationBuilder.DropTable(
                 name: "Course");
 
             migrationBuilder.DropTable(
-                name: "UserShort");
+                name: "User");
         }
     }
 }

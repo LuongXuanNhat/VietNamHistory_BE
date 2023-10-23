@@ -26,6 +26,8 @@ using VNH.Application.Interfaces.Posts;
 using VNH.Infrastructure.Implement.Catalog.Posts;
 using VNH.Application.Interfaces.Catalog.HashTags;
 using VNH.Infrastructure.Implement.Catalog.HashTags;
+using VNH.Application.Interfaces.Catalog.Reports;
+using VNH.Infrastructure.Implement.Catalog.Reports;
 
 namespace VNH.Infrastructure
 {
@@ -91,7 +93,7 @@ namespace VNH.Infrastructure
                 facebookOptions.AppId = configuration.GetValue<string>("Authentication:Facebook:AppId");
                 facebookOptions.AppSecret = configuration.GetValue<string>("Authentication:Facebook:AppSecret");
                //// facebookOptions.CallbackPath = "/FacebookCallback";
-               // //facebookOptions.SaveTokens = true;
+               ////facebookOptions.SaveTokens = true;
 
             });
             services.AddHttpLogging(options =>
@@ -120,9 +122,9 @@ namespace VNH.Infrastructure
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<ITopicService, TopicService>();
             services.AddScoped<IPostService, PostService>();
-            
+            services.AddScoped<IReportService, ReportService>();
+            services.AddSignalR();
 
-            
 
             return services;
         }

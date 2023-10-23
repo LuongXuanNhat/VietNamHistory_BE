@@ -13,5 +13,7 @@ namespace VNH.Application.Interfaces.Posts
 
         Task<ApiResult<string>> AddOrUnLikePost(string id, string userId);
         Task<ApiResult<string>> AddOrRemoveSavePost(string postId, string userId);
+        Task<ApiResult<string>> ReportPost(ReportPostDto reportPostDto);
+        Task<List<ReportPostDto>> GetReport();
     }
 }

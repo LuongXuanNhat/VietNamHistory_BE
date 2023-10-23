@@ -63,7 +63,7 @@ namespace VNH.Infrastructure.Presenters.Migrations
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Data Source=.;Initial Catalog=VietNamHistory;Integrated Security=True;Encrypt=true;TrustServerCertificate=true;");
+                optionsBuilder.UseSqlServer("Data Source=.;Initial Catalog=VietNamHistory_2;Integrated Security=True;Encrypt=true;TrustServerCertificate=true;");
             }
         }
 
@@ -97,6 +97,7 @@ namespace VNH.Infrastructure.Presenters.Migrations
                     .WithMany(p => p.Answers)
                     .HasForeignKey(d => d.AuthorId)
                     .HasConstraintName("FK__Answer__AuthorId__1AD3FDA4");
+               
             });
 
             modelBuilder.Entity<AnswerVote>(entity =>
@@ -373,6 +374,12 @@ namespace VNH.Infrastructure.Presenters.Migrations
                     .WithMany(p => p.Questions)
                     .HasForeignKey(d => d.AuthorId)
                     .HasConstraintName("FK__Question__Author__18EBB532");
+
+                entity.HasMany(d => d.Answers)
+                   .WithOne(p => p.Questions)
+                   .HasForeignKey(d => d.QuestionId)
+                   .HasConstraintName("FK__Answer__QuestionId__1AD3FVA4");
+
             });
 
             modelBuilder.Entity<QuestionLike>(entity =>

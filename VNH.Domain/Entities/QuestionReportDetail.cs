@@ -13,11 +13,13 @@ namespace VNH.Domain
     {
         [Key]
         public Guid Id { get; set; }
-        public Guid? QuestionId { get; set; }
-        public Guid? ReportId { get; set; }
-        public Guid? UserId { get; set; }
+        public Guid QuestionId { get; set; }
+        public Guid ReportId { get; set; }
+        public Guid UserId { get; set; }
         [StringLength(255)]
         public string Description { get; set; }
+        public DateTime ReportDate { get; set; }
+        public bool Checked { get; set; } = false;
 
         [ForeignKey("QuestionId")]
         [InverseProperty("QuestionReportDetails")]

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
@@ -197,6 +198,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
             {
                 return new ApiErrorResult<PostResponsetDto>("Không tìm thấy bài viết");
             }
+            var user = await _userManager.FindByIdAsync(post.UserId.ToString());
             var postResponse = _mapper.Map<PostResponsetDto>(post);
             postResponse.Image = _image.ConvertByteArrayToString(post.Image, Encoding.UTF8);
 
@@ -212,6 +214,12 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
                     Id = tag.Id,
                 });
             }
+            postResponse.UserShort = new()
+            {
+                FullName = user.Fullname,
+                Id = user.Id,
+                Image = _image.ConvertByteArrayToString(user.Image, Encoding.UTF8)
+            };
 
             var topic = await _dataContext.Topics.FirstAsync(x => x.Id == post.TopicId);
             postResponse.TopicName = topic.Title;
@@ -265,9 +273,6 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
             {
                 return new ApiErrorResult<bool>("Không tìm thấy bài viết");
             }
-            var postTags = await _dataContext.PostTags.Where(x => x.PostId == id).ToListAsync();
-
-            _dataContext.PostTags.RemoveRange(postTags);
             _dataContext.Posts.Remove(post);
 
             await _dataContext.SaveChangesAsync();
@@ -275,22 +280,22 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
             return new ApiSuccessResult<bool>(true);
         }
 
-        public async Task<ApiResult<string>> AddOrUnLikePost(string PostId, string UserId)
+        public async Task<ApiResult<string>> AddOrUnLikePost(string id, string userId)
         {
-            var post = await _dataContext.Posts.FirstOrDefaultAsync(x => x.Id.Equals(PostId));
+            var post = await _dataContext.Posts.FirstOrDefaultAsync(x => x.Id.Equals(id));
             if (post is null)
             {
                 return new ApiErrorResult<string>("Không tìm thấy bài viết");
             }
-            var check = _dataContext.PostLikes.Where(x => x.PostId == PostId && x.UserId == Guid.Parse(UserId)).FirstOrDefault();
+            var check = _dataContext.PostLikes.Where(x => x.PostId == id && x.UserId == Guid.Parse(userId)).FirstOrDefault();
             var mess = "";
             if (check is null)
             {
                 var like = new PostLike()
                 {
                     Id     = Guid.NewGuid(),
-                    PostId = PostId,
-                    UserId = Guid.Parse(UserId)
+                    PostId = id,
+                    UserId = Guid.Parse(userId)
                 };
                 _dataContext.PostLikes.Add(like);
                 mess = "Đã thích";
@@ -304,22 +309,22 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
             return new ApiSuccessResult<string>(mess);
         }
 
-        public async Task<ApiResult<string>> AddOrRemoveSavePost(string PostId, string UserId)
+        public async Task<ApiResult<string>> AddOrRemoveSavePost(string postId, string userId)
         {
-            var post = await _dataContext.Posts.FirstOrDefaultAsync(x => x.Id.Equals(PostId));
+            var post = await _dataContext.Posts.FirstOrDefaultAsync(x => x.Id.Equals(postId));
             if (post is null)
             {
                 return new ApiErrorResult<string>("Không tìm thấy bài viết");
             }
-            var check = _dataContext.PostSaves.Where(x => x.PostId == PostId && x.UserId == Guid.Parse(UserId)).FirstOrDefault();
+            var check = _dataContext.PostSaves.Where(x => x.PostId == postId && x.UserId == Guid.Parse(userId)).FirstOrDefault();
             var mess = "";
             if (check is null)
             {
                 var save = new PostSave()
                 {
                     Id = Guid.NewGuid(),
-                    PostId = PostId,
-                    UserId = Guid.Parse(UserId)
+                    PostId = postId,
+                    UserId = Guid.Parse(userId)
                 };
                 _dataContext.PostSaves.Add(save);
                 mess = "Đã lưu";
@@ -332,6 +337,32 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
 
             await _dataContext.SaveChangesAsync();
             return new ApiSuccessResult<string>(mess);
+        }
+
+        public async Task<ApiResult<string>> ReportPost(ReportPostDto reportPostDto)
+        {
+            var reportPost = _mapper.Map<PostReportDetail>(reportPostDto);
+            reportPost.ReportDate = DateTime.Now;
+            reportPost.Id = Guid.NewGuid();
+
+            _dataContext.PostReportDetails.Add(reportPost);
+            await _dataContext.SaveChangesAsync();
+
+            return new ApiSuccessResult<string>("Đã gửi báo cáo đến kiểm duyệt viên! Chúng tôi sẽ phản hồi bạn sớm nhất có thể! Xin cảm ơn.");
+        }
+
+        [Authorize(Roles = "admin")]
+        public async Task<List<ReportPostDto>> GetReport()
+        {
+            var reportPost = await _dataContext.PostReportDetails
+                .OrderByDescending(x=>x.ReportDate)
+                .ToListAsync();
+            var results = new List<ReportPostDto>();
+            foreach (var item in reportPost)
+            {
+                results.Add(_mapper.Map<ReportPostDto>(item));
+            }
+            return results;
         }
     }
 }
