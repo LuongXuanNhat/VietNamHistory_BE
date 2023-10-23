@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Options;
+using VNH.Infrastructure.Presenters;
 
 namespace VNH.WebAPi
 {
@@ -133,7 +134,10 @@ namespace VNH.WebAPi
             {
                 MinimumSameSitePolicy = SameSiteMode.Lax
             });
-
+            ////app.UseEndpoints(endpoints =>
+            ////{
+            ////    endpoints.MapHub<ChatSignalR>("/commentHub");
+            ////});
             app.Run();
         }
 

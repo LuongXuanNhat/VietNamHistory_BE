@@ -24,7 +24,6 @@ namespace VNH.Domain
             Documents = new HashSet<Document>();
             ExerciseDetails = new HashSet<ExerciseDetail>();
             PostComments = new HashSet<PostComment>();
-            PostDetails = new HashSet<PostDetail>();
             PostLikes = new HashSet<PostLike>();
             PostReportDetails = new HashSet<PostReportDetail>();
             PostSaves = new HashSet<PostSave>();
@@ -71,8 +70,6 @@ namespace VNH.Domain
         public virtual ICollection<ExerciseDetail> ExerciseDetails { get; set; }
         [InverseProperty("User")]
         public virtual ICollection<PostComment> PostComments { get; set; }
-        [InverseProperty("User")]
-        public virtual ICollection<PostDetail> PostDetails { get; set; }
         [InverseProperty("User")]
         public virtual ICollection<PostLike> PostLikes { get; set; }
         [InverseProperty("User")]

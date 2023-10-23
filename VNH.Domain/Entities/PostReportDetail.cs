@@ -13,19 +13,21 @@ namespace VNH.Domain
     {
         [Key]
         public Guid Id { get; set; }
-        public Guid? ReportId { get; set; }
-        public Guid? UserId { get; set; }
+        public Guid ReportId { get; set; }
+        public Guid UserId { get; set; }
         [StringLength(255)]
         public string PostId { get; set; }
         [StringLength(255)]
         public string Description { get; set; }
+        public DateTime ReportDate { get; set; }
+        public bool Checked { get; set; } = false;
 
         [ForeignKey("PostId")]
         [InverseProperty("PostReportDetails")]
         public virtual Post Post { get; set; }
         [ForeignKey("ReportId")]
         [InverseProperty("PostReportDetails")]
-        public virtual PostReport Report { get; set; }
+        public virtual Report Report { get; set; }
         [ForeignKey("UserId")]
         [InverseProperty("PostReportDetails")]
         public virtual User User { get; set; }

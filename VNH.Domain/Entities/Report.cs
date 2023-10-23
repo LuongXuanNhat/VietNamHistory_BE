@@ -8,12 +8,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace VNH.Domain
 {
-    [Table("QuestionReport")]
-    public partial class QuestionReport
+    [Table("Report")]
+    public partial class Report
     {
-        public QuestionReport()
+        public Report()
         {
-            QuestionReportDetails = new HashSet<QuestionReportDetail>();
+            PostReportDetails = new HashSet<PostReportDetail>();
         }
 
         [Key]
@@ -21,12 +21,14 @@ namespace VNH.Domain
         [Required]
         [StringLength(255)]
         public string Title { get; set; }
-        [StringLength(255)]
+        [StringLength(500)]
         public string Description { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime? CreatedAt { get; set; }
 
-        [InverseProperty("QuestionReport")]
+        [InverseProperty("Report")]
+        public virtual ICollection<PostReportDetail> PostReportDetails { get; set; }
+        [InverseProperty("Report")]
         public virtual ICollection<QuestionReportDetail> QuestionReportDetails { get; set; }
     }
 }

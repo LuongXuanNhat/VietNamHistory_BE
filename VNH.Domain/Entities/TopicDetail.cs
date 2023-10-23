@@ -14,11 +14,11 @@ namespace VNH.Domain
         [Key]
         public Guid Id { get; set; }
         public Guid? TopicId { get; set; }
-        public Guid? TagId { get; set; }
+        public string PostId { get; set; }
 
-        [ForeignKey("TagId")]
+        [ForeignKey("PostId")]
         [InverseProperty("TopicDetails")]
-        public virtual Tag Tag { get; set; }
+        public virtual Post Post { get; set; }
         [ForeignKey("TopicId")]
         [InverseProperty("TopicDetails")]
         public virtual Topic Topic { get; set; }

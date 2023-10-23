@@ -5,14 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using VNH.Application.Common.Contants;
 using VNH.Application.DTOs.Catalog.Users;
-using Microsoft.AspNetCore.Identity;
-using VNH.Domain;
 using Microsoft.AspNetCore.Authentication.Google;
 using VNH.Application.Interfaces.Catalog.Accounts;
 using Facebook;
 using VNH.WebAPi.ViewModels.Catalog;
 using Microsoft.AspNetCore.Authentication.OAuth;
-using Newtonsoft.Json;
 
 namespace VNH.WebAPi.Controllers
 {
@@ -44,7 +41,7 @@ namespace VNH.WebAPi.Controllers
             var userPrincipal = _account.ValidateToken(result.ResultObj);
             var authProperties = new AuthenticationProperties
             {
-                ExpiresUtc = DateTimeOffset.UtcNow.AddHours(1),
+                ExpiresUtc = DateTimeOffset.UtcNow.AddHours(12),
                 IsPersistent = true
             };
 
