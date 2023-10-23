@@ -40,5 +40,7 @@ namespace VNH.Domain
         public virtual ICollection<QuestionReportDetail> QuestionReportDetails { get; set; }
         [InverseProperty("Question")]
         public virtual ICollection<QuestionSave> QuestionSaves { get; set; }
+        [InverseProperty("Questions")]
+        public virtual ICollection<Answer> Answers { get; set; }
     }
 }

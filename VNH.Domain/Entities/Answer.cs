@@ -19,6 +19,7 @@ namespace VNH.Domain
 
         [Key]
         public Guid Id { get; set; }
+        public Guid QuestionId { get; set; }
         public string Content { get; set; }
         public Guid? AuthorId { get; set; }
         [Column(TypeName = "datetime")]
@@ -29,9 +30,15 @@ namespace VNH.Domain
         [ForeignKey("AuthorId")]
         [InverseProperty("Answers")]
         public virtual User Author { get; set; }
+
+        [ForeignKey("QuestionId")]
+        [InverseProperty("Answers")]
+        public virtual Question Questions { get; set; }
+
         [InverseProperty("Answer")]
         public virtual ICollection<AnswerVote> AnswerVotes { get; set; }
         [InverseProperty("PreAnswer")]
         public virtual ICollection<SubAnswer> SubAnswers { get; set; }
+
     }
 }

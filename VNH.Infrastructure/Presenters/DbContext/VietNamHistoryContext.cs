@@ -38,16 +38,15 @@ namespace VNH.Infrastructure.Presenters.Migrations
         public virtual DbSet<Lesson> Lessons { get; set; }
         public virtual DbSet<News> News { get; set; }
         public virtual DbSet<Post> Posts { get; set; }
+        public virtual DbSet<PostTag> PostTags { get; set; }
         public virtual DbSet<PostComment> PostComments { get; set; }
-        public virtual DbSet<PostDetail> PostDetails { get; set; }
         public virtual DbSet<PostLike> PostLikes { get; set; }
-        public virtual DbSet<PostReport> PostReports { get; set; }
+        public virtual DbSet<Report> Reports { get; set; }
         public virtual DbSet<PostReportDetail> PostReportDetails { get; set; }
         public virtual DbSet<PostSave> PostSaves { get; set; }
         public virtual DbSet<PostSubComment> PostSubComments { get; set; }
         public virtual DbSet<Question> Questions { get; set; }
         public virtual DbSet<QuestionLike> QuestionLikes { get; set; }
-        public virtual DbSet<QuestionReport> QuestionReports { get; set; }
         public virtual DbSet<QuestionReportDetail> QuestionReportDetails { get; set; }
         public virtual DbSet<QuestionSave> QuestionSaves { get; set; }
         public virtual DbSet<QuestionTag> QuestionTags { get; set; }
@@ -64,7 +63,7 @@ namespace VNH.Infrastructure.Presenters.Migrations
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Data Source=.;Initial Catalog=VietNamHistory;Integrated Security=True;Encrypt=true;TrustServerCertificate=true;");
+                optionsBuilder.UseSqlServer("Data Source=.;Initial Catalog=VietNamHistory_2;Integrated Security=True;Encrypt=true;TrustServerCertificate=true;");
             }
         }
 
@@ -98,6 +97,7 @@ namespace VNH.Infrastructure.Presenters.Migrations
                     .WithMany(p => p.Answers)
                     .HasForeignKey(d => d.AuthorId)
                     .HasConstraintName("FK__Answer__AuthorId__1AD3FDA4");
+               
             });
 
             modelBuilder.Entity<AnswerVote>(entity =>
@@ -279,20 +279,7 @@ namespace VNH.Infrastructure.Presenters.Migrations
                     .HasConstraintName("FK__PostComme__UserI__10566F31");
             });
 
-            modelBuilder.Entity<PostDetail>(entity =>
-            {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.HasOne(d => d.Post)
-                    .WithMany(p => p.PostDetails)
-                    .HasForeignKey(d => d.PostId)
-                    .HasConstraintName("FK__PostDetai__PostI__0D7A0286");
-
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.PostDetails)
-                    .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK__PostDetai__UserI__0E6E26BF");
-            });
+            
 
             modelBuilder.Entity<PostLike>(entity =>
             {
@@ -309,7 +296,7 @@ namespace VNH.Infrastructure.Presenters.Migrations
                     .HasConstraintName("FK__PostLike__UserId__14270015");
             });
 
-            modelBuilder.Entity<PostReport>(entity =>
+            modelBuilder.Entity<Report>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
             });
@@ -332,6 +319,21 @@ namespace VNH.Infrastructure.Presenters.Migrations
                     .WithMany(p => p.PostReportDetails)
                     .HasForeignKey(d => d.UserId)
                     .HasConstraintName("FK__PostRepor__UserI__160F4887");
+            });
+
+            modelBuilder.Entity<PostTag>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id).UseIdentityColumn(1,1);
+
+                entity.HasOne(d => d.Post)
+                    .WithMany(p => p.PostTags)
+                    .HasForeignKey(d => d.PostId);
+
+                entity.HasOne(d => d.Tag)
+                    .WithMany(p => p.PostTags)
+                    .HasForeignKey(d => d.TagId);
+
             });
 
             modelBuilder.Entity<PostSave>(entity =>
@@ -372,6 +374,12 @@ namespace VNH.Infrastructure.Presenters.Migrations
                     .WithMany(p => p.Questions)
                     .HasForeignKey(d => d.AuthorId)
                     .HasConstraintName("FK__Question__Author__18EBB532");
+
+                entity.HasMany(d => d.Answers)
+                   .WithOne(p => p.Questions)
+                   .HasForeignKey(d => d.QuestionId)
+                   .HasConstraintName("FK__Answer__QuestionId__1AD3FVA4");
+
             });
 
             modelBuilder.Entity<QuestionLike>(entity =>
@@ -389,11 +397,6 @@ namespace VNH.Infrastructure.Presenters.Migrations
                     .HasConstraintName("FK__QuestionL__UserI__208CD6FA");
             });
 
-            modelBuilder.Entity<QuestionReport>(entity =>
-            {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-            });
-
             modelBuilder.Entity<QuestionReportDetail>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
@@ -403,9 +406,9 @@ namespace VNH.Infrastructure.Presenters.Migrations
                     .HasForeignKey(d => d.QuestionId)
                     .HasConstraintName("FK__QuestionR__Quest__2180FB33");
 
-                entity.HasOne(d => d.QuestionReport)
+                entity.HasOne(d => d.Report)
                     .WithMany(p => p.QuestionReportDetails)
-                    .HasForeignKey(d => d.QuestionReportId)
+                    .HasForeignKey(d => d.ReportId)
                     .HasConstraintName("FK__QuestionR__Quest__22751F6C");
 
                 entity.HasOne(d => d.User)
@@ -500,9 +503,9 @@ namespace VNH.Infrastructure.Presenters.Migrations
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
-                entity.HasOne(d => d.Tag)
+                entity.HasOne(d => d.Post)
                     .WithMany(p => p.TopicDetails)
-                    .HasForeignKey(d => d.TagId)
+                    .HasForeignKey(d => d.PostId)
                     .HasConstraintName("FK__TopicDeta__TagId__07C12930");
 
                 entity.HasOne(d => d.Topic)
@@ -516,7 +519,7 @@ namespace VNH.Infrastructure.Presenters.Migrations
                 entity.Property(e => e.Id).ValueGeneratedNever();
                 entity.Property(e => e.Image).HasMaxLength(3 * 1024 * 1024);
 
-          
+                
             });
 
             modelBuilder.Entity<IdentityUserRole<Guid>>().ToTable("UserRoles").HasKey(x => new { x.UserId, x.RoleId });

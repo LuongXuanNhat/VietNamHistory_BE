@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VNH.Infrastructure.Presenters.Migrations;
 
@@ -11,9 +12,11 @@ using VNH.Infrastructure.Presenters.Migrations;
 namespace VNH.Infrastructure.Migrations
 {
     [DbContext(typeof(VietNamHistoryContext))]
-    partial class VietNamHistoryContextModelSnapshot : ModelSnapshot
+    [Migration("20231018023612_Update_Fk_UserRole")]
+    partial class Update_Fk_UserRole
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -146,14 +149,9 @@ namespace VNH.Infrastructure.Migrations
                     b.Property<DateTime?>("PubDate")
                         .HasColumnType("datetime");
 
-                    b.Property<Guid>("QuestionId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
                     b.HasIndex("AuthorId");
-
-                    b.HasIndex("QuestionId");
 
                     b.ToTable("Answer");
                 });
@@ -668,9 +666,6 @@ namespace VNH.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool>("Checked")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Description")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
@@ -679,13 +674,10 @@ namespace VNH.Infrastructure.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<DateTime>("ReportDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("ReportId")
+                    b.Property<Guid?>("ReportId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid?>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -805,23 +797,17 @@ namespace VNH.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool>("Checked")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Description")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<Guid>("QuestionId")
+                    b.Property<Guid?>("QuestionId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("ReportDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("ReportId")
+                    b.Property<Guid?>("ReportId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid?>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -923,57 +909,6 @@ namespace VNH.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Report");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("d30e1353-0163-43c1-b757-7957981b0eda"),
-                            CreatedAt = new DateTime(2023, 10, 20, 15, 7, 14, 489, DateTimeKind.Local).AddTicks(8233),
-                            Description = " Báo cáo này được sử dụng khi người dùng chia sẻ nội dung cá nhân của bạn mà bạn cho rằng vi phạm quyền riêng tư của bạn.",
-                            Title = "Nội dung vi phạm quy định về quyền riêng tư"
-                        },
-                        new
-                        {
-                            Id = new Guid("25752490-4ba5-4abb-ac3b-192205cd1b6e"),
-                            CreatedAt = new DateTime(2023, 10, 20, 15, 7, 14, 489, DateTimeKind.Local).AddTicks(8251),
-                            Description = "Sử dụng khi bạn thấy nội dung bài đăng chứa lời lẽ xúc phạm, kỳ thị hoặc có tính chất đe doạ đến người khác.",
-                            Title = "Nội dung xấu, xúc phạm, hay kỳ thị"
-                        },
-                        new
-                        {
-                            Id = new Guid("bab1da58-6921-44b9-837f-c58d3998497b"),
-                            CreatedAt = new DateTime(2023, 10, 20, 15, 7, 14, 489, DateTimeKind.Local).AddTicks(8253),
-                            Description = "Dùng khi bạn thấy nội dung chứa hình ảnh hoặc video bạo lực hoặc đội nhóm xấu, hoặc khuyến khích hành vi bạo lực.",
-                            Title = "Chứa nội dung bạo lực hoặc đội nhóm xấu"
-                        },
-                        new
-                        {
-                            Id = new Guid("349ed807-6107-436f-9a4c-9d6183fbc444"),
-                            CreatedAt = new DateTime(2023, 10, 20, 15, 7, 14, 489, DateTimeKind.Local).AddTicks(8255),
-                            Description = "Sử dụng khi bạn thấy nội dung chứa hình ảnh tự tử hoặc khuyến khích hành vi tự gây thương tổn.",
-                            Title = "Chứa nội dung tự tử hoặc tự gây thương tổn"
-                        },
-                        new
-                        {
-                            Id = new Guid("c4ddb872-06c5-4779-a8a3-a55e5b2c5347"),
-                            CreatedAt = new DateTime(2023, 10, 20, 15, 7, 14, 489, DateTimeKind.Local).AddTicks(8258),
-                            Description = "Sử dụng khi bạn cho rằng Nội dung vi phạm quyền sở hữu trí tuệ hoặc bản quyền, chẳng hạn như sử dụng hình ảnh hoặc video mà bạn sở hữu mà không có sự cho phép.",
-                            Title = "Nội dung vi phạm bản quyền hoặc sở hữu trí tuệ"
-                        },
-                        new
-                        {
-                            Id = new Guid("4a780087-9058-41c9-b84b-944d1a502010"),
-                            CreatedAt = new DateTime(2023, 10, 20, 15, 7, 14, 489, DateTimeKind.Local).AddTicks(8259),
-                            Description = "Sử dụng khi bạn thấy rằng nội dung chứa thông tin sai lệch, giả mạo hoặc vi phạm quy tắc về sự thật và trung thực.",
-                            Title = "Bài đăng chứa thông tin sai lệch hoặc giả mạo"
-                        },
-                        new
-                        {
-                            Id = new Guid("3043c693-b3c9-453e-9876-31c943222576"),
-                            CreatedAt = new DateTime(2023, 10, 20, 15, 7, 14, 489, DateTimeKind.Local).AddTicks(8262),
-                            Description = "Dùng khi bạn muốn báo cáo vì nó quá nhiều thông báo hoặc quảng cáo không mong muốn.",
-                            Title = "Nội dung xuất hiện quá nhiều thông báo hoặc quảng cáo không mong muốn"
-                        });
                 });
 
             modelBuilder.Entity("VNH.Domain.Role", b =>
@@ -999,21 +934,21 @@ namespace VNH.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("a18be9c0-aa65-4af8-bd17-00bd9344e575"),
-                            ConcurrencyStamp = "8f306177-bd4a-4f3d-812f-774927febc0a",
+                            ConcurrencyStamp = "dfd7b1af-c20d-44a7-bec4-35dffd9ffa71",
                             Name = "admin",
                             NormalizedName = "admin"
                         },
                         new
                         {
                             Id = new Guid("cfafcfcd-d796-43f4-8ac0-ead43bd2f18a"),
-                            ConcurrencyStamp = "ef4bd6d1-c7b9-4013-93ec-2614e3d532a4",
+                            ConcurrencyStamp = "13c5c2b0-b161-4609-b855-2d59bd827c12",
                             Name = "teacher",
                             NormalizedName = "teacher"
                         },
                         new
                         {
                             Id = new Guid("5d4e4081-91f8-4fc0-b8eb-9860b7849604"),
-                            ConcurrencyStamp = "cdd07513-a753-4446-bb2e-fdf342432274",
+                            ConcurrencyStamp = "d96e32a9-9a47-401f-b582-ca0ed6787615",
                             Name = "student",
                             NormalizedName = "student"
                         });
@@ -1196,7 +1131,7 @@ namespace VNH.Infrastructure.Migrations
                         {
                             Id = new Guid("d1f771da-b318-42f8-a003-5a15614216f5"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "311ace0d-cd72-4127-9f17-ae26c351e8c3",
+                            ConcurrencyStamp = "a0234eb9-f81e-4936-903e-ac2488a2cde6",
                             DateOfBirth = new DateTime(2002, 3, 18, 0, 0, 0, 0, DateTimeKind.Local),
                             Email = "admin@gmail.com",
                             EmailConfirmed = true,
@@ -1205,7 +1140,7 @@ namespace VNH.Infrastructure.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "onionwebdev@gmail.com",
                             NormalizedUserName = "admin",
-                            PasswordHash = "AQAAAAEAACcQAAAAEDUOWq3UqyNeXmAlz5MOnvKn0UfK+m9H7SYBn0R02ctctjwJsE941TRCPRhvLl8i1A==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEAnALxO8DpC3lTevQ6OIE/b9T/ebBU9SWduNAPcet2wJYq7LOBBuIQsS5ve2hNVqzg==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -1220,16 +1155,7 @@ namespace VNH.Infrastructure.Migrations
                         .HasForeignKey("AuthorId")
                         .HasConstraintName("FK__Answer__AuthorId__1AD3FDA4");
 
-                    b.HasOne("VNH.Domain.Question", "Questions")
-                        .WithMany("Answers")
-                        .HasForeignKey("QuestionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK__Answer__QuestionId__1AD3FVA4");
-
                     b.Navigation("Author");
-
-                    b.Navigation("Questions");
                 });
 
             modelBuilder.Entity("VNH.Domain.AnswerVote", b =>
@@ -1495,15 +1421,11 @@ namespace VNH.Infrastructure.Migrations
                     b.HasOne("VNH.Domain.Report", "Report")
                         .WithMany("PostReportDetails")
                         .HasForeignKey("ReportId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
                         .HasConstraintName("FK__PostRepor__Repor__151B244E");
 
                     b.HasOne("VNH.Domain.User", "User")
                         .WithMany("PostReportDetails")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
                         .HasConstraintName("FK__PostRepor__UserI__160F4887");
 
                     b.Navigation("Post");
@@ -1579,22 +1501,16 @@ namespace VNH.Infrastructure.Migrations
                     b.HasOne("VNH.Domain.Question", "Question")
                         .WithMany("QuestionReportDetails")
                         .HasForeignKey("QuestionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
                         .HasConstraintName("FK__QuestionR__Quest__2180FB33");
 
                     b.HasOne("VNH.Domain.Report", "Report")
                         .WithMany("QuestionReportDetails")
                         .HasForeignKey("ReportId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
                         .HasConstraintName("FK__QuestionR__Quest__22751F6C");
 
                     b.HasOne("VNH.Domain.User", "User")
                         .WithMany("QuestionReportDetails")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
                         .HasConstraintName("FK__QuestionR__UserI__236943A5");
 
                     b.Navigation("Question");
@@ -1771,8 +1687,6 @@ namespace VNH.Infrastructure.Migrations
 
             modelBuilder.Entity("VNH.Domain.Question", b =>
                 {
-                    b.Navigation("Answers");
-
                     b.Navigation("QuestionLikes");
 
                     b.Navigation("QuestionReportDetails");

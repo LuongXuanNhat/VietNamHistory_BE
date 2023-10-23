@@ -22,6 +22,12 @@ using VNH.Application.Interfaces.Catalog.Topics;
 using VNH.Infrastructure.Implement.Catalog.Topics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpLogging;
+using VNH.Application.Interfaces.Posts;
+using VNH.Infrastructure.Implement.Catalog.Posts;
+using VNH.Application.Interfaces.Catalog.HashTags;
+using VNH.Infrastructure.Implement.Catalog.HashTags;
+using VNH.Application.Interfaces.Catalog.Reports;
+using VNH.Infrastructure.Implement.Catalog.Reports;
 
 namespace VNH.Infrastructure
 {
@@ -52,9 +58,9 @@ namespace VNH.Infrastructure
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                  .AddCookie(options =>
                  {
-                     options.LoginPath = "/User/Login";
-                     options.LogoutPath = "/User/Signup";
-                     options.AccessDeniedPath = "/User/Forbidden/";
+                     options.LoginPath = "/UserShort/Login";
+                     options.LogoutPath = "/UserShort/Signup";
+                     options.AccessDeniedPath = "/UserShort/Forbidden/";
 
                      options.CookieManager = new ChunkingCookieManager();
 
@@ -78,16 +84,16 @@ namespace VNH.Infrastructure
             {
                 googleOptions.ClientId = configuration.GetValue<string>("Authentication:Google:AppId");
                 googleOptions.ClientSecret = configuration.GetValue<string>("Authentication:Google:AppSecret");
-                // googleOptions.CallbackPath = "/signin-google";
-                //googleOptions.AccessDeniedPath = "/Login";
-                //googleOptions.SaveTokens = true;
+                //// googleOptions.CallbackPath = "/signin-google";
+                ////googleOptions.AccessDeniedPath = "/Login";
+                ////googleOptions.SaveTokens = true;
             })
             .AddFacebook(facebookOptions =>
             {
                 facebookOptions.AppId = configuration.GetValue<string>("Authentication:Facebook:AppId");
                 facebookOptions.AppSecret = configuration.GetValue<string>("Authentication:Facebook:AppSecret");
-               // facebookOptions.CallbackPath = "/FacebookCallback";
-                //facebookOptions.SaveTokens = true;
+               //// facebookOptions.CallbackPath = "/FacebookCallback";
+               ////facebookOptions.SaveTokens = true;
 
             });
             services.AddHttpLogging(options =>
@@ -111,10 +117,14 @@ namespace VNH.Infrastructure
             services.AddSingleton<ISendMailService, SendMailService>();
 
             services.AddSingleton<IImageService, ImageService>();
+
+            services.AddScoped<IHashTag, TagService>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<ITopicService, TopicService>();
+            services.AddScoped<IPostService, PostService>();
+            services.AddScoped<IReportService, ReportService>();
+            services.AddSignalR();
 
-            
 
             return services;
         }
