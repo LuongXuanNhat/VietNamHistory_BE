@@ -1,9 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using ImageMagick;
+using Microsoft.AspNetCore.Http;
+using System.Drawing.Imaging;
 using System.Text;
-using System.Threading.Tasks;
 using VNH.Application.Interfaces.Common;
 
 namespace VNH.Infrastructure.Implement.Common
@@ -12,7 +10,7 @@ namespace VNH.Infrastructure.Implement.Common
     {
         public string ConvertByteArrayToString(byte[]? byteArray, Encoding encoding)
         {
-            return byteArray is not null ? encoding.GetString(byteArray) : string.Empty;
+            return byteArray is not null ? Convert.ToBase64String(byteArray) : string.Empty;
         }
 
         public async Task<byte[]> ConvertFormFileToByteArray(IFormFile formFile)
@@ -21,5 +19,50 @@ namespace VNH.Infrastructure.Implement.Common
             await formFile.CopyToAsync(memoryStream);
             return memoryStream.ToArray();
         }
+
+        public byte[] CompressImage(byte[] originalImage, int targetSizeInKb)
+        {
+            if(originalImage == null || originalImage.Length <= targetSizeInKb * 1024)
+            {
+                return originalImage;
+            }
+
+            using MagickImage image = new MagickImage(originalImage);
+            int quality = 40; // Chất lượng ban đầu
+            byte[] compressedData;
+
+            while (true)
+            {
+                using (MagickImage clonedImage = new MagickImage(image))
+                {
+                    clonedImage.Quality = quality;
+                    compressedData = clonedImage.ToByteArray(MagickFormat.Jpeg);
+                }
+
+                if (compressedData.Length <= targetSizeInKb * 1024)
+                {
+                    return compressedData;
+                }
+                quality -= 5;
+                if (quality <= 2)
+                {
+                    return compressedData;
+                }
+            }
+        }
+
+        ////private static ImageCodecInfo GetEncoder(ImageFormat format)
+        ////{
+        ////    ImageCodecInfo[] codecs = ImageCodecInfo.GetImageDecoders();
+        ////    foreach (ImageCodecInfo codec in codecs)
+        ////    {
+        ////        if (codec.FormatID == format.Guid)
+        ////        {
+        ////            return codec;
+        ////        }
+        ////    }
+        ////    throw new InvalidOperationException("Không thể nén ảnh");
+        ////}
     }
+    
 }

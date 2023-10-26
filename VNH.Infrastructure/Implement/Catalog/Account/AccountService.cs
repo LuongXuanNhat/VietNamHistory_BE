@@ -12,6 +12,7 @@ using VNH.Application.DTOs.Catalog.Users;
 using VNH.Application.DTOs.Common.ResponseNotification;
 using VNH.Application.DTOs.Common.SendEmail;
 using VNH.Application.Interfaces.Catalog.Accounts;
+using VNH.Application.Interfaces.Common;
 using VNH.Application.Interfaces.Email;
 using VNH.Domain;
 using VNH.Infrastructure.Implement.Catalog.Users;
@@ -27,6 +28,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Account
         private readonly VietNamHistoryContext _dataContext;
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly IImageService _imageService;
 
 
         public AccountService(VietNamHistoryContext context,
@@ -34,7 +36,8 @@ namespace VNH.Infrastructure.Implement.Catalog.Account
                 UserManager<User> userManager,
                 SignInManager<User> signInManager,
                 IConfiguration configuration,
-                ISendMailService sendmailservice)
+                ISendMailService sendmailservice,
+                IImageService imageService)
         {
             _dataContext = context;
             _logger = logger;
@@ -42,6 +45,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Account
             _signInManager = signInManager;
             _config = configuration;
             _sendmailservice = sendmailservice;
+            _imageService = imageService;
         }
         public async Task<ApiResult<string>> Authenticate(LoginRequest request)
         {
@@ -77,12 +81,13 @@ namespace VNH.Infrastructure.Implement.Catalog.Account
 
         public async Task<string> GetToken(User user)
         {
+            Encoding encoding = Encoding.UTF8;
             var roles = await _userManager.GetRolesAsync(user);
             var claims = new[]
             {
             new Claim(ClaimTypes.Email,user.Email),
             new Claim(ClaimTypes.Role, string.Join(";",roles)),
-            new Claim(ClaimTypes.Name, user.Email)
+            new Claim(ClaimTypes.Name, user.UserName),
             };
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Tokens:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

@@ -11,5 +11,6 @@ namespace VNH.Application.Interfaces.Common
     {
         Task<byte[]> ConvertFormFileToByteArray(IFormFile formFile);
         string ConvertByteArrayToString(byte[]? byteArray, Encoding encoding);
+        byte[] CompressImage(byte[] originalImage, int KbNumber);
     }
 }

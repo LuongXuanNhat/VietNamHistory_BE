@@ -58,7 +58,6 @@ namespace VNH.WebAPi.Controllers
             await _cache.SetStringAsync("my_token_key", SystemConstants.Token, cacheOptions);
             return Ok(result);
         }
-
         [HttpGet("LoginFacebook")]
         public IActionResult LoginFacebook()
         {
@@ -234,12 +233,20 @@ namespace VNH.WebAPi.Controllers
         [Authorize]
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            HttpContext.Session.Remove("Token");
-            return Ok("Đăng xuất thành công");
+            try
+            {
+                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                HttpContext.Session.Remove("Token");
+                return Ok(new { message = "Đăng xuất thành công" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
 
-        [HttpPost("Signup")]
+        [HttpPost("SignUp")]
         [AllowAnonymous]
         public async Task<IActionResult> RegisterUser([FromBody] RegisterRequest request)
         {
@@ -309,5 +316,7 @@ namespace VNH.WebAPi.Controllers
             }
             return Ok(result);
         }
+
+        
     }
 }

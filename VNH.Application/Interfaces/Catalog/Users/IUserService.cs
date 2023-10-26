@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Http;
 using VNH.Application.DTOs.Catalog.Users;
 using VNH.Application.DTOs.Common.ResponseNotification;
-using VNH.Domain;
 
 namespace VNH.Application.Services.Catalog.Users
 {
     public interface IUserService
     {
+        Task<ApiResult<string>> GetImage(string request);
         Task<ApiResult<UserDetailDto>> GetUserDetail(string email);
+        Task<ApiResult<string>> SetImageUser(string name, IFormFile image);
         Task<ApiResult<UserDetailDto>> Update(UserUpdateDto request);
 
 
