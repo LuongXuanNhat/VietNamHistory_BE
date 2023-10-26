@@ -32,5 +32,21 @@ namespace VNH.WebAPi.Controllers
             var result = await _userService.Update(request);
             return result.IsSuccessed ? Ok(result) : BadRequest(result);
         }
+
+        [HttpGet("Image")]
+        [Authorize]
+        public async Task<IActionResult> GetImage()
+        {
+            var result = await _userService.GetImage(User.Identity.Name);
+            return result.IsSuccessed ? Ok(result.ResultObj) : BadRequest(result.Message);
+        }
+
+        [HttpPost("Image")]
+        [Authorize]
+        public async Task<IActionResult> SetImage(IFormFile image)
+        {
+            var result = await _userService.SetImageUser(User.Identity.Name, image);
+            return result.IsSuccessed ? Ok(result.ResultObj) : BadRequest(result.Message);
+        }
     }
 }
