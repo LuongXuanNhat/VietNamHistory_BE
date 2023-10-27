@@ -16,6 +16,7 @@ namespace VNH.Application.DTOs.Catalog.Users
         public Gender Gender { get; set; }
         public IFormFile? Image { get; set; }
         public virtual string Email { get; set; } = string.Empty;
+        public virtual string Introduction { get; set; } = string.Empty;
         public virtual string PhoneNumber { get; set; } = string.Empty;
     }
 }

@@ -45,6 +45,7 @@ namespace VNH.Domain
         [Column(TypeName = "datetime")]
         [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? DateOfBirth { get; set; }
+        public string  Introduction { get; set; }
         public Gender Gender { get; set; }
         public byte[] Image { get; set; }
         public string NumberConfirm { get; set; } // Confirm Email
