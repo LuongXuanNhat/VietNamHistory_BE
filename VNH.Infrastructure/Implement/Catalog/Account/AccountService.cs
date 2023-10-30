@@ -103,27 +103,23 @@ namespace VNH.Infrastructure.Implement.Catalog.Account
 
 
         // Confirm Code to Reset Password
-        public async Task<ApiResult<ResetPassDto>> ConfirmCode(LoginRequest loginRequest)
+        public async Task<ApiResult<ResetPassDto>> ConfirmCode(string email)
         {
-            var user = await _userManager.FindByEmailAsync(loginRequest.Email);
-            if (user != null && user.NumberConfirm.Equals(loginRequest.Password))
+            var user = await _userManager.FindByEmailAsync(email);
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var result = new ResetPassDto()
             {
-                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var result = new ResetPassDto()
-                {
-                    Email = loginRequest.Email,
-                    Token = token
-                };
-                return new ApiSuccessResult<ResetPassDto>(result);
-            }
-            return new ApiErrorResult<ResetPassDto>("Mã xác nhận không chính xác");
+                Email = email,
+                Token = token
+            };
+            return new ApiSuccessResult<ResetPassDto>(result);
         }
 
-        [Authorize]
         public async Task<ApiResult<bool>> EmailConfirm(string numberConfirm, string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
-            if (user is null) return new ApiErrorResult<bool>("Lỗi");
+            if (user is null) return new ApiErrorResult<bool>("Lỗi xác nhận email");
             if (user.NumberConfirm.Equals(numberConfirm))
             {
                 user.EmailConfirmed = true;
@@ -139,7 +135,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Account
             var user = await _userManager.FindByEmailAsync(email);
             if (user is null)
             {
-                return new ApiErrorResult<LoginRequest>("Không tìm thấy tài khoản");
+                return new ApiErrorResult<LoginRequest>("Email chưa được đăng ký tài khoản");
             }
             if (user.AccessFailedCount is -1)
             {
@@ -154,7 +150,8 @@ namespace VNH.Infrastructure.Implement.Catalog.Account
 
             var result = new LoginRequest()
             {
-                Email = email
+                Email = email,
+                Password = confirmNumber
             };
 
             return new ApiSuccessResult<LoginRequest>(result);

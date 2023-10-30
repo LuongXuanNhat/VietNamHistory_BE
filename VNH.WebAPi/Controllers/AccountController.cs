@@ -271,7 +271,7 @@ namespace VNH.WebAPi.Controllers
         }
 
         [HttpGet("ForgetPassword")]
-        public async Task<IActionResult> ForgetPassword(string email)
+        public async Task<IActionResult> ForgetPassword([FromQuery] string email)
         {
             var result = await _account.ForgetPassword(email);
             if (!result.IsSuccessed)
@@ -281,11 +281,11 @@ namespace VNH.WebAPi.Controllers
             return Ok(result);
         }
 
-        [HttpPost("ForgetPassword/ConfirmCode")]
+        [HttpGet("ForgetPassword/ConfirmCode")]
         [AllowAnonymous]
-        public async Task<IActionResult> ConfirmCode(LoginRequest request)
+        public async Task<IActionResult> ConfirmCode([FromQuery] string email)
         {
-            var result = await _account.ConfirmCode(request);
+            var result = await _account.ConfirmCode(email);
             if (!result.IsSuccessed)
             {
                 return BadRequest(result);
