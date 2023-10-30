@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VNH.Infrastructure.Presenters.Migrations;
 
@@ -11,9 +12,11 @@ using VNH.Infrastructure.Presenters.Migrations;
 namespace VNH.Infrastructure.Migrations
 {
     [DbContext(typeof(VietNamHistoryContext))]
-    partial class VietNamHistoryContextModelSnapshot : ModelSnapshot
+    [Migration("20231030155718_Add_column_Desciption_For_User")]
+    partial class Add_column_Desciption_For_User
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
