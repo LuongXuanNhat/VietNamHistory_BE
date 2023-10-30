@@ -17,7 +17,7 @@ namespace VNH.Application.Interfaces.Catalog.Accounts
         Task<ApiResult<bool>> EmailConfirm(string numberConfirm, string email);
         ClaimsPrincipal ValidateToken(string jwtToken);
         Task<ApiResult<LoginRequest>> ForgetPassword(string email);
-        Task<ApiResult<ResetPassDto>> ConfirmCode(LoginRequest loginRequest);
+        Task<ApiResult<ResetPassDto>> ConfirmCode(string email);
         Task<ApiResult<bool>> ResetPassword(ResetPassDto resetPass);
         Task LockAccount(User user);
         Task<ApiResult<bool>> ChangePassword(ChangePasswordDto changePasswodDto);
