@@ -85,9 +85,10 @@ namespace VNH.Infrastructure.Implement.Catalog.Account
             var roles = await _userManager.GetRolesAsync(user);
             var claims = new[]
             {
-            new Claim(ClaimTypes.Email,user.Email),
-            new Claim(ClaimTypes.Role, string.Join(";",roles)),
-            new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Email,user.Email),
+                new Claim(ClaimTypes.Role, string.Join(";",roles)),
+                new Claim(ClaimTypes.Name, user.UserName),
             };
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Tokens:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -358,10 +359,11 @@ namespace VNH.Infrastructure.Implement.Catalog.Account
             var user = await _userManager.FindByEmailAsync(email);
             if (user is null)
             {
-                var newAccount = new User { UserName = email, Email = email };
+                var newAccount = new User { UserName = name, Email = email, Fullname = name };
                 var createdResult = await _userManager.CreateAsync(newAccount);
                 return createdResult.Succeeded ? new ApiSuccessResult<string>(await GetToken(newAccount)) : new ApiErrorResult<string>("Lỗi đăng nhập, hiện tại chưa xử lý được");
             }
+
             await _signInManager.SignInAsync(user, isPersistent: false);
             return new ApiSuccessResult<string>(await GetToken(user));
         }
