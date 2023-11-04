@@ -44,7 +44,6 @@ namespace VNH.Infrastructure.Implement.Catalog.Users
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null) return new ApiErrorResult<UserDetailDto>("Lỗi");
             var userDetail = _mapper.Map<UserDetailDto>(user);
-            userDetail.Image = _image.ConvertByteArrayToString(user.Image, Encoding.UTF8);
             return new ApiSuccessResult<UserDetailDto>(userDetail);
         }
 
@@ -53,13 +52,11 @@ namespace VNH.Infrastructure.Implement.Catalog.Users
             var user = await _userManager.FindByEmailAsync(request.Email);
 
             _mapper.Map(request, user);
-            user.Image = (request.Image is not null) ? await _image.ConvertFormFileToByteArray(request.Image) : null;
 
             var updateResult = await _userManager.UpdateAsync(user);
             if (updateResult.Succeeded)
             {
                 var userDetail = _mapper.Map<UserDetailDto>(user);
-                userDetail.Image = _image.ConvertByteArrayToString(user.Image, Encoding.UTF8);
                 return new ApiSuccessResult<UserDetailDto>(userDetail);
             }
             else

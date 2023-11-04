@@ -26,8 +26,7 @@ namespace VNH.WebAPi.Controllers
 
         [HttpPut]
         [Authorize]
-        [Consumes("multipart/form-data")]
-        public async Task<IActionResult> Update([FromForm] UserUpdateDto request)
+        public async Task<IActionResult> Update([FromBody] UserUpdateDto request)
         {
             var result = await _userService.Update(request);
             return result.IsSuccessed ? Ok(result) : BadRequest(result);
