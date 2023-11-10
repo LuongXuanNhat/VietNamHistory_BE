@@ -2,13 +2,13 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using System.Globalization;
 using System.Text;
 using VNH.Application.DTOs.Catalog.HashTags;
 using VNH.Application.DTOs.Catalog.Posts;
 using VNH.Application.DTOs.Catalog.Users;
 using VNH.Application.DTOs.Common.ResponseNotification;
-using VNH.Application.Interfaces.Catalog.HashTags;
 using VNH.Application.Interfaces.Common;
 using VNH.Application.Interfaces.Posts;
 using VNH.Domain;
@@ -22,21 +22,23 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
         private readonly UserManager<User> _userManager;
         private readonly VietNamHistoryContext _dataContext;
         private readonly IImageService _image;
-
+        private readonly IStorageService _storageService;
         private readonly IMapper _mapper;
 
         public PostService(UserManager<User> userManager, IMapper mapper, IImageService image,
-            VietNamHistoryContext vietNamHistoryContext) {
+            VietNamHistoryContext vietNamHistoryContext, IStorageService storageService)
+        {
             _userManager = userManager;
             _mapper = mapper;
             _image = image;
             _dataContext = vietNamHistoryContext;
+            _storageService = storageService;
         }
         public async Task<ApiResult<PostResponsetDto>> Create(CreatePostDto requestDto, string name)
         {
             var user = await _userManager.FindByEmailAsync(name);
             var post = _mapper.Map<Post>(requestDto);
-            post.Image = await _image.ConvertFormFileToByteArray(requestDto.Image);
+            post.Image = await _image.SaveFile(requestDto.Image);
             post.CreatedAt = DateTime.Now;
             post.UserId = user.Id;
             post.TopicId = requestDto.TopicId;
@@ -66,12 +68,12 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
 
                 var postReponse = _mapper.Map<PostResponsetDto>(post);
                 
-                postReponse.Image = _image.ConvertByteArrayToString(post.Image, Encoding.UTF8);
+                postReponse.Image = post.Image;
                 var useDto = new UserShortDto()
                 {
                     FullName = user.Fullname,
                     Id = user.Id,
-                    Image = _image.ConvertByteArrayToString(user.Image, Encoding.UTF8)
+                    Image = user.Image
                 };
                 postReponse.UserShort = useDto;
                 var listPostTag = await _dataContext.PostTags.Where(x => x.PostId.Equals(postReponse.Id)).Select(x => x.TagId).ToListAsync();
@@ -124,8 +126,11 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
             {
                 return new ApiErrorResult<PostResponsetDto>("Lỗi :Bài viết không được cập nhập (không tìm thấy bài viết)");
             }
-
-            updatePost.Image = await _image.ConvertFormFileToByteArray(requestDto.Image);
+            if (updatePost.Image != string.Empty)
+            {
+                await _storageService.DeleteFileAsync(updatePost.Image);
+            }
+            updatePost.Image = await _image.SaveFile(requestDto.Image);
             updatePost.UpdatedAt = DateTime.Now;
             updatePost.TopicId = requestDto.TopicId;
             updatePost.Content = requestDto.Content;
@@ -158,12 +163,12 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
 
                 var postReponse = _mapper.Map<PostResponsetDto>(updatePost);
                 
-                postReponse.Image = _image.ConvertByteArrayToString(updatePost.Image, Encoding.UTF8);
+                postReponse.Image = updatePost.Image;
                 var useDto = new UserShortDto()
                 {
                     FullName = user.Fullname,
                     Id = user.Id,
-                    Image = _image.ConvertByteArrayToString(user.Image, Encoding.UTF8)
+                    Image = user.Image
                 };
                 postReponse.UserShort = useDto;
                 var listPostTag = await _dataContext.PostTags.Where(x => x.PostId.Equals(postReponse.Id)).Select(x => x.TagId).ToListAsync();
@@ -200,7 +205,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
             }
             var user = await _userManager.FindByIdAsync(post.UserId.ToString());
             var postResponse = _mapper.Map<PostResponsetDto>(post);
-            postResponse.Image = _image.ConvertByteArrayToString(post.Image, Encoding.UTF8);
+            postResponse.Image = post.Image;
 
             var listPostTag = await _dataContext.PostTags.Where(x => x.PostId.Equals(postResponse.Id)).Select(x => x.TagId).ToListAsync();
             var tags = await _dataContext.Tags
@@ -218,7 +223,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
             {
                 FullName = user.Fullname,
                 Id = user.Id,
-                Image = _image.ConvertByteArrayToString(user.Image, Encoding.UTF8)
+                Image = user.Image
             };
 
             var topic = await _dataContext.Topics.FirstAsync(x => x.Id == post.TopicId);
@@ -234,17 +239,19 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
         public async Task<ApiResult<List<PostResponsetDto>>> GetAll()
         {
             var posts = await _dataContext.Posts.ToListAsync();
+            var topics = await _dataContext.Topics.ToListAsync();
+            var users = await _dataContext.User.ToListAsync();
 
             var result = new List<PostResponsetDto>();
             foreach (var item in posts)
             {
                 var post = _mapper.Map<PostResponsetDto>(item);
-                var userShort = await _dataContext.User.Where(x => x.Id == item.UserId).FirstOrDefaultAsync();
+                var userShort = users.First(x => x.Id == item.UserId);
                 if (userShort is not null)
                 {
                     post.UserShort.FullName = userShort.Fullname;
                     post.UserShort.Id = userShort.Id;
-                    post.UserShort.Image = _image.ConvertByteArrayToString(userShort.Image, Encoding.UTF8);
+                    post.UserShort.Image = userShort.Image;
                 }
                 var tags = await _dataContext.PostTags
                             .Where(x => x.PostId == item.Id)
@@ -258,26 +265,30 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
                 {
                     post.Tags.Add(_mapper.Map<TagDto>(tag));
                 }
-
-                post.Image = _image.ConvertByteArrayToString(item.Image, Encoding.UTF8);
+                post.TopicName = topics.Where(x => x.Id == item.TopicId).Select(x=>x.Title).First();
+                post.Image = item.Image;
                 result.Add(post);
             }
 
             return new ApiSuccessResult<List<PostResponsetDto>>(result);    
         }
 
-        public async Task<ApiResult<bool>> Delete(string id)
+        public async Task<ApiResult<string>> Delete(string id)
         {
             var post = await _dataContext.Posts.FirstOrDefaultAsync(x => x.Id.Equals(id));
             if (post is null)
             {
-                return new ApiErrorResult<bool>("Không tìm thấy bài viết");
+                return new ApiErrorResult<string>("Không tìm thấy bài viết");
+            }
+            if (post.Image != string.Empty)
+            {
+                await _storageService.DeleteFileAsync(post.Image);
             }
             _dataContext.Posts.Remove(post);
 
             await _dataContext.SaveChangesAsync();
 
-            return new ApiSuccessResult<bool>(true);
+            return new ApiSuccessResult<string>("Đã xóa bài viết");
         }
 
         public async Task<ApiResult<string>> AddOrUnLikePost(string id, string userId)

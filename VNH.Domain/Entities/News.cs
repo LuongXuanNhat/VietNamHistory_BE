@@ -16,9 +16,9 @@ namespace VNH.Domain
         [StringLength(255)]
         public string Title { get; set; }
         [Column(TypeName = "text")]
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
         [Column(TypeName = "text")]
-        public string Image { get; set; }
+        public string Image { get; set; } = string.Empty;
         [Column(TypeName = "datetime")]
         public DateTime? PubDate { get; set; }
         [Required]

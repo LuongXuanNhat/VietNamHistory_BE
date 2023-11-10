@@ -11,6 +11,7 @@ using VNH.Application.Interfaces.Email;
 using AutoMapper;
 using VNH.Application.Interfaces.Common;
 using Microsoft.AspNetCore.Http;
+using VNH.Infrastructure.Implement.Common;
 
 namespace VNH.Infrastructure.Implement.Catalog.Users
 {
@@ -22,7 +23,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Users
         public readonly ILogger<UserService> _logger;
         private readonly UserManager<User> _userManager;
         private readonly VietNamHistoryContext _dataContext;
-
+        private readonly IStorageService _storageService;
 
         public UserService(VietNamHistoryContext context,
                 ILogger<UserService> logger,
@@ -30,7 +31,8 @@ namespace VNH.Infrastructure.Implement.Catalog.Users
                 SignInManager<User> signInManager,
                 IConfiguration configuration,
                 ISendMailService sendmailservice,
-                IMapper mapper, IImageService image)
+                IMapper mapper, IImageService image,
+                IStorageService storageService)
         {
             _logger = logger;
             _mapper = mapper;
@@ -38,6 +40,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Users
             _userManager = userManager;
             _sendmailservice = sendmailservice;
             _dataContext = context;
+            _storageService = storageService;
         }
         public async Task<ApiResult<UserDetailDto>> GetUserDetail(string email)
         {
@@ -68,13 +71,17 @@ namespace VNH.Infrastructure.Implement.Catalog.Users
         public async Task<ApiResult<string>> GetImage(string email)
         {
             var user = await _userManager.FindByNameAsync(email);
-            return new ApiSuccessResult<string>(_image.ConvertByteArrayToString(user.Image, Encoding.UTF8));
+            return new ApiSuccessResult<string>(user.Image);
         }
 
         public async Task<ApiResult<string>> SetImageUser(string name, IFormFile image)
         {
             var user = await _userManager.FindByNameAsync(name);
-            user.Image = await _image.ConvertFormFileToByteArray(image);
+            if (user.Image != string.Empty)
+            {
+                await _storageService.DeleteFileAsync(user.Image);
+            }
+            user.Image = await _image.SaveFile(image);
             _dataContext.User.Update(user);
             await _dataContext.SaveChangesAsync();
             return new ApiSuccessResult<string>("Cập nhập ảnh đại diện thành công");

@@ -41,7 +41,7 @@ namespace VNH.WebAPi.Controllers
             var userPrincipal = _account.ValidateToken(result.ResultObj);
             var authProperties = new AuthenticationProperties
             {
-                ExpiresUtc = DateTimeOffset.UtcNow.AddHours(12),
+                ExpiresUtc = DateTimeOffset.UtcNow.AddDays(15),
                 IsPersistent = true
             };
 
@@ -53,7 +53,7 @@ namespace VNH.WebAPi.Controllers
 
             var cacheOptions = new DistributedCacheEntryOptions()
             {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1)
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(12)
             };
             await _cache.SetStringAsync("my_token_key", SystemConstants.Token, cacheOptions);
             return Ok(result);
@@ -251,11 +251,7 @@ namespace VNH.WebAPi.Controllers
         public async Task<IActionResult> RegisterUser([FromBody] RegisterRequest request)
         {
             var result = await _account.Register(request);
-            if (!result.IsSuccessed)
-            {
-                return BadRequest(result);
-            }
-            return Ok(result);
+            return result.IsSuccessed ? Ok(result) : BadRequest(result);
         }
 
         [HttpPost("EmailConfirm")]
@@ -263,22 +259,14 @@ namespace VNH.WebAPi.Controllers
         public async Task<IActionResult> EmailConfirm(string numberConfirm)
         {
             var result = await _account.EmailConfirm(numberConfirm, User.Identity.Name);
-            if (!result.IsSuccessed)
-            {
-                return BadRequest(result);
-            }
-            return Ok(result);
+            return result.IsSuccessed ? Ok(result) : BadRequest(result);
         }
 
         [HttpGet("ForgetPassword")]
         public async Task<IActionResult> ForgetPassword([FromQuery] string email)
         {
             var result = await _account.ForgetPassword(email);
-            if (!result.IsSuccessed)
-            {
-                return BadRequest(result);
-            }
-            return Ok(result);
+            return result.IsSuccessed ? Ok(result) : BadRequest(result);
         }
 
         [HttpGet("ForgetPassword/ConfirmCode")]
@@ -286,23 +274,24 @@ namespace VNH.WebAPi.Controllers
         public async Task<IActionResult> ConfirmCode([FromQuery] string email)
         {
             var result = await _account.ConfirmCode(email);
-            if (!result.IsSuccessed)
-            {
-                return BadRequest(result);
-            }
-            return Ok(result);
+            return result.IsSuccessed ? Ok(result) : BadRequest(result);
         }
 
         [HttpPost("ResetPassword")]
         public async Task<IActionResult> ResetPassword(ResetPassDto resetPass)
         {
             var result = await _account.ResetPassword(resetPass);
-            if (!result.IsSuccessed)
-            {
-                return BadRequest(result);
-            }
-            return Ok(result);
+            return result.IsSuccessed ? Ok(result) : BadRequest(result);
 
+        }
+
+        [HttpPost("ChangeEmail")]
+        [Authorize]
+        public async Task<IActionResult> ChangeEmail(string email)
+        {
+            //// var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            var result = await _account.ChangeEmail(User.Identity.Name, email);
+            return result.IsSuccessed ? Ok(result) : BadRequest(result);
         }
 
         [HttpPost("ChangePassword")]
@@ -310,11 +299,7 @@ namespace VNH.WebAPi.Controllers
         public async Task<IActionResult> ChanggPassword(ChangePasswordDto changePasswodDto)
         {
             var result = await _account.ChangePassword(changePasswodDto);
-            if (!result.IsSuccessed)
-            {
-                return BadRequest(result);
-            }
-            return Ok(result);
+            return result.IsSuccessed ? Ok(result) : BadRequest(result);
         }
 
         

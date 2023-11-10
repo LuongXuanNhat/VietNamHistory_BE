@@ -33,6 +33,7 @@ namespace VNH.WebAPi
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
 
+
             #region  SwaggerGen Configuration
             builder.Services.AddSwaggerGen(c =>
             {
@@ -115,18 +116,21 @@ namespace VNH.WebAPi
 
             app.Use(async (context, next) =>
             {
-                // Connection: RemoteIp
                 app.Logger.LogInformation("Request RemoteIp: {RemoteIpAddress}",
                     context.Connection.RemoteIpAddress);
 
                 await next(context);
             });
-            app.UseCors("AllowAngularDev");
+            
+            
             app.UseStaticFiles();
             app.UseForwardedHeaders();
-            app.UseAuthentication();
+            
             app.UseSession();
             app.UseHttpsRedirection();
+            app.UseRouting();
+            app.UseCors("AllowAngularDev");
+            app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
             app.UseHttpsRedirection();

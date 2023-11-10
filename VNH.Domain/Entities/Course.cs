@@ -30,7 +30,7 @@ namespace VNH.Domain {
         public DateTime? CreatedAt { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime? UpdatedAt { get; set; }
-
+        public string Image { get; set; } = string.Empty;
         [ForeignKey("UserId")]
         [InverseProperty("Courses")]
         public virtual User User { get; set; }

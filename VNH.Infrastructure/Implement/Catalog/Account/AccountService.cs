@@ -117,18 +117,18 @@ namespace VNH.Infrastructure.Implement.Catalog.Account
             return new ApiSuccessResult<ResetPassDto>(result);
         }
 
-        public async Task<ApiResult<bool>> EmailConfirm(string numberConfirm, string email)
+        public async Task<ApiResult<string>> EmailConfirm(string numberConfirm, string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
-            if (user is null) return new ApiErrorResult<bool>("Lỗi xác nhận email");
+            if (user is null) return new ApiErrorResult<string>("Lỗi xác nhận email");
             if (user.NumberConfirm.Equals(numberConfirm))
             {
                 user.EmailConfirmed = true;
                 _dataContext.User.Update(user);
                 await _dataContext.SaveChangesAsync();
-                return new ApiSuccessResult<bool>();
+                return new ApiSuccessResult<string>();
             }
-            return new ApiErrorResult<bool>("Xác thực không thành công");
+            return new ApiErrorResult<string>("Xác thực không thành công");
         }
 
         public async Task<ApiResult<LoginRequest>> ForgetPassword(string email)
@@ -158,12 +158,12 @@ namespace VNH.Infrastructure.Implement.Catalog.Account
             return new ApiSuccessResult<LoginRequest>(result);
         }
 
-        public async Task<ApiResult<bool>> Register(RegisterRequest request)
+        public async Task<ApiResult<string>> Register(RegisterRequest request)
         {
             try
             {
                 var user = await _userManager.FindByEmailAsync(request.Email);
-                if (user != null) return new ApiErrorResult<bool>("Email đã tồn tại");
+                if (user != null) return new ApiErrorResult<string>("Email đã tồn tại");
                 var confirmNumber = GetConfirmCode();
                 user = new User()
                 {
@@ -185,16 +185,16 @@ namespace VNH.Infrastructure.Implement.Catalog.Account
                         await SendConfirmCodeToEmail(request.Email, confirmNumber);
 
                         await _userManager.AddToRoleAsync(getUser, role);
-                        return new ApiSuccessResult<bool>();
+                        return new ApiSuccessResult<string>();
                     }
                 }
 
-                return new ApiErrorResult<bool>("Đăng ký không thành công : Mật khẩu không hợp lệ, yêu cầu gồm có ít 6 ký tự bao gồm ký tự: Hoa, thường, số, ký tự đặc biệt ");
+                return new ApiErrorResult<string>("Đăng ký không thành công : Mật khẩu không hợp lệ, yêu cầu gồm có ít 6 ký tự bao gồm ký tự: Hoa, thường, số, ký tự đặc biệt ");
             }
             catch (Exception ex)
             {
                 _logger.LogError("Xảy ra lỗi trong quá trình đăng ký | ", ex.Message);
-                return new ApiErrorResult<bool>("Lỗi đăng ký!");
+                return new ApiErrorResult<string>("Lỗi đăng ký!");
             }
         }
 
@@ -310,15 +310,15 @@ namespace VNH.Infrastructure.Implement.Catalog.Account
             return principal;
         }
 
-        public async Task<ApiResult<bool>> ResetPassword(ResetPassDto resetPass)
+        public async Task<ApiResult<string>> ResetPassword(ResetPassDto resetPass)
         {
             var user = await _userManager.FindByEmailAsync(resetPass.Email);
-            if (user is null) return new ApiErrorResult<bool>("Lỗi");
+            if (user is null) return new ApiErrorResult<string>("Lỗi");
             var resetPasswordResult = await _userManager.ResetPasswordAsync(user, resetPass.Token, resetPass.Password);
             if (!resetPasswordResult.Succeeded)
             {
                 _logger.LogError("Xảy ra lỗi trong quá trình xử lý | ", resetPasswordResult.Errors.Select(e => e.Description));
-                return new ApiErrorResult<bool>("Lỗi!");
+                return new ApiErrorResult<string>("Lỗi!");
             }
             if (user.AccessFailedCount is 5)
             {
@@ -327,7 +327,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Account
                 _dataContext.User.Update(user);
                 await _dataContext.SaveChangesAsync();
             }
-            return new ApiSuccessResult<bool>();
+            return new ApiSuccessResult<string>();
         }
 
         public async Task LockAccount(User user)
@@ -338,20 +338,20 @@ namespace VNH.Infrastructure.Implement.Catalog.Account
             await _dataContext.SaveChangesAsync();
         }
 
-        public async Task<ApiResult<bool>> ChangePassword(ChangePasswordDto changePasswodDto)
+        public async Task<ApiResult<string>> ChangePassword(ChangePasswordDto changePasswodDto)
         {
             var user = await _userManager.FindByEmailAsync(changePasswodDto.Email);
             var passwordCheckResult = await _userManager.CheckPasswordAsync(user, changePasswodDto.Password);
             if (!passwordCheckResult)
             {
-            return new ApiErrorResult<bool>("Mật khẩu hiện tại không đúng");
+            return new ApiErrorResult<string>("Mật khẩu hiện tại không đúng");
             } 
             var changePasswordResult = await _userManager.ChangePasswordAsync(user, changePasswodDto.Password, changePasswodDto.NewPassword);
             if (changePasswordResult.Succeeded)
             {
-                return new ApiSuccessResult<bool>();
+                return new ApiSuccessResult<string>();
             }
-            return new ApiErrorResult<bool>("Đổi mật khẩu không thành công");
+            return new ApiErrorResult<string>("Đổi mật khẩu không thành công");
         }
 
         public async Task<ApiResult<string>> LoginExtend(string email, string name)
@@ -366,6 +366,21 @@ namespace VNH.Infrastructure.Implement.Catalog.Account
 
             await _signInManager.SignInAsync(user, isPersistent: false);
             return new ApiSuccessResult<string>(await GetToken(user));
+        }
+
+        public async Task<ApiResult<string>> ChangeEmail(string currentEmail, string email)
+        {
+            var user = await _userManager.FindByEmailAsync(currentEmail);
+            var token = await _userManager.GenerateChangeEmailTokenAsync(user, email);
+            user.UserName = email;
+            user.NormalizedEmail = email;
+            user.NormalizedUserName = email;
+            var changeEmailResult = await _userManager.ChangeEmailAsync(user, email, token);
+            if (changeEmailResult.Succeeded)
+            {
+                return new ApiSuccessResult<string>( await GetToken(user));
+            }
+            return new ApiErrorResult<string>("Đổi email không thành công");
         }
     }
 }

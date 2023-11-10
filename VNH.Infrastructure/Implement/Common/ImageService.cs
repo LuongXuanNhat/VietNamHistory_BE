@@ -1,13 +1,30 @@
 ﻿using ImageMagick;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using System.Drawing.Imaging;
+using System.Net.Http.Headers;
 using System.Text;
+using VNH.Application.Common.Contants;
 using VNH.Application.Interfaces.Common;
 
 namespace VNH.Infrastructure.Implement.Common
 {
     public class ImageService : IImageService
     {
+        private const string USER_CONTENT_FOLDER_NAME = "Images";
+        private readonly string URL = SystemConstants.UrlWeb;
+        private readonly IStorageService _storageService;
+        public ImageService(IStorageService storageService)
+        {
+            _storageService = storageService;
+        }
+        public async Task<string> SaveFile(IFormFile file)
+        {
+            var originalFileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName?.Trim('"');
+            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(originalFileName)}";
+            await _storageService.SaveFileAsync(file.OpenReadStream(), fileName);
+            return URL + USER_CONTENT_FOLDER_NAME + "/" + fileName;
+        }
         public string ConvertByteArrayToString(byte[]? byteArray, Encoding encoding)
         {
             return byteArray is not null ? Convert.ToBase64String(byteArray) : string.Empty;

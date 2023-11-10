@@ -9,7 +9,7 @@ namespace VNH.Application.Interfaces.Posts
         Task<ApiResult<PostResponsetDto>> Update(CreatePostDto requestDto, string name);
         Task<ApiResult<PostResponsetDto>> Detail(string Id);
         Task<ApiResult<List<PostResponsetDto>>> GetAll();
-        Task<ApiResult<bool>> Delete(string id);
+        Task<ApiResult<string>> Delete(string id);
 
         Task<ApiResult<string>> AddOrUnLikePost(string id, string userId);
         Task<ApiResult<string>> AddOrRemoveSavePost(string postId, string userId);

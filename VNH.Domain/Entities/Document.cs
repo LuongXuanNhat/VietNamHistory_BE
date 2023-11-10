@@ -21,11 +21,11 @@ namespace VNH.Domain
         [Required]
         [StringLength(255)]
         public string Title { get; set; }
-        [StringLength(255)]
+        [StringLength(500)]
         public string Description { get; set; }
         [StringLength(255)]
         [Unicode(false)]
-        public string UrlImage { get; set; }
+        public string Image { get; set; } = string.Empty;
         [StringLength(255)]
         [Unicode(false)]
         public string FileName { get; set; }
