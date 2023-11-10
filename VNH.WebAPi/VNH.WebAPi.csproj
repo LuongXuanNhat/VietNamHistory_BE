@@ -10,6 +10,15 @@
     <PackageReference Include="Facebook" Version="6.8.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.22" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.22" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.13">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.13" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.24">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
@@ -22,5 +31,9 @@
     <ProjectReference Include="..\VNH.Application\VNH.Application.csproj" />
     <ProjectReference Include="..\VNH.Infrastructure\VNH.Infrastructure.csproj" />
   </ItemGroup>
-
+	
+	<!--garbage collection mode from server to workstation.-->
+    <PropertyGroup>
+	    <ServerGarbageCollection>false</ServerGarbageCollection>
+    </PropertyGroup>
 </Project>

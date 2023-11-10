@@ -108,6 +108,9 @@ namespace VNH.Infrastructure
                            .AllowAnyHeader()
                            .AllowAnyMethod()
                            .AllowCredentials();
+                    //builder.AllowAnyOrigin()
+                    //   .AllowAnyHeader()
+                    //   .AllowAnyMethod();
                 });
             });
             services.AddOptions();
@@ -116,8 +119,9 @@ namespace VNH.Infrastructure
             services.Configure<MailSettings>(mailsettings);
             services.AddSingleton<ISendMailService, SendMailService>();
 
-            services.AddSingleton<IImageService, ImageService>();
+            services.AddSingleton<IStorageService, StorageService>();
 
+            services.AddScoped<IImageService, ImageService>();
             services.AddScoped<IHashTag, TagService>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<ITopicService, TopicService>();

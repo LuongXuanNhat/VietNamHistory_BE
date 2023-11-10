@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
+using VNH.Application.Common.Contants;
 using VNH.Domain;
 using VNH.Domain.Entities;
 using VNH.Infrastructure.Presenters.DbContext;
@@ -63,7 +64,7 @@ namespace VNH.Infrastructure.Presenters.Migrations
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Data Source=.;Initial Catalog=VietNamHistory_2;Integrated Security=True;Encrypt=true;TrustServerCertificate=true;");
+                optionsBuilder.UseSqlServer(SystemConstants.ConnectString);
             }
         }
 

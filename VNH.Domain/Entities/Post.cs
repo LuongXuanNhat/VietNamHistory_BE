@@ -33,7 +33,7 @@ namespace VNH.Domain
         [Column(TypeName = "datetime")]
         public DateTime? UpdatedAt { get; set; }
         public Guid? UserId { get; set; }
-        public byte[] Image { get; set; }
+        public string Image { get; set; } = string.Empty;
         public int ViewNumber { get; set; }
 
         [ForeignKey("TopicId")]

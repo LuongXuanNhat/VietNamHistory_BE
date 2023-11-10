@@ -13,14 +13,15 @@ namespace VNH.Application.Interfaces.Catalog.Accounts
     public interface IAccountService
     {
         Task<ApiResult<string>> Authenticate(LoginRequest request);
-        Task<ApiResult<bool>> Register(RegisterRequest request);
-        Task<ApiResult<bool>> EmailConfirm(string numberConfirm, string email);
+        Task<ApiResult<string>> Register(RegisterRequest request);
+        Task<ApiResult<string>> EmailConfirm(string numberConfirm, string email);
         ClaimsPrincipal ValidateToken(string jwtToken);
         Task<ApiResult<LoginRequest>> ForgetPassword(string email);
         Task<ApiResult<ResetPassDto>> ConfirmCode(string email);
-        Task<ApiResult<bool>> ResetPassword(ResetPassDto resetPass);
+        Task<ApiResult<string>> ResetPassword(ResetPassDto resetPass);
         Task LockAccount(User user);
-        Task<ApiResult<bool>> ChangePassword(ChangePasswordDto changePasswodDto);
+        Task<ApiResult<string>> ChangePassword(ChangePasswordDto changePasswodDto);
         Task<ApiResult<string>> LoginExtend(string email, string name);
+        Task<ApiResult<string>> ChangeEmail(string currentEmail ,string email);
     }
 }
