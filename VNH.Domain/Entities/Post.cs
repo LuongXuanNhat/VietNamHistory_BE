@@ -23,16 +23,17 @@ namespace VNH.Domain
         [Key]
         [StringLength(255)]
         public string Id { get; set; }
-        [Required]
+        [StringLength(300)]
+        public string SubId { get; set; } = string.Empty;
         [StringLength(255)]
         public string Title { get; set; }
         public string Content { get; set; }
         public Guid TopicId { get; set; }
         [Column(TypeName = "datetime")]
-        public DateTime? CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime? UpdatedAt { get; set; }
-        public Guid? UserId { get; set; }
+        public Guid UserId { get; set; }
         public string Image { get; set; } = string.Empty;
         public int ViewNumber { get; set; }
 

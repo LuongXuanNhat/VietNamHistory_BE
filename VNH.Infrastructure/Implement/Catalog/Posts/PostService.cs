@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using System.Globalization;
 using System.Text;
+using System.Text.RegularExpressions;
 using VNH.Application.DTOs.Catalog.HashTags;
 using VNH.Application.DTOs.Catalog.Posts;
 using VNH.Application.DTOs.Catalog.Users;
@@ -34,7 +36,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
             _dataContext = vietNamHistoryContext;
             _storageService = storageService;
         }
-        public async Task<ApiResult<PostResponsetDto>> Create(CreatePostDto requestDto, string name)
+        public async Task<ApiResult<PostResponseDto>> Create(CreatePostDto requestDto, string name)
         {
             var user = await _userManager.FindByEmailAsync(name);
             var post = _mapper.Map<Post>(requestDto);
@@ -42,31 +44,34 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
             post.CreatedAt = DateTime.Now;
             post.UserId = user.Id;
             post.TopicId = requestDto.TopicId;
-            var Id = RemoveDiacritics(post.Title);
-            post.Id = Id.Trim().Replace(" ","-") + "-" + Guid.NewGuid().ToString();
+            string formattedDateTime = post.CreatedAt.ToString("HH:mm:ss.fff-dd-MM-yyyy");
+            var Id = SanitizeString(post.Title);
+            post.SubId = Id + "-" + formattedDateTime;
             try
             {
                 _dataContext.Posts.Add(post);
                 await _dataContext.SaveChangesAsync();
 
-                foreach (var item in requestDto.Tag)
+                if (!requestDto.Tag.IsNullOrEmpty())
                 {
-                    var tag = new Tag()
+                    foreach (var item in requestDto.Tag)
                     {
-                        Id = Guid.NewGuid(),
-                        Name = item
-                    };
-                    var postTag = new PostTag()
-                    {
-                        PostId = post.Id,
-                        TagId = tag.Id
-                    };
-                    _dataContext.PostTags.Add(postTag);
-                    _dataContext.Tags.Add(tag);
+                        var tag = new Tag()
+                        {
+                            Id = Guid.NewGuid(),
+                            Name = item
+                        };
+                        var postTag = new PostTag()
+                        {
+                            PostId = post.Id,
+                            TagId = tag.Id
+                        };
+                        _dataContext.PostTags.Add(postTag);
+                        _dataContext.Tags.Add(tag);
+                    }
+                    await _dataContext.SaveChangesAsync();
                 }
-                await _dataContext.SaveChangesAsync();
-
-                var postReponse = _mapper.Map<PostResponsetDto>(post);
+                var postReponse = _mapper.Map<PostResponseDto>(post);
                 
                 postReponse.Image = post.Image;
                 var useDto = new UserShortDto()
@@ -93,11 +98,11 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
                 var topic = await _dataContext.Topics.FirstAsync(x => x.Id == post.TopicId);
                 postReponse.TopicName = topic.Title;
 
-                return new ApiSuccessResult<PostResponsetDto>(postReponse);
+                return new ApiSuccessResult<PostResponseDto>(postReponse);
             }
             catch (Exception ex)
             {
-                return new ApiErrorResult<PostResponsetDto>("Lỗi lưu bài viết : " + ex.Message);
+                return new ApiErrorResult<PostResponseDto>("Lỗi lưu bài viết : " + ex.Message);
             }
         }
 
@@ -116,15 +121,22 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
 
             return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
         }
+        private static string SanitizeString(string input)
+        {
+            string withoutDiacritics = RemoveDiacritics(input).Trim().Replace(" ", "-");
+            string sanitizedString = Regex.Replace(withoutDiacritics, "[^a-zA-Z0-9-]", "");
 
-        public async Task<ApiResult<PostResponsetDto>> Update(CreatePostDto requestDto, string name)
+            return sanitizedString;
+        }
+
+        public async Task<ApiResult<PostResponseDto>> Update(CreatePostDto requestDto, string name)
         {
             var user = await _userManager.FindByEmailAsync(name);
 
             var updatePost = _dataContext.Posts.First(x=>x.Id.Equals(requestDto.Id));
             if (updatePost is null)
             {
-                return new ApiErrorResult<PostResponsetDto>("Lỗi :Bài viết không được cập nhập (không tìm thấy bài viết)");
+                return new ApiErrorResult<PostResponseDto>("Lỗi :Bài viết không được cập nhập (không tìm thấy bài viết)");
             }
             if (updatePost.Image != string.Empty)
             {
@@ -134,7 +146,9 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
             updatePost.UpdatedAt = DateTime.Now;
             updatePost.TopicId = requestDto.TopicId;
             updatePost.Content = requestDto.Content;
-
+            string formattedDateTime = DateTime.Now.ToString("HH:mm:ss.fff-dd-MM-yyyy");
+            var Id = SanitizeString(updatePost.Title);
+            updatePost.SubId = Id.Trim().Replace(" ", "-") + "-" + formattedDateTime;
             try
             {
                 _dataContext.Posts.Update(updatePost);
@@ -142,7 +156,6 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
 
                 var tagOfPost = await _dataContext.PostTags.Where(x => x.PostId.Equals(updatePost.Id)).ToListAsync();
                 _dataContext.PostTags.RemoveRange(tagOfPost);
-                await _dataContext.SaveChangesAsync();
 
                 foreach (var item in requestDto.Tag)
                 {
@@ -161,7 +174,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
                 }
                 await _dataContext.SaveChangesAsync();
 
-                var postReponse = _mapper.Map<PostResponsetDto>(updatePost);
+                var postReponse = _mapper.Map<PostResponseDto>(updatePost);
                 
                 postReponse.Image = updatePost.Image;
                 var useDto = new UserShortDto()
@@ -188,23 +201,23 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
                 var topic = await _dataContext.Topics.FirstAsync(x => x.Id == updatePost.TopicId);
                 postReponse.TopicName = topic.Title;
 
-                return new ApiSuccessResult<PostResponsetDto>(postReponse);
+                return new ApiSuccessResult<PostResponseDto>(postReponse);
             }
             catch (Exception ex)
             {
-                return new ApiErrorResult<PostResponsetDto>("Lỗi lưu bài viết : " + ex.Message);
+                return new ApiErrorResult<PostResponseDto>("Lỗi lưu bài viết : " + ex.Message);
             }
         }
 
-        public async Task<ApiResult<PostResponsetDto>> Detail(string Id)
+        public async Task<ApiResult<PostResponseDto>> Detail(string Id)
         {
-            var post = await _dataContext.Posts.FirstOrDefaultAsync(x=>x.Id.Equals(Id));
+            var post = await _dataContext.Posts.FirstOrDefaultAsync(x=>x.SubId.Equals(Id));
             if (post is null)
             {
-                return new ApiErrorResult<PostResponsetDto>("Không tìm thấy bài viết");
+                return new ApiErrorResult<PostResponseDto>("Không tìm thấy bài viết");
             }
             var user = await _userManager.FindByIdAsync(post.UserId.ToString());
-            var postResponse = _mapper.Map<PostResponsetDto>(post);
+            var postResponse = _mapper.Map<PostResponseDto>(post);
             postResponse.Image = post.Image;
 
             var listPostTag = await _dataContext.PostTags.Where(x => x.PostId.Equals(postResponse.Id)).Select(x => x.TagId).ToListAsync();
@@ -225,27 +238,29 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
                 Id = user.Id,
                 Image = user.Image
             };
-
+            
             var topic = await _dataContext.Topics.FirstAsync(x => x.Id == post.TopicId);
             postResponse.TopicName = topic.Title;
-
+            postResponse.ViewNumber = post.ViewNumber += 1;
             postResponse.SaveNumber = await _dataContext.PostSaves.Where(x=>x.PostId.Equals(Id)).CountAsync();
             postResponse.CommentNumber = await _dataContext.PostComments.Where(x => x.PostId.Equals(Id)).CountAsync();
             postResponse.LikeNumber = await _dataContext.PostLikes.Where(x=>x.PostId.Equals(x.PostId)).CountAsync();
 
-            return new ApiSuccessResult<PostResponsetDto>(postResponse);
+            _dataContext.Posts.Update(post);
+            await _dataContext.SaveChangesAsync();
+            return new ApiSuccessResult<PostResponseDto>(postResponse);
         }
 
-        public async Task<ApiResult<List<PostResponsetDto>>> GetAll()
+        public async Task<ApiResult<List<PostResponseDto>>> GetAll()
         {
             var posts = await _dataContext.Posts.ToListAsync();
             var topics = await _dataContext.Topics.ToListAsync();
             var users = await _dataContext.User.ToListAsync();
 
-            var result = new List<PostResponsetDto>();
+            var result = new List<PostResponseDto>();
             foreach (var item in posts)
             {
-                var post = _mapper.Map<PostResponsetDto>(item);
+                var post = _mapper.Map<PostResponseDto>(item);
                 var userShort = users.First(x => x.Id == item.UserId);
                 if (userShort is not null)
                 {
@@ -270,10 +285,28 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
                 result.Add(post);
             }
 
-            return new ApiSuccessResult<List<PostResponsetDto>>(result);    
+            return new ApiSuccessResult<List<PostResponseDto>>(result);    
         }
 
-        public async Task<ApiResult<string>> Delete(string id)
+        public async Task<ApiResult<string>> Delete(string id, string userId)
+        {
+            var post = await _dataContext.Posts.FirstOrDefaultAsync(x => x.Id.Equals(id) && x.UserId.ToString().Equals(userId));
+            if (post is null)
+            {
+                return new ApiErrorResult<string>("Không tìm thấy bài viết");
+            }
+            if (post.Image != string.Empty)
+            {
+                await _storageService.DeleteFileAsync(post.Image);
+            }
+            _dataContext.Posts.Remove(post);
+
+            await _dataContext.SaveChangesAsync();
+
+            return new ApiSuccessResult<string>("Đã xóa bài viết");
+        }
+
+        public async Task<ApiResult<string>> DeleteAdmin(string id)
         {
             var post = await _dataContext.Posts.FirstOrDefaultAsync(x => x.Id.Equals(id));
             if (post is null)
@@ -375,5 +408,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
             }
             return results;
         }
+
+        
     }
 }
