@@ -169,6 +169,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Account
                 {
                     Id = Guid.NewGuid(),
                     UserName = request.Email,
+                    Fullname = request.Email,
                     Email = request.Email,
                     NumberConfirm = confirmNumber,
                     LockoutEnabled = false

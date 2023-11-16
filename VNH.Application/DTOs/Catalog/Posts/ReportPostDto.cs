@@ -3,7 +3,7 @@ namespace VNH.Application.DTOs.Catalog.Posts
 {
     public class ReportPostDto
     {
-        public string PostId { get; set; } = string.Empty;
+        public string PostId { get; set; }
         public Guid UserId { get; set; }
         public Guid ReportId { get; set; }
         public string Description { get; set; } = string.Empty;

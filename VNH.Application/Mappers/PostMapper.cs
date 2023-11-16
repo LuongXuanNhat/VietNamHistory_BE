@@ -11,7 +11,7 @@ namespace VNH.Application.Mappers
             CreateMap<CreatePostDto, Post>()
                 .ForMember(dest => dest.Image, opt => opt.Ignore());
 
-            CreateMap<Post, PostResponsetDto>()
+            CreateMap<Post, PostResponseDto>()
                 .ForMember(dest => dest.Image, opt => opt.Ignore());
 
             CreateMap<ReportPostDto, PostReportDetail>().ReverseMap();

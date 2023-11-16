@@ -7,9 +7,10 @@ using VNH.Domain;
 
 namespace VNH.Application.DTOs.Catalog.Posts
 {
-    public class PostResponsetDto
+    public class PostResponseDto
     {
         public string Id { get; set; } = string.Empty;
+        public string SubId { get; set; } = string.Empty;
         public string Title { get; set; } = string.Empty;
         public string Content { get; set; } = string.Empty;
         public string Image { get; set; } = string.Empty;

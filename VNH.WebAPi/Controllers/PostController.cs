@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using VNH.Application.DTOs.Catalog.Posts;
 using VNH.Application.Interfaces.Posts;
-using VNH.Domain;
 
 namespace VNH.WebAPi.Controllers
 {
@@ -50,10 +50,17 @@ namespace VNH.WebAPi.Controllers
         }
 
         [HttpDelete]
-        [Authorize]
         public async Task<IActionResult> Delete(string Id)
         {
-            var result = await _postService.Delete(Id);
+            var result = await _postService.Delete(Id, User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "");
+            return result is null ? BadRequest(result) : Ok(result);
+        }
+
+        [HttpDelete("delete")]
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> DeleteAdmin(string Id)
+        {
+            var result = await _postService.DeleteAdmin(Id);
             return result is null ? BadRequest(result) : Ok(result);
         }
 
