@@ -28,6 +28,8 @@ using VNH.Application.Interfaces.Catalog.HashTags;
 using VNH.Infrastructure.Implement.Catalog.HashTags;
 using VNH.Application.Interfaces.Catalog.Reports;
 using VNH.Infrastructure.Implement.Catalog.Reports;
+using VNH.Application.Interfaces.Documents;
+using VNH.Infrastructure.Implement.Catalog.Documents;
 
 namespace VNH.Infrastructure
 {
@@ -127,6 +129,8 @@ namespace VNH.Infrastructure
             services.AddScoped<ITopicService, TopicService>();
             services.AddScoped<IPostService, PostService>();
             services.AddScoped<IReportService, ReportService>();
+            services.AddScoped<IDocumentService, DocumentService>();
+            services.AddScoped<IFileService, FileService>();
             services.AddSignalR();
 
 
