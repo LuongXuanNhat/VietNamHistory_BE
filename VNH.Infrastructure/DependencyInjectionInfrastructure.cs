@@ -127,6 +127,7 @@ namespace VNH.Infrastructure
             services.AddScoped<ITopicService, TopicService>();
             services.AddScoped<IPostService, PostService>();
             services.AddScoped<IReportService, ReportService>();
+
             services.AddSignalR();
 
 

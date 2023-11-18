@@ -63,7 +63,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserClaims");
+                    b.ToTable("UserClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
@@ -155,7 +155,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("QuestionId");
 
-                    b.ToTable("Answer");
+                    b.ToTable("Answer", (string)null);
                 });
 
             modelBuilder.Entity("VNH.Domain.AnswerVote", b =>
@@ -175,7 +175,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AnswerVote");
+                    b.ToTable("AnswerVote", (string)null);
                 });
 
             modelBuilder.Entity("VNH.Domain.Course", b =>
@@ -208,7 +208,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Course");
+                    b.ToTable("Course", (string)null);
                 });
 
             modelBuilder.Entity("VNH.Domain.CourseComment", b =>
@@ -238,7 +238,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("CourseComment");
+                    b.ToTable("CourseComment", (string)null);
                 });
 
             modelBuilder.Entity("VNH.Domain.CourseRating", b =>
@@ -261,7 +261,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("CourseRating");
+                    b.ToTable("CourseRating", (string)null);
                 });
 
             modelBuilder.Entity("VNH.Domain.CourseSave", b =>
@@ -281,7 +281,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("CourseSave");
+                    b.ToTable("CourseSave", (string)null);
                 });
 
             modelBuilder.Entity("VNH.Domain.CourseSubComment", b =>
@@ -311,7 +311,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("CourseSubComment");
+                    b.ToTable("CourseSubComment", (string)null);
                 });
 
             modelBuilder.Entity("VNH.Domain.Document", b =>
@@ -359,7 +359,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Document");
+                    b.ToTable("Document", (string)null);
                 });
 
             modelBuilder.Entity("VNH.Domain.DocumentSave", b =>
@@ -379,7 +379,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("DocumentSave");
+                    b.ToTable("DocumentSave", (string)null);
                 });
 
             modelBuilder.Entity("VNH.Domain.Entities.Notification", b =>
@@ -395,7 +395,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Notification");
+                    b.ToTable("Notification", (string)null);
                 });
 
             modelBuilder.Entity("VNH.Domain.Entities.NotificationDetail", b =>
@@ -424,7 +424,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("NotificationDetails");
+                    b.ToTable("NotificationDetails", (string)null);
                 });
 
             modelBuilder.Entity("VNH.Domain.Entities.PostTag", b =>
@@ -448,7 +448,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("TagId");
 
-                    b.ToTable("PostTags");
+                    b.ToTable("PostTags", (string)null);
                 });
 
             modelBuilder.Entity("VNH.Domain.Exercise", b =>
@@ -484,7 +484,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Exercise");
+                    b.ToTable("Exercise", (string)null);
                 });
 
             modelBuilder.Entity("VNH.Domain.ExerciseDetail", b =>
@@ -510,7 +510,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ExerciseDetail");
+                    b.ToTable("ExerciseDetail", (string)null);
                 });
 
             modelBuilder.Entity("VNH.Domain.Lesson", b =>
@@ -541,7 +541,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("CourseId");
 
-                    b.ToTable("Lesson");
+                    b.ToTable("Lesson", (string)null);
                 });
 
             modelBuilder.Entity("VNH.Domain.News", b =>
@@ -571,7 +571,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("News");
+                    b.ToTable("News", (string)null);
                 });
 
             modelBuilder.Entity("VNH.Domain.Post", b =>
@@ -615,7 +615,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Post");
+                    b.ToTable("Post", (string)null);
                 });
 
             modelBuilder.Entity("VNH.Domain.PostComment", b =>
@@ -645,7 +645,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("PostComment");
+                    b.ToTable("PostComment", (string)null);
                 });
 
             modelBuilder.Entity("VNH.Domain.PostLike", b =>
@@ -666,7 +666,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("PostLike");
+                    b.ToTable("PostLike", (string)null);
                 });
 
             modelBuilder.Entity("VNH.Domain.PostReportDetail", b =>
@@ -702,7 +702,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("PostReportDetail");
+                    b.ToTable("PostReportDetail", (string)null);
                 });
 
             modelBuilder.Entity("VNH.Domain.PostSave", b =>
@@ -723,7 +723,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("PostSave");
+                    b.ToTable("PostSave", (string)null);
                 });
 
             modelBuilder.Entity("VNH.Domain.PostSubComment", b =>
@@ -752,7 +752,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("PostSubComment");
+                    b.ToTable("PostSubComment", (string)null);
                 });
 
             modelBuilder.Entity("VNH.Domain.Question", b =>
@@ -783,7 +783,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("AuthorId");
 
-                    b.ToTable("Question");
+                    b.ToTable("Question", (string)null);
                 });
 
             modelBuilder.Entity("VNH.Domain.QuestionLike", b =>
@@ -803,7 +803,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("QuestionLike");
+                    b.ToTable("QuestionLike", (string)null);
                 });
 
             modelBuilder.Entity("VNH.Domain.QuestionReportDetail", b =>
@@ -838,7 +838,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("QuestionReportDetail");
+                    b.ToTable("QuestionReportDetail", (string)null);
                 });
 
             modelBuilder.Entity("VNH.Domain.QuestionSave", b =>
@@ -858,7 +858,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("QuestionSave");
+                    b.ToTable("QuestionSave", (string)null);
                 });
 
             modelBuilder.Entity("VNH.Domain.QuestionTag", b =>
@@ -873,7 +873,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("TagId");
 
-                    b.ToTable("QuestionTag");
+                    b.ToTable("QuestionTag", (string)null);
                 });
 
             modelBuilder.Entity("VNH.Domain.Quiz", b =>
@@ -906,7 +906,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Quiz");
+                    b.ToTable("Quiz", (string)null);
                 });
 
             modelBuilder.Entity("VNH.Domain.Report", b =>
@@ -928,7 +928,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Report");
+                    b.ToTable("Report", (string)null);
 
                     b.HasData(
                         new
@@ -999,7 +999,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
 
                     b.HasData(
                         new
@@ -1041,7 +1041,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Search");
+                    b.ToTable("Search", (string)null);
                 });
 
             modelBuilder.Entity("VNH.Domain.SubAnswer", b =>
@@ -1067,7 +1067,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("PreAnswerId");
 
-                    b.ToTable("SubAnswer");
+                    b.ToTable("SubAnswer", (string)null);
                 });
 
             modelBuilder.Entity("VNH.Domain.Tag", b =>
@@ -1081,7 +1081,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Tag");
+                    b.ToTable("Tag", (string)null);
                 });
 
             modelBuilder.Entity("VNH.Domain.Topic", b =>
@@ -1106,7 +1106,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("AuthorId");
 
-                    b.ToTable("Topic");
+                    b.ToTable("Topic", (string)null);
                 });
 
             modelBuilder.Entity("VNH.Domain.TopicDetail", b =>
@@ -1126,7 +1126,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("TopicId");
 
-                    b.ToTable("TopicDetail");
+                    b.ToTable("TopicDetail", (string)null);
                 });
 
             modelBuilder.Entity("VNH.Domain.User", b =>
@@ -1198,7 +1198,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("User");
+                    b.ToTable("User", (string)null);
 
                     b.HasData(
                         new

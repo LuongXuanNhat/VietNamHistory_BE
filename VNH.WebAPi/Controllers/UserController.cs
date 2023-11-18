@@ -37,7 +37,7 @@ namespace VNH.WebAPi.Controllers
         public async Task<IActionResult> GetImage()
         {
             var result = await _userService.GetImage(User.Identity.Name);
-            return result.IsSuccessed ? Ok(result.ResultObj) : BadRequest(result.Message);
+            return result.IsSuccessed ? Ok(result) : BadRequest(result);
         }
 
         [HttpPost("Image")]
