@@ -238,10 +238,9 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
                 Id = user.Id,
                 Image = user.Image
             };
-            
+            post.ViewNumber += 1;
             var topic = await _dataContext.Topics.FirstAsync(x => x.Id == post.TopicId);
             postResponse.TopicName = topic.Title;
-            postResponse.ViewNumber = post.ViewNumber += 1;
             postResponse.SaveNumber = await _dataContext.PostSaves.Where(x=>x.PostId.Equals(Id)).CountAsync();
             postResponse.CommentNumber = await _dataContext.PostComments.Where(x => x.PostId.Equals(Id)).CountAsync();
             postResponse.LikeNumber = await _dataContext.PostLikes.Where(x=>x.PostId.Equals(x.PostId)).CountAsync();
@@ -324,69 +323,75 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
             return new ApiSuccessResult<string>("Đã xóa bài viết");
         }
 
-        public async Task<ApiResult<string>> AddOrUnLikePost(string id, string userId)
+        public async Task<ApiResult<bool>> AddOrUnLikePost(PostFpkDto postFpk)
         {
-            var post = await _dataContext.Posts.FirstOrDefaultAsync(x => x.Id.Equals(id));
+            var post = await _dataContext.Posts.FirstOrDefaultAsync(x => x.SubId.Equals(postFpk.PostId));
             if (post is null)
             {
-                return new ApiErrorResult<string>("Không tìm thấy bài viết");
+                return new ApiErrorResult<bool>("Không tìm thấy bài viết");
             }
-            var check = _dataContext.PostLikes.Where(x => x.PostId == id && x.UserId == Guid.Parse(userId)).FirstOrDefault();
+            var check = _dataContext.PostLikes.Where(x => x.PostId == post.Id && x.UserId == Guid.Parse(postFpk.UserId)).FirstOrDefault();
             var mess = "";
             if (check is null)
             {
                 var like = new PostLike()
                 {
                     Id     = Guid.NewGuid(),
-                    PostId = id,
-                    UserId = Guid.Parse(userId)
+                    PostId = post.Id,
+                    UserId = Guid.Parse(postFpk.UserId)
                 };
                 _dataContext.PostLikes.Add(like);
-                mess = "Đã thích";
+                await _dataContext.SaveChangesAsync();
+                return new ApiSuccessResult<bool>(true);
             } else
             {
                 _dataContext.PostLikes.Remove(check);
-                mess = "Đã bỏ thích";
+                await _dataContext.SaveChangesAsync();
+                return new ApiSuccessResult<bool>(false);
             }
             
-            await _dataContext.SaveChangesAsync();
-            return new ApiSuccessResult<string>(mess);
+            
         }
 
-        public async Task<ApiResult<string>> AddOrRemoveSavePost(string postId, string userId)
+        public async Task<ApiResult<bool>> AddOrRemoveSavePost(PostFpkDto postFpk)
         {
-            var post = await _dataContext.Posts.FirstOrDefaultAsync(x => x.Id.Equals(postId));
+            var post = await _dataContext.Posts.FirstOrDefaultAsync(x => x.SubId.Equals(postFpk.PostId));
             if (post is null)
             {
-                return new ApiErrorResult<string>("Không tìm thấy bài viết");
+                return new ApiErrorResult<bool>("Không tìm thấy bài viết");
             }
-            var check = _dataContext.PostSaves.Where(x => x.PostId == postId && x.UserId == Guid.Parse(userId)).FirstOrDefault();
+            var check = _dataContext.PostSaves.Where(x => x.PostId == post.Id && x.UserId == Guid.Parse(postFpk.UserId)).FirstOrDefault();
             var mess = "";
             if (check is null)
             {
                 var save = new PostSave()
                 {
                     Id = Guid.NewGuid(),
-                    PostId = postId,
-                    UserId = Guid.Parse(userId)
+                    PostId = post.Id,
+                    UserId = Guid.Parse(postFpk.UserId)
                 };
                 _dataContext.PostSaves.Add(save);
-                mess = "Đã lưu";
+                await _dataContext.SaveChangesAsync();
+                return new ApiSuccessResult<bool>(true);
             }
             else
             {
                 _dataContext.PostSaves.Remove(check);
-                mess = "Đã bỏ lưu";
+                await _dataContext.SaveChangesAsync();
+                return new ApiSuccessResult<bool>(false);
             }
 
-            await _dataContext.SaveChangesAsync();
-            return new ApiSuccessResult<string>(mess);
+            
         }
 
         public async Task<ApiResult<string>> ReportPost(ReportPostDto reportPostDto)
         {
+            var postId = _dataContext.Posts.FirstOrDefault(x => x.SubId.Equals(reportPostDto.PostId));
+            if (postId == null)
+            {
+                return new ApiErrorResult<string>("Bài viết không tồn tại");
+            }
             var reportPost = _mapper.Map<PostReportDetail>(reportPostDto);
-            reportPost.ReportDate = DateTime.Now;
             reportPost.Id = Guid.NewGuid();
 
             _dataContext.PostReportDetails.Add(reportPost);
@@ -409,6 +414,20 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
             return results;
         }
 
-        
+        public async Task<ApiResult<bool>> GetLike(PostFpkDto postFpk)
+        {
+            var post = _dataContext.Posts.First(x => x.SubId.Equals(postFpk.PostId));
+            var check = await _dataContext.PostLikes.Where(x => x.PostId.Equals(post.Id) && x.UserId == Guid.Parse(postFpk.UserId)).FirstOrDefaultAsync();
+            var reuslt = check != null;
+            return new ApiSuccessResult<bool>(reuslt);
+        }
+
+        public async Task<ApiResult<bool>> GetSave(PostFpkDto postFpk)
+        {
+            var post = _dataContext.Posts.First(x => x.SubId.Equals(postFpk.PostId));
+            var check = await _dataContext.PostSaves.Where(x => x.PostId.Equals(post.Id) && x.UserId == Guid.Parse(postFpk.UserId)).FirstOrDefaultAsync();
+            var reuslt = check != null;
+            return new ApiSuccessResult<bool>(reuslt);
+        }
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using VNH.Application.DTOs.Catalog.Posts;
+using VNH.Application.Interfaces.Catalog.Chats;
 using VNH.Application.Interfaces.Posts;
 
 namespace VNH.WebAPi.Controllers
@@ -11,6 +12,7 @@ namespace VNH.WebAPi.Controllers
     public class PostController : ControllerBase
     {
         private readonly IPostService _postService;
+        private readonly ICommentService _commentService;
         public PostController(IPostService postService)
         {
             _postService = postService;
@@ -63,20 +65,31 @@ namespace VNH.WebAPi.Controllers
             var result = await _postService.DeleteAdmin(Id);
             return result is null ? BadRequest(result) : Ok(result);
         }
-
-        [HttpPost("Like")]
-        [Authorize]
-        public async Task<IActionResult> Like([FromForm] string PostId, [FromForm] string UserId)
+        [HttpGet("Like")]
+        public async Task<IActionResult> GetLikePost([FromQuery] PostFpkDto postFpk)
         {
-            var result = await _postService.AddOrUnLikePost(PostId, UserId);
+            var result = await _postService.GetLike(postFpk);
             return result is null ? BadRequest(result) : Ok(result);
         }
-
+        [HttpPost("Like")]
+        [Authorize]
+        public async Task<IActionResult> Like([FromForm] PostFpkDto postFpk)
+        {
+            var result = await _postService.AddOrUnLikePost(postFpk);
+            return result is null ? BadRequest(result) : Ok(result);
+        }
+        [HttpGet("Save")]
+        [Authorize]
+        public async Task<IActionResult> GetSavePost([FromQuery] PostFpkDto postFpk)
+        {
+            var result = await _postService.GetSave(postFpk);
+            return result is null ? BadRequest(result) : Ok(result);
+        }
         [HttpPost("Save")]
         [Authorize]
-        public async Task<IActionResult> Save([FromForm] string PostId, [FromForm] string UserId)
+        public async Task<IActionResult> Save([FromForm] PostFpkDto postFpk)
         {
-            var result = await _postService.AddOrRemoveSavePost(PostId, UserId);
+            var result = await _postService.AddOrRemoveSavePost(postFpk);
             return result is null ? BadRequest(result) : Ok(result);
         }
 
@@ -95,7 +108,7 @@ namespace VNH.WebAPi.Controllers
             var result = await _postService.GetReport();
             return result is null ? BadRequest(result) : Ok(result);
         }
-        
+      
 
     }
 }

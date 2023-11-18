@@ -13,10 +13,11 @@ namespace VNH.Application.Interfaces.Posts
         Task<ApiResult<string>> DeleteAdmin(string id);
 
 
-        Task<ApiResult<string>> AddOrUnLikePost(string id, string userId);
-        Task<ApiResult<string>> AddOrRemoveSavePost(string postId, string userId);
+        Task<ApiResult<bool>> AddOrUnLikePost(PostFpkDto postFpk);
+        Task<ApiResult<bool>> AddOrRemoveSavePost(PostFpkDto postFpk);
         Task<ApiResult<string>> ReportPost(ReportPostDto reportPostDto);
         Task<List<ReportPostDto>> GetReport();
-        
+        Task<ApiResult<bool>> GetLike(PostFpkDto postFpk);
+        Task<ApiResult<bool>> GetSave(PostFpkDto postFpk);
     }
 }
