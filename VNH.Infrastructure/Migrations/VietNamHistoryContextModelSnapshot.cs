@@ -63,7 +63,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserClaims", (string)null);
+                    b.ToTable("UserClaims");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
@@ -155,7 +155,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("QuestionId");
 
-                    b.ToTable("Answer", (string)null);
+                    b.ToTable("Answer");
                 });
 
             modelBuilder.Entity("VNH.Domain.AnswerVote", b =>
@@ -175,7 +175,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AnswerVote", (string)null);
+                    b.ToTable("AnswerVote");
                 });
 
             modelBuilder.Entity("VNH.Domain.Course", b =>
@@ -208,7 +208,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Course", (string)null);
+                    b.ToTable("Course");
                 });
 
             modelBuilder.Entity("VNH.Domain.CourseComment", b =>
@@ -238,7 +238,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("CourseComment", (string)null);
+                    b.ToTable("CourseComment");
                 });
 
             modelBuilder.Entity("VNH.Domain.CourseRating", b =>
@@ -261,7 +261,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("CourseRating", (string)null);
+                    b.ToTable("CourseRating");
                 });
 
             modelBuilder.Entity("VNH.Domain.CourseSave", b =>
@@ -281,7 +281,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("CourseSave", (string)null);
+                    b.ToTable("CourseSave");
                 });
 
             modelBuilder.Entity("VNH.Domain.CourseSubComment", b =>
@@ -311,21 +311,13 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("CourseSubComment", (string)null);
+                    b.ToTable("CourseSubComment");
                 });
 
             modelBuilder.Entity("VNH.Domain.Document", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<byte[]>("Content")
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<string>("ContentType")
-                        .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(255)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime");
@@ -337,6 +329,9 @@ namespace VNH.Infrastructure.Migrations
                     b.Property<string>("FileName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("SubId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -346,13 +341,15 @@ namespace VNH.Infrastructure.Migrations
                         .HasColumnType("datetime");
 
                     b.Property<Guid?>("UserId")
+                        .HasMaxLength(255)
+                        .IsUnicode(false)
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Document", (string)null);
+                    b.ToTable("Document");
                 });
 
             modelBuilder.Entity("VNH.Domain.DocumentSave", b =>
@@ -372,7 +369,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("DocumentSave", (string)null);
+                    b.ToTable("DocumentSave");
                 });
 
             modelBuilder.Entity("VNH.Domain.Entities.Notification", b =>
@@ -388,7 +385,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Notification", (string)null);
+                    b.ToTable("Notification");
                 });
 
             modelBuilder.Entity("VNH.Domain.Entities.NotificationDetail", b =>
@@ -417,7 +414,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("NotificationDetails", (string)null);
+                    b.ToTable("NotificationDetails");
                 });
 
             modelBuilder.Entity("VNH.Domain.Entities.PostTag", b =>
@@ -441,7 +438,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("TagId");
 
-                    b.ToTable("PostTags", (string)null);
+                    b.ToTable("PostTags");
                 });
 
             modelBuilder.Entity("VNH.Domain.Exercise", b =>
@@ -477,7 +474,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Exercise", (string)null);
+                    b.ToTable("Exercise");
                 });
 
             modelBuilder.Entity("VNH.Domain.ExerciseDetail", b =>
@@ -503,7 +500,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ExerciseDetail", (string)null);
+                    b.ToTable("ExerciseDetail");
                 });
 
             modelBuilder.Entity("VNH.Domain.Lesson", b =>
@@ -534,7 +531,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("CourseId");
 
-                    b.ToTable("Lesson", (string)null);
+                    b.ToTable("Lesson");
                 });
 
             modelBuilder.Entity("VNH.Domain.News", b =>
@@ -564,7 +561,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("News", (string)null);
+                    b.ToTable("News");
                 });
 
             modelBuilder.Entity("VNH.Domain.Post", b =>
@@ -608,7 +605,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Post", (string)null);
+                    b.ToTable("Post");
                 });
 
             modelBuilder.Entity("VNH.Domain.PostComment", b =>
@@ -638,7 +635,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("PostComment", (string)null);
+                    b.ToTable("PostComment");
                 });
 
             modelBuilder.Entity("VNH.Domain.PostLike", b =>
@@ -659,7 +656,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("PostLike", (string)null);
+                    b.ToTable("PostLike");
                 });
 
             modelBuilder.Entity("VNH.Domain.PostReportDetail", b =>
@@ -695,7 +692,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("PostReportDetail", (string)null);
+                    b.ToTable("PostReportDetail");
                 });
 
             modelBuilder.Entity("VNH.Domain.PostSave", b =>
@@ -716,7 +713,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("PostSave", (string)null);
+                    b.ToTable("PostSave");
                 });
 
             modelBuilder.Entity("VNH.Domain.PostSubComment", b =>
@@ -745,7 +742,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("PostSubComment", (string)null);
+                    b.ToTable("PostSubComment");
                 });
 
             modelBuilder.Entity("VNH.Domain.Question", b =>
@@ -776,7 +773,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("AuthorId");
 
-                    b.ToTable("Question", (string)null);
+                    b.ToTable("Question");
                 });
 
             modelBuilder.Entity("VNH.Domain.QuestionLike", b =>
@@ -796,7 +793,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("QuestionLike", (string)null);
+                    b.ToTable("QuestionLike");
                 });
 
             modelBuilder.Entity("VNH.Domain.QuestionReportDetail", b =>
@@ -831,7 +828,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("QuestionReportDetail", (string)null);
+                    b.ToTable("QuestionReportDetail");
                 });
 
             modelBuilder.Entity("VNH.Domain.QuestionSave", b =>
@@ -851,7 +848,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("QuestionSave", (string)null);
+                    b.ToTable("QuestionSave");
                 });
 
             modelBuilder.Entity("VNH.Domain.QuestionTag", b =>
@@ -866,7 +863,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("TagId");
 
-                    b.ToTable("QuestionTag", (string)null);
+                    b.ToTable("QuestionTag");
                 });
 
             modelBuilder.Entity("VNH.Domain.Quiz", b =>
@@ -899,7 +896,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Quiz", (string)null);
+                    b.ToTable("Quiz");
                 });
 
             modelBuilder.Entity("VNH.Domain.Report", b =>
@@ -921,55 +918,55 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Report", (string)null);
+                    b.ToTable("Report");
 
                     b.HasData(
                         new
                         {
                             Id = new Guid("d30e1353-0163-43c1-b757-7957981b0eda"),
-                            CreatedAt = new DateTime(2023, 11, 16, 23, 23, 51, 917, DateTimeKind.Local).AddTicks(4154),
+                            CreatedAt = new DateTime(2023, 11, 18, 20, 17, 41, 588, DateTimeKind.Local).AddTicks(1571),
                             Description = " Báo cáo này được sử dụng khi người dùng chia sẻ nội dung cá nhân của bạn mà bạn cho rằng vi phạm quyền riêng tư của bạn.",
                             Title = "Nội dung vi phạm quy định về quyền riêng tư"
                         },
                         new
                         {
                             Id = new Guid("25752490-4ba5-4abb-ac3b-192205cd1b6e"),
-                            CreatedAt = new DateTime(2023, 11, 16, 23, 23, 51, 917, DateTimeKind.Local).AddTicks(4164),
+                            CreatedAt = new DateTime(2023, 11, 18, 20, 17, 41, 588, DateTimeKind.Local).AddTicks(1586),
                             Description = "Sử dụng khi bạn thấy nội dung bài đăng chứa lời lẽ xúc phạm, kỳ thị hoặc có tính chất đe doạ đến người khác.",
                             Title = "Nội dung xấu, xúc phạm, hay kỳ thị"
                         },
                         new
                         {
                             Id = new Guid("bab1da58-6921-44b9-837f-c58d3998497b"),
-                            CreatedAt = new DateTime(2023, 11, 16, 23, 23, 51, 917, DateTimeKind.Local).AddTicks(4167),
+                            CreatedAt = new DateTime(2023, 11, 18, 20, 17, 41, 588, DateTimeKind.Local).AddTicks(1588),
                             Description = "Dùng khi bạn thấy nội dung chứa hình ảnh hoặc video bạo lực hoặc đội nhóm xấu, hoặc khuyến khích hành vi bạo lực.",
                             Title = "Chứa nội dung bạo lực hoặc đội nhóm xấu"
                         },
                         new
                         {
                             Id = new Guid("349ed807-6107-436f-9a4c-9d6183fbc444"),
-                            CreatedAt = new DateTime(2023, 11, 16, 23, 23, 51, 917, DateTimeKind.Local).AddTicks(4169),
+                            CreatedAt = new DateTime(2023, 11, 18, 20, 17, 41, 588, DateTimeKind.Local).AddTicks(1590),
                             Description = "Sử dụng khi bạn thấy nội dung chứa hình ảnh tự tử hoặc khuyến khích hành vi tự gây thương tổn.",
                             Title = "Chứa nội dung tự tử hoặc tự gây thương tổn"
                         },
                         new
                         {
                             Id = new Guid("c4ddb872-06c5-4779-a8a3-a55e5b2c5347"),
-                            CreatedAt = new DateTime(2023, 11, 16, 23, 23, 51, 917, DateTimeKind.Local).AddTicks(4173),
+                            CreatedAt = new DateTime(2023, 11, 18, 20, 17, 41, 588, DateTimeKind.Local).AddTicks(1592),
                             Description = "Sử dụng khi bạn cho rằng Nội dung vi phạm quyền sở hữu trí tuệ hoặc bản quyền, chẳng hạn như sử dụng hình ảnh hoặc video mà bạn sở hữu mà không có sự cho phép.",
                             Title = "Nội dung vi phạm bản quyền hoặc sở hữu trí tuệ"
                         },
                         new
                         {
                             Id = new Guid("4a780087-9058-41c9-b84b-944d1a502010"),
-                            CreatedAt = new DateTime(2023, 11, 16, 23, 23, 51, 917, DateTimeKind.Local).AddTicks(4175),
+                            CreatedAt = new DateTime(2023, 11, 18, 20, 17, 41, 588, DateTimeKind.Local).AddTicks(1594),
                             Description = "Sử dụng khi bạn thấy rằng nội dung chứa thông tin sai lệch, giả mạo hoặc vi phạm quy tắc về sự thật và trung thực.",
                             Title = "Bài đăng chứa thông tin sai lệch hoặc giả mạo"
                         },
                         new
                         {
                             Id = new Guid("3043c693-b3c9-453e-9876-31c943222576"),
-                            CreatedAt = new DateTime(2023, 11, 16, 23, 23, 51, 917, DateTimeKind.Local).AddTicks(4176),
+                            CreatedAt = new DateTime(2023, 11, 18, 20, 17, 41, 588, DateTimeKind.Local).AddTicks(1596),
                             Description = "Dùng khi bạn muốn báo cáo vì nó quá nhiều thông báo hoặc quảng cáo không mong muốn.",
                             Title = "Nội dung xuất hiện quá nhiều thông báo hoặc quảng cáo không mong muốn"
                         });
@@ -992,27 +989,27 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles", (string)null);
+                    b.ToTable("Roles");
 
                     b.HasData(
                         new
                         {
                             Id = new Guid("a18be9c0-aa65-4af8-bd17-00bd9344e575"),
-                            ConcurrencyStamp = "a7761124-c49c-4938-966b-9c2fdbaa11b8",
+                            ConcurrencyStamp = "680bc398-aef8-439a-b268-b7f73588b94c",
                             Name = "admin",
                             NormalizedName = "admin"
                         },
                         new
                         {
                             Id = new Guid("cfafcfcd-d796-43f4-8ac0-ead43bd2f18a"),
-                            ConcurrencyStamp = "e83ff527-39a8-46fa-a01e-3064a6f3daf6",
+                            ConcurrencyStamp = "ccfce868-876f-4240-abd0-3a0c4893eeb7",
                             Name = "teacher",
                             NormalizedName = "teacher"
                         },
                         new
                         {
                             Id = new Guid("5d4e4081-91f8-4fc0-b8eb-9860b7849604"),
-                            ConcurrencyStamp = "f8c65095-8569-45aa-8673-93fa4635701e",
+                            ConcurrencyStamp = "51bf1f0f-5f05-473f-a48b-b102f8f06272",
                             Name = "student",
                             NormalizedName = "student"
                         });
@@ -1034,7 +1031,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Search", (string)null);
+                    b.ToTable("Search");
                 });
 
             modelBuilder.Entity("VNH.Domain.SubAnswer", b =>
@@ -1060,7 +1057,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("PreAnswerId");
 
-                    b.ToTable("SubAnswer", (string)null);
+                    b.ToTable("SubAnswer");
                 });
 
             modelBuilder.Entity("VNH.Domain.Tag", b =>
@@ -1074,7 +1071,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Tag", (string)null);
+                    b.ToTable("Tag");
                 });
 
             modelBuilder.Entity("VNH.Domain.Topic", b =>
@@ -1099,7 +1096,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("AuthorId");
 
-                    b.ToTable("Topic", (string)null);
+                    b.ToTable("Topic");
                 });
 
             modelBuilder.Entity("VNH.Domain.TopicDetail", b =>
@@ -1119,7 +1116,7 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasIndex("TopicId");
 
-                    b.ToTable("TopicDetail", (string)null);
+                    b.ToTable("TopicDetail");
                 });
 
             modelBuilder.Entity("VNH.Domain.User", b =>
@@ -1191,14 +1188,14 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("User", (string)null);
+                    b.ToTable("User");
 
                     b.HasData(
                         new
                         {
                             Id = new Guid("d1f771da-b318-42f8-a003-5a15614216f5"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "d93ca1cb-4367-4dc4-a399-9749e502cb02",
+                            ConcurrencyStamp = "f1c303ad-8432-4bb0-be7a-43d59b2c6dab",
                             DateOfBirth = new DateTime(2002, 3, 18, 0, 0, 0, 0, DateTimeKind.Local),
                             Email = "admin@gmail.com",
                             EmailConfirmed = true,
@@ -1208,7 +1205,7 @@ namespace VNH.Infrastructure.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "onionwebdev@gmail.com",
                             NormalizedUserName = "admin",
-                            PasswordHash = "AQAAAAEAACcQAAAAEDg9jA9joNhSW0bDPeNk70fvxUVtfQsuFSeT7T9xQ6QJSSXmh+0a1+36CPBEcSdoeg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEGRCels5gTIO3nU1TVxHwe0txuW6KfZFFUojWI8PuPulbQk5JmdHXTmg6aLYNm8WMQ==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,

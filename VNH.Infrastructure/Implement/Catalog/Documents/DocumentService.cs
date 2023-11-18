@@ -37,11 +37,12 @@ namespace VNH.Infrastructure.Implement.Catalog.Documents
         {
             var user = await _userManager.FindByEmailAsync(name);
             var document = _mapper.Map<Document>(requestDto);
+            document.Id = Guid.NewGuid();
             document.FileName = await _document.SaveFile(requestDto.FileName);
             document.CreatedAt = DateTime.Now;
             document.UserId = user.Id;
             string formattedDateTime = document.CreatedAt.ToString("HH:mm:ss.fff-dd-MM-yyyy");
-            var Id = SanitizeString(document.Title);
+            document.SubId = SanitizeString(document.Title) + "-" + formattedDateTime;
             try
             {
                 _dataContext.Documents.Add(document);
@@ -96,7 +97,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Documents
             var user = await _userManager.FindByEmailAsync(name);
             
             var updateDocument = _dataContext.Documents
-                .FirstOrDefault(x => x.Id.Equals(Guid.Parse(requestDto.Id)));
+                .FirstOrDefault(x => x.Id.Equals(requestDto.Id));
             if (updateDocument is null)
             {
                 return new ApiErrorResult<DocumentReponseDto>("Lỗi :Tài liệu không được cập nhập (không tìm thấy tài liệu)");
