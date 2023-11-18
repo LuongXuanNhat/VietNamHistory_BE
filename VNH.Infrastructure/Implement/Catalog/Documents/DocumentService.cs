@@ -1,12 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using VNH.Application.DTOs.Catalog.Document;
 using VNH.Application.DTOs.Catalog.Users;
 using VNH.Application.DTOs.Common.ResponseNotification;
@@ -15,9 +11,6 @@ using VNH.Application.Interfaces.Common;
 using VNH.Domain;
 using VNH.Infrastructure.Presenters.Migrations;
 using Microsoft.EntityFrameworkCore;
-using VNH.Application.DTOs.Catalog.HashTags;
-using VNH.Domain.Entities;
-using VNH.Application.DTOs.Catalog.Posts;
 
 namespace VNH.Infrastructure.Implement.Catalog.Documents
 {
