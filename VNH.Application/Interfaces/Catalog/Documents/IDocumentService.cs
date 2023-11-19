@@ -12,5 +12,9 @@ namespace VNH.Application.Interfaces.Documents
         Task<ApiResult<List<DocumentReponseDto>>> GetAll();
         Task<ApiResult<string>> Delete(string id, string email);
 
+        Task<ApiResult<bool>> GetSave(DocumentFpkDto docsFpk);
+
+        Task<ApiResult<bool>> AddOrRemoveSaveDocs(DocumentFpkDto docsFpk);
+
     }
 }
