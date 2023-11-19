@@ -241,9 +241,9 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
             post.ViewNumber += 1;
             var topic = await _dataContext.Topics.FirstAsync(x => x.Id == post.TopicId);
             postResponse.TopicName = topic.Title;
-            postResponse.SaveNumber = await _dataContext.PostSaves.Where(x=>x.PostId.Equals(Id)).CountAsync();
-            postResponse.CommentNumber = await _dataContext.PostComments.Where(x => x.PostId.Equals(Id)).CountAsync();
-            postResponse.LikeNumber = await _dataContext.PostLikes.Where(x=>x.PostId.Equals(x.PostId)).CountAsync();
+            postResponse.SaveNumber = await _dataContext.PostSaves.Where(x=>x.PostId.Equals(post.Id)).CountAsync();
+            postResponse.CommentNumber = await _dataContext.PostComments.Where(x => x.PostId.Equals(post.Id)).CountAsync();
+            postResponse.LikeNumber = await _dataContext.PostLikes.Where(x=>x.PostId.Equals(post.Id)).CountAsync();
 
             _dataContext.Posts.Update(post);
             await _dataContext.SaveChangesAsync();
@@ -267,19 +267,6 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
                     post.UserShort.Id = userShort.Id;
                     post.UserShort.Image = userShort.Image;
                 }
-                var tags = await _dataContext.PostTags
-                            .Where(x => x.PostId == item.Id)
-                            .Join(
-                                _dataContext.Tags,
-                                postTag => postTag.TagId,
-                                tag => tag.Id,
-                                (postTag, tag) => tag)
-                            .ToListAsync();
-                foreach (var tag in tags)
-                {
-                    post.Tags.Add(_mapper.Map<TagDto>(tag));
-                }
-                post.TopicName = topics.Where(x => x.Id == item.TopicId).Select(x=>x.Title).First();
                 post.Image = item.Image;
                 result.Add(post);
             }
@@ -323,15 +310,16 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
             return new ApiSuccessResult<string>("Đã xóa bài viết");
         }
 
-        public async Task<ApiResult<bool>> AddOrUnLikePost(PostFpkDto postFpk)
+        public async Task<ApiResult<int>> AddOrUnLikePost(PostFpkDto postFpk)
         {
             var post = await _dataContext.Posts.FirstOrDefaultAsync(x => x.SubId.Equals(postFpk.PostId));
             if (post is null)
             {
-                return new ApiErrorResult<bool>("Không tìm thấy bài viết");
+                return new ApiErrorResult<int>("Không tìm thấy bài viết");
             }
             var check = _dataContext.PostLikes.Where(x => x.PostId == post.Id && x.UserId == Guid.Parse(postFpk.UserId)).FirstOrDefault();
             var mess = "";
+            var likeNumber = await _dataContext.PostLikes.Where(x => x.PostId == post.Id).CountAsync();
             if (check is null)
             {
                 var like = new PostLike()
@@ -342,26 +330,27 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
                 };
                 _dataContext.PostLikes.Add(like);
                 await _dataContext.SaveChangesAsync();
-                return new ApiSuccessResult<bool>(true);
+                return new ApiSuccessResult<int>(likeNumber+1);
             } else
             {
                 _dataContext.PostLikes.Remove(check);
                 await _dataContext.SaveChangesAsync();
-                return new ApiSuccessResult<bool>(false);
+                return new ApiSuccessResult<int>(likeNumber-1);
             }
             
             
         }
 
-        public async Task<ApiResult<bool>> AddOrRemoveSavePost(PostFpkDto postFpk)
+        public async Task<ApiResult<int>> AddOrRemoveSavePost(PostFpkDto postFpk)
         {
             var post = await _dataContext.Posts.FirstOrDefaultAsync(x => x.SubId.Equals(postFpk.PostId));
             if (post is null)
             {
-                return new ApiErrorResult<bool>("Không tìm thấy bài viết");
+                return new ApiErrorResult<int>("Không tìm thấy bài viết");
             }
             var check = _dataContext.PostSaves.Where(x => x.PostId == post.Id && x.UserId == Guid.Parse(postFpk.UserId)).FirstOrDefault();
             var mess = "";
+            var saveNumber = await _dataContext.PostSaves.Where(x => x.PostId == post.Id).CountAsync();
             if (check is null)
             {
                 var save = new PostSave()
@@ -372,13 +361,13 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
                 };
                 _dataContext.PostSaves.Add(save);
                 await _dataContext.SaveChangesAsync();
-                return new ApiSuccessResult<bool>(true);
+                return new ApiSuccessResult<int>(saveNumber+1);
             }
             else
             {
                 _dataContext.PostSaves.Remove(check);
                 await _dataContext.SaveChangesAsync();
-                return new ApiSuccessResult<bool>(false);
+                return new ApiSuccessResult<int>(saveNumber-1);
             }
 
             
@@ -386,14 +375,14 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
 
         public async Task<ApiResult<string>> ReportPost(ReportPostDto reportPostDto)
         {
-            var postId = _dataContext.Posts.FirstOrDefault(x => x.SubId.Equals(reportPostDto.PostId));
-            if (postId == null)
+            var post = _dataContext.Posts.FirstOrDefault(x => x.SubId.Equals(reportPostDto.PostId));
+            if (post == null)
             {
                 return new ApiErrorResult<string>("Bài viết không tồn tại");
             }
             var reportPost = _mapper.Map<PostReportDetail>(reportPostDto);
             reportPost.Id = Guid.NewGuid();
-
+            reportPost.PostId = post.Id;
             _dataContext.PostReportDetails.Add(reportPost);
             await _dataContext.SaveChangesAsync();
 
@@ -428,6 +417,50 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
             var check = await _dataContext.PostSaves.Where(x => x.PostId.Equals(post.Id) && x.UserId == Guid.Parse(postFpk.UserId)).FirstOrDefaultAsync();
             var reuslt = check != null;
             return new ApiSuccessResult<bool>(reuslt);
+        }
+
+        public async Task<ApiResult<List<string>>> GetTopTags(int numberTag)
+        {
+            var tags = await _dataContext.Tags
+                            .GroupBy(x => x.Name)
+                            .Select(group => new { Name = group.Key, Count = group.Sum(t => 1) })
+                            .OrderByDescending(tagName => tagName.Count)
+                            .Take(10)
+                            .Select(group => group.Name)
+                            .ToListAsync();
+
+            return new ApiSuccessResult<List<string>>(tags);
+        }
+
+        public async Task<ApiResult<List<PostResponseDto>>> GetPostByTag(string tag)
+        {
+            var posts = await _dataContext.Posts
+                            .Where(post => _dataContext.PostTags
+                                .Any(postTag => _dataContext.Tags
+                                .Any(tagEntity => tagEntity.Name.ToLower().Contains(tag.ToLower()) && tagEntity.Id == postTag.TagId)
+                                && postTag.PostId == post.Id))
+                                .ToListAsync();
+            if (posts.IsNullOrEmpty())
+            {
+                return new ApiSuccessResult<List<PostResponseDto>>(new List<PostResponseDto>());
+            }
+            var users = await _dataContext.User.ToListAsync();
+
+            var result = new List<PostResponseDto>();
+            foreach (var item in posts)
+            {
+                var post = _mapper.Map<PostResponseDto>(item);
+                var userShort = users.First(x => x.Id == item.UserId);
+                if (userShort is not null)
+                {
+                    post.UserShort.FullName = userShort.Fullname;
+                    post.UserShort.Id = userShort.Id;
+                    post.UserShort.Image = userShort.Image;
+                }
+                post.Image = item.Image;
+                result.Add(post);
+            }
+            return new ApiSuccessResult<List<PostResponseDto>>(result);
         }
     }
 }

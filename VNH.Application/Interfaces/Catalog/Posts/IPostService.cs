@@ -1,4 +1,5 @@
-﻿using VNH.Application.DTOs.Catalog.Posts;
+﻿using VNH.Application.DTOs.Catalog.HashTags;
+using VNH.Application.DTOs.Catalog.Posts;
 using VNH.Application.DTOs.Common.ResponseNotification;
 
 namespace VNH.Application.Interfaces.Posts
@@ -13,11 +14,13 @@ namespace VNH.Application.Interfaces.Posts
         Task<ApiResult<string>> DeleteAdmin(string id);
 
 
-        Task<ApiResult<bool>> AddOrUnLikePost(PostFpkDto postFpk);
-        Task<ApiResult<bool>> AddOrRemoveSavePost(PostFpkDto postFpk);
+        Task<ApiResult<int>> AddOrUnLikePost(PostFpkDto postFpk);
+        Task<ApiResult<int>> AddOrRemoveSavePost(PostFpkDto postFpk);
         Task<ApiResult<string>> ReportPost(ReportPostDto reportPostDto);
         Task<List<ReportPostDto>> GetReport();
         Task<ApiResult<bool>> GetLike(PostFpkDto postFpk);
         Task<ApiResult<bool>> GetSave(PostFpkDto postFpk);
+        Task<ApiResult<List<string>>> GetTopTags(int numberTag);
+        Task<ApiResult<List<PostResponseDto>>> GetPostByTag(string tag);
     }
 }

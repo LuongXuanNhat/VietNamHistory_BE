@@ -108,7 +108,18 @@ namespace VNH.WebAPi.Controllers
             var result = await _postService.GetReport();
             return result is null ? BadRequest(result) : Ok(result);
         }
-      
-
+        [HttpGet("TopTag")]      
+        public async Task<IActionResult> GetTopTags(int numberTag)
+        {
+            var result = await _postService.GetTopTags(numberTag);
+            return result is null ? BadRequest(result) : Ok(result);
+        }
+        [HttpGet("FindByTag")]
+        public async Task<IActionResult> GetPostByTag(string tag)
+        {
+            var result = await _postService.GetPostByTag(tag);
+            return result is null ? BadRequest(result) : Ok(result);
+        }
+        
     }
 }

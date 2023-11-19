@@ -7,8 +7,7 @@ namespace VNH.Application.Mappers
 {
     public class DocumentMapper : Profile
     {
-       public DocumentMapper
-            ()
+       public DocumentMapper()
         {
             CreateMap<CreateDocumentDto, Document>()
                .ForMember(dest => dest.FileName, opt => opt.Ignore());

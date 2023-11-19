@@ -12,6 +12,7 @@ using VNH.Domain;
 using VNH.Infrastructure.Presenters.Migrations;
 using Microsoft.EntityFrameworkCore;
 using VNH.Application.DTOs.Catalog.Posts;
+using Microsoft.Extensions.Hosting;
 
 namespace VNH.Infrastructure.Implement.Catalog.Documents
 {
@@ -178,9 +179,6 @@ namespace VNH.Infrastructure.Implement.Catalog.Documents
                 .UserId.ToString());
             var documentResponse = _mapper.Map<DocumentReponseDto>(document);
             documentResponse.FileName = document.FileName;
-
-                               
-       
             documentResponse
                 .UserShort = new()
             {
@@ -189,7 +187,6 @@ namespace VNH.Infrastructure.Implement.Catalog.Documents
                 Image = user.Image
             };
 
-           // _dataContext.Documents.Update(document);
             await _dataContext.SaveChangesAsync();
             return new ApiSuccessResult<DocumentReponseDto>(documentResponse);
         }
@@ -222,15 +219,16 @@ namespace VNH.Infrastructure.Implement.Catalog.Documents
             return new ApiSuccessResult<bool>(reuslt);
         }
 
-        public async Task<ApiResult<bool>> AddOrRemoveSaveDocs(DocumentFpkDto docsFpk)
+        public async Task<ApiResult<int>> AddOrRemoveSaveDocs(DocumentFpkDto docsFpk)
         {
             var docs = await _dataContext.Documents.FirstOrDefaultAsync(x => x.SubId.Equals(docsFpk.DocumentId));
             if (docs is null)
             {
-                return new ApiErrorResult<bool>("Không tìm thấy bài viết");
+                return new ApiErrorResult<int>("Không tìm thấy bài viết");
             }
             var check = _dataContext.DocumentSaves.Where(x => x.DocumentId == docs.Id && x.UserId == Guid.Parse(docsFpk.UserId)).FirstOrDefault();
             var mess = "";
+            var saveNumber = await _dataContext.DocumentSaves.Where(x => x.DocumentId == docs.Id).CountAsync();
             if (check is null)
             {
                 var save = new DocumentSave()
@@ -241,13 +239,13 @@ namespace VNH.Infrastructure.Implement.Catalog.Documents
                 };
                 _dataContext.DocumentSaves.Add(save);
                 await _dataContext.SaveChangesAsync();
-                return new ApiSuccessResult<bool>(true);
+                return new ApiSuccessResult<int>(saveNumber+1);
             }
             else
             {
                 _dataContext.DocumentSaves.Remove(check);
                 await _dataContext.SaveChangesAsync();
-                return new ApiSuccessResult<bool>(false);
+                return new ApiSuccessResult<int>(saveNumber-1);
             }
 
 
