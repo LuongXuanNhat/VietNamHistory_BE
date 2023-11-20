@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Azure;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using VNH.Application.DTOs.Catalog.Posts;
 using VNH.Application.Interfaces.Catalog.Chats;
 using VNH.Application.Interfaces.Posts;
+using VNH.Domain;
 
 namespace VNH.WebAPi.Controllers
 {
@@ -120,6 +122,42 @@ namespace VNH.WebAPi.Controllers
             var result = await _postService.GetPostByTag(tag);
             return result is null ? BadRequest(result) : Ok(result);
         }
-        
+        [HttpGet("Chat")]
+        public async Task<IActionResult> GetComments(string PostId)
+        {
+            var result = await _postService.GetComment(PostId);
+            return result is null ? BadRequest(result) : Ok(result);
+        }
+        [HttpPost("Chat")]
+        [Authorize]
+        public async Task<IActionResult> CreateComment(CommentPostDto comment)
+        {
+            var result = await _postService.CreateComment(comment);
+            return result is null ? BadRequest(result) : Ok(result);
+        }
+        [HttpPut("Chat")]
+        [Authorize]
+        public async Task<IActionResult> UpdateComment(CommentPostDto comment)
+        {
+            var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (id == null || !id.Equals(comment.UserId.ToString()))
+            {
+                return BadRequest();
+            }
+            var result = await _postService.UpdateComment(comment);
+            return result is null ? BadRequest(result) : Ok(result);
+        }
+        [HttpDelete("Chat")]
+        [Authorize]
+        public async Task<IActionResult> DeleteComment(string idComment)
+        {
+            var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (id == null || !id.Equals(id))
+            {
+                return BadRequest();
+            }
+            var result = await _postService.DeteleComment(idComment);
+            return result is null ? BadRequest(result) : Ok(result);
+        }
     }
 }

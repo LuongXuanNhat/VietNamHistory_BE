@@ -133,6 +133,8 @@ namespace VNH.Infrastructure
             services.AddScoped<IFileService, FileService>();
             services.AddSignalR();
 
+            
+
 
             return services;
         }

@@ -47,7 +47,7 @@ namespace VNH.Infrastructure.Migrations
                 name: "FK__Post__UserId__778AC167",
                 table: "Post",
                 column: "UserId",
-                principalTable: "User",
+                principalTable: "UserShort",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.NoAction);
         }
@@ -88,7 +88,7 @@ namespace VNH.Infrastructure.Migrations
                 name: "FK__Post__UserId__778AC167",
                 table: "Post",
                 column: "UserId",
-                principalTable: "User",
+                principalTable: "UserShort",
                 principalColumn: "Id");
         }
     }

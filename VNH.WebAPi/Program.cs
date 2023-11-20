@@ -138,10 +138,10 @@ namespace VNH.WebAPi
             {
                 MinimumSameSitePolicy = SameSiteMode.Lax
             });
-            ////app.UseEndpoints(endpoints =>
-            ////{
-            ////    endpoints.MapHub<ChatSignalR>("/commentHub");
-            ////});
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapHub<ChatSignalR>("/commentHub");
+            });
             app.Run();
         }
 

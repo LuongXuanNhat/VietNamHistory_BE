@@ -96,7 +96,7 @@ namespace VNH.Infrastructure.Migrations
                 keyValue: new Guid("cfafcfcd-d796-43f4-8ac0-ead43bd2f18a"));
 
             migrationBuilder.DeleteData(
-                table: "User",
+                table: "UserShort",
                 keyColumn: "Id",
                 keyValue: new Guid("d1f771da-b318-42f8-a003-5a15614216f5"));
 
