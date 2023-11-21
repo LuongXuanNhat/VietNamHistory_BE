@@ -13,4 +13,3 @@ namespace VNH.Application.DTOs.Catalog.Posts
         public List<string>? Tag { get; set; } = new List<string>();
     }
 }
- 
