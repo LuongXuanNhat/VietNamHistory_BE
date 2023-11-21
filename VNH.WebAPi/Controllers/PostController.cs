@@ -87,6 +87,23 @@ namespace VNH.WebAPi.Controllers
             var result = await _postService.GetSave(postFpk);
             return result is null ? BadRequest(result) : Ok(result);
         }
+        [HttpGet()]
+        [Authorize]
+        public async Task<IActionResult> GetMyPostSaved()
+        {
+            var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "";
+            var result = await _postService.GetMyPostSaved(id);
+            return result is null ? BadRequest(result) : Ok(result);
+        }
+        [HttpGet("MyPost")]
+        [Authorize]
+        public async Task<IActionResult> GetMyPost()
+        {
+            var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "";
+            var result = await _postService.GetMyPost(id);
+            return result is null ? BadRequest(result) : Ok(result);
+        }
+
         [HttpPost("Save")]
         [Authorize]
         public async Task<IActionResult> Save([FromForm] PostFpkDto postFpk)
@@ -108,12 +125,6 @@ namespace VNH.WebAPi.Controllers
         public async Task<IActionResult> GetReport()
         {
             var result = await _postService.GetReport();
-            return result is null ? BadRequest(result) : Ok(result);
-        }
-        [HttpGet("TopTag")]      
-        public async Task<IActionResult> GetTopTags(int numberTag)
-        {
-            var result = await _postService.GetTopTags(numberTag);
             return result is null ? BadRequest(result) : Ok(result);
         }
         [HttpGet("FindByTag")]

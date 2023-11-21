@@ -421,19 +421,6 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
             return new ApiSuccessResult<bool>(reuslt);
         }
 
-        public async Task<ApiResult<List<string>>> GetTopTags(int numberTag)
-        {
-            var tags = await _dataContext.Tags
-                            .GroupBy(x => x.Name)
-                            .Select(group => new { Name = group.Key, Count = group.Sum(t => 1) })
-                            .OrderByDescending(tagName => tagName.Count)
-                            .Take(numberTag)
-                            .Select(group => group.Name)
-                            .ToListAsync();
-
-            return new ApiSuccessResult<List<string>>(tags);
-        }
-
         public async Task<ApiResult<List<PostResponseDto>>> GetPostByTag(string tag)
         {
             var posts = await _dataContext.Posts
@@ -562,6 +549,39 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
             _dataContext.PostComments.Remove(comment);
             await _dataContext.SaveChangesAsync();
             return new ApiSuccessResult<string>();
+        }
+
+        public async Task<ApiResult<List<PostResponseDto>>> GetMyPostSaved(string id)
+        {
+            Guid userId = Guid.Parse(id);
+            var users = await _dataContext.User.ToListAsync();
+
+            var posts = await (
+                from postSave in _dataContext.PostSaves
+                join post in _dataContext.Posts on postSave.PostId equals post.Id
+                where postSave.UserId == userId
+                select post
+            ).ToListAsync();
+
+            var result = new List<PostResponseDto>();
+            foreach (var item in posts)
+            {
+                var post = _mapper.Map<PostResponseDto>(item);
+                var userShort = users.First(x => x.Id == item.UserId);
+                if (userShort is not null)
+                {
+                    post.UserShort.FullName = userShort.Fullname;
+                    post.UserShort.Id = userShort.Id;
+                    post.UserShort.Image = userShort.Image;
+                }
+                post.Image = item.Image;
+                result.Add(post);
+            }
+            return new ApiSuccessResult<List<PostResponseDto>>(result);
+        }
+        public Task<ApiResult<List<PostResponseDto>>> GetMyPost(string id)
+        {
+            throw new NotImplementedException();
         }
     }
 }
