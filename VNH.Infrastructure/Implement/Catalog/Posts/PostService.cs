@@ -425,7 +425,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
                             .GroupBy(x => x.Name)
                             .Select(group => new { Name = group.Key, Count = group.Sum(t => 1) })
                             .OrderByDescending(tagName => tagName.Count)
-                            .Take(10)
+                            .Take(numberTag)
                             .Select(group => group.Name)
                             .ToListAsync();
 

@@ -26,14 +26,17 @@ namespace VNH.Domain
         public int? ViewNumber { get; set; }
         public Guid? AuthorId { get; set; }
         [Column(TypeName = "datetime")]
-        public DateTime? PubDate { get; set; }
-        public Guid? QuestionTagId { get; set; }
+        public DateTime? UpdateAt { get; set; }
+
+        [Column(TypeName = "datetime")]
+        public DateTime CreateAt { get; set; }
+       
 
         [ForeignKey("AuthorId")]
         [InverseProperty("Questions")]
         public virtual User Author { get; set; }
-        [InverseProperty("IdNavigation")]
-        public virtual QuestionTag QuestionTag { get; set; }
+        [InverseProperty("Question")]
+        public virtual ICollection<QuestionTag> QuestionTag { get; set; }
         [InverseProperty("Question")]
         public virtual ICollection<QuestionLike> QuestionLikes { get; set; }
         [InverseProperty("Question")]

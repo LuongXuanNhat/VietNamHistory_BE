@@ -24,6 +24,9 @@ namespace VNH.Domain
         public Guid? AuthorId { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime? PubDate { get; set; }
+
+        [Column(TypeName = "datetime")]
+        public DateTime? UpdateAt { get; set; }
         public bool? Confirm { get; set; }
         public bool? MostConfirm { get; set; }
 

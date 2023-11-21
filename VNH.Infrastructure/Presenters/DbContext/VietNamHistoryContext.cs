@@ -437,10 +437,9 @@ namespace VNH.Infrastructure.Presenters.Migrations
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
-                entity.HasOne(d => d.IdNavigation)
-                    .WithOne(p => p.QuestionTag)
-                    .HasForeignKey<QuestionTag>(d => d.Id)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                entity.HasOne(d => d.Question)
+                    .WithMany(p => p.QuestionTag)
+                    .HasForeignKey(d => d.QuestionId)
                     .HasConstraintName("FK__QuestionTag__Id__2739D489");
 
                 entity.HasOne(d => d.Tag)
