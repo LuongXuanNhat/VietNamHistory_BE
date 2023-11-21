@@ -15,9 +15,11 @@ namespace VNH.Domain
         public Guid Id { get; set; }
         public Guid? TagId { get; set; }
 
-        [ForeignKey("Id")]
+        public Guid? QuestionId { get; set; }
+
+        [ForeignKey("QuestionId")]
         [InverseProperty("QuestionTag")]
-        public virtual Question IdNavigation { get; set; }
+        public virtual Question Question { get; set; }
         [ForeignKey("TagId")]
         [InverseProperty("QuestionTags")]
         public virtual Tag Tag { get; set; }
