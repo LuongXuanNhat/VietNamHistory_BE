@@ -1,4 +1,5 @@
-﻿using VNH.Application.DTOs.Catalog.Posts;
+﻿using VNH.Application.DTOs.Catalog.HashTags;
+using VNH.Application.DTOs.Catalog.Posts;
 using VNH.Application.DTOs.Common.ResponseNotification;
 
 namespace VNH.Application.Interfaces.Posts
@@ -13,10 +14,18 @@ namespace VNH.Application.Interfaces.Posts
         Task<ApiResult<string>> DeleteAdmin(string id);
 
 
-        Task<ApiResult<string>> AddOrUnLikePost(string id, string userId);
-        Task<ApiResult<string>> AddOrRemoveSavePost(string postId, string userId);
+        Task<ApiResult<int>> AddOrUnLikePost(PostFpkDto postFpk);
+        Task<ApiResult<int>> AddOrRemoveSavePost(PostFpkDto postFpk);
         Task<ApiResult<string>> ReportPost(ReportPostDto reportPostDto);
         Task<List<ReportPostDto>> GetReport();
-        
+        Task<ApiResult<bool>> GetLike(PostFpkDto postFpk);
+        Task<ApiResult<bool>> GetSave(PostFpkDto postFpk);
+        Task<ApiResult<List<PostResponseDto>>> GetPostByTag(string tag);
+        Task<ApiResult<List<CommentPostDto>>> GetComment(string postId);
+        Task<ApiResult<List<CommentPostDto>>> CreateComment(CommentPostDto comment);
+        Task<ApiResult<List<CommentPostDto>>> UpdateComment(CommentPostDto comment);
+        Task<ApiResult<string>> DeteleComment(string id);
+        Task<ApiResult<List<PostResponseDto>>> GetMyPostSaved(string id);
+        Task<ApiResult<List<PostResponseDto>>> GetMyPost(string id);
     }
 }

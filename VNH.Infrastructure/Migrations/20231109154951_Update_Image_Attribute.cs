@@ -18,7 +18,7 @@ namespace VNH.Infrastructure.Migrations
 
             migrationBuilder.AlterColumn<string>(
                 name: "Image",
-                table: "User",
+                table: "UserShort",
                 type: "varchar(max)",
                 maxLength: 3145728,
                 nullable: true,
@@ -118,7 +118,7 @@ namespace VNH.Infrastructure.Migrations
 
             migrationBuilder.AlterColumn<byte[]>(
                 name: "Image",
-                table: "User",
+                table: "UserShort",
                 type: "varbinary(max)",
                 maxLength: 3145728,
                 nullable: true,

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VNH.Application.DTOs.Catalog.HashTags;
+using VNH.Application.DTOs.Common.ResponseNotification;
 using VNH.Application.Interfaces.Catalog.HashTags;
 using VNH.Domain;
 using VNH.Infrastructure.Presenters.Migrations;
@@ -40,6 +41,30 @@ namespace VNH.Infrastructure.Implement.Catalog.HashTags
                 });
             }
             return tagDtos;
+        }
+
+        public async Task<ApiResult<List<string>>> GetAllTag(int numberTag)
+        {
+            if (numberTag <= 0)
+            {
+                var tags = await _dataContext.Tags
+                                            .GroupBy(x => x.Name)
+                                            .Select(group => new { Name = group.Key, Count = group.Sum(t => 1) })
+                                            .OrderByDescending(tagName => tagName.Count)
+                                            .Select(group => group.Name)
+                                            .ToListAsync();
+                return new ApiSuccessResult<List<string>>(tags);
+            } else
+            {
+                var tags = await _dataContext.Tags
+                            .GroupBy(x => x.Name)
+                            .Select(group => new { Name = group.Key, Count = group.Sum(t => 1) })
+                            .OrderByDescending(tagName => tagName.Count)
+                            .Take(numberTag)
+                            .Select(group => group.Name)
+                            .ToListAsync();
+                return new ApiSuccessResult<List<string>>(tags);
+            } 
         }
     }
 }

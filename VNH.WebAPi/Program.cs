@@ -106,11 +106,11 @@ namespace VNH.WebAPi
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
+            //if (app.Environment.IsDevelopment())
+            //{
                 app.UseSwagger();
                 app.UseSwaggerUI();
-            }
+            //}
             app.UseForwardedHeaders();
             app.UseHttpLogging();
 
@@ -138,10 +138,10 @@ namespace VNH.WebAPi
             {
                 MinimumSameSitePolicy = SameSiteMode.Lax
             });
-            ////app.UseEndpoints(endpoints =>
-            ////{
-            ////    endpoints.MapHub<ChatSignalR>("/commentHub");
-            ////});
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapHub<ChatSignalR>("/commentHub");
+            });
             app.Run();
         }
 

@@ -19,6 +19,9 @@ namespace VNH.Domain
         [Column(TypeName = "datetime")]
         public DateTime? PubDate { get; set; }
 
+        [Column(TypeName = "datetime")]
+        public DateTime? UpdateAt { get; set; }
+
         [ForeignKey("AuthorId")]
         [InverseProperty("SubAnswers")]
         public virtual User Author { get; set; }

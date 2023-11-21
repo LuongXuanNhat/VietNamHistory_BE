@@ -110,7 +110,7 @@ namespace VNH.Infrastructure.Migrations
                 name: "FK__PostRepor__UserI__160F4887",
                 table: "PostReportDetail",
                 column: "UserId",
-                principalTable: "User",
+                principalTable: "UserShort",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.NoAction);
 
@@ -134,7 +134,7 @@ namespace VNH.Infrastructure.Migrations
                 name: "FK__QuestionR__UserI__236943A5",
                 table: "QuestionReportDetail",
                 column: "UserId",
-                principalTable: "User",
+                principalTable: "UserShort",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.NoAction);
         }
@@ -222,7 +222,7 @@ namespace VNH.Infrastructure.Migrations
                 name: "FK__PostRepor__UserI__160F4887",
                 table: "PostReportDetail",
                 column: "UserId",
-                principalTable: "User",
+                principalTable: "UserShort",
                 principalColumn: "Id");
 
             migrationBuilder.AddForeignKey(
@@ -243,7 +243,7 @@ namespace VNH.Infrastructure.Migrations
                 name: "FK__QuestionR__UserI__236943A5",
                 table: "QuestionReportDetail",
                 column: "UserId",
-                principalTable: "User",
+                principalTable: "UserShort",
                 principalColumn: "Id");
         }
     }
