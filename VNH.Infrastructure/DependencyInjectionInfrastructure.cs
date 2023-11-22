@@ -108,13 +108,14 @@ namespace VNH.Infrastructure
             {
                 options.AddPolicy("AllowAngularDev", builder =>
                 {
-                    builder.WithOrigins("http://localhost:4200")
+                    builder.WithOrigins("http://localhost:4200", "https://luongxuannhat.github.io")
                            .AllowAnyHeader()
                            .AllowAnyMethod()
                            .AllowCredentials();
-                    //builder.AllowAnyOrigin()
-                    //   .AllowAnyHeader()
-                    //   .AllowAnyMethod();
+                    //builder.WithOrigins("http://localhost:4200", "https://luongxuannhat.github.io")
+                    //       .AllowAnyHeader()
+                    //       .AllowAnyMethod()
+                    //       .AllowCredentials();
                 });
             });
             services.AddOptions();
