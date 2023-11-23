@@ -1,8 +1,11 @@
 ﻿using AutoMapper;
+using Azure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using System.Globalization;
 using System.Net.NetworkInformation;
@@ -78,7 +81,6 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
                 }
                 var postReponse = _mapper.Map<PostResponseDto>(post);
                 
-                postReponse.Image = post.Image;
                 var useDto = new UserShortDto()
                 {
                     FullName = user.Fullname,
@@ -181,7 +183,6 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
 
                 var postReponse = _mapper.Map<PostResponseDto>(updatePost);
                 
-                postReponse.Image = updatePost.Image;
                 var useDto = new UserShortDto()
                 {
                     FullName = user.Fullname,
@@ -223,7 +224,6 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
             }
             var user = await _userManager.FindByIdAsync(post.UserId.ToString());
             var postResponse = _mapper.Map<PostResponseDto>(post);
-            postResponse.Image = post.Image;
 
             var listPostTag = await _dataContext.PostTags.Where(x => x.PostId.Equals(postResponse.Id)).Select(x => x.TagId).ToListAsync();
             var tags = await _dataContext.Tags
@@ -271,7 +271,6 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
                     post.UserShort.Id = userShort.Id;
                     post.UserShort.Image = userShort.Image;
                 }
-                post.Image = item.Image;
                 result.Add(post);
             }
 
@@ -426,7 +425,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
             var posts = await _dataContext.Posts
                             .Where(post => _dataContext.PostTags
                                 .Any(postTag => _dataContext.Tags
-                                .Any(tagEntity => tagEntity.Name.ToLower().Contains(tag.ToLower()) && tagEntity.Id == postTag.TagId)
+                                .Any(tagEntity => tagEntity.Name.ToLower().Equals(tag.ToLower()) && tagEntity.Id == postTag.TagId)
                                 && postTag.PostId == post.Id))
                                 .ToListAsync();
             if (posts.IsNullOrEmpty())
@@ -446,7 +445,6 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
                     post.UserShort.Id = userShort.Id;
                     post.UserShort.Image = userShort.Image;
                 }
-                post.Image = item.Image;
                 result.Add(post);
             }
             return new ApiSuccessResult<List<PostResponseDto>>(result);
@@ -574,14 +572,80 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
                     post.UserShort.Id = userShort.Id;
                     post.UserShort.Image = userShort.Image;
                 }
-                post.Image = item.Image;
                 result.Add(post);
             }
             return new ApiSuccessResult<List<PostResponseDto>>(result);
         }
-        public Task<ApiResult<List<PostResponseDto>>> GetMyPost(string id)
+        public async Task<ApiResult<List<PostResponseDto>>> GetMyPost(string id)
         {
-            throw new NotImplementedException();
+            var posts = await _dataContext.Posts.ToListAsync();
+            var result = new List<PostResponseDto>();
+            foreach (var item in posts)
+            {
+                var post = _mapper.Map<PostResponseDto>(item);
+                result.Add(post);
+            }
+
+            return new ApiSuccessResult<List<PostResponseDto>>(result);
+        }
+
+        public async Task<ApiResult<List<PostResponseDto>>> SearchPosts(string keyWord)
+        {
+            if (keyWord.StartsWith("#"))
+            {
+                keyWord = keyWord.TrimStart('#');
+                return await GetPostByTag(keyWord);
+            }
+            var users = await _dataContext.User.ToListAsync();
+            var posts = new List<PostResponseDto>();
+            string[] searchKeywords = keyWord.ToLower().Split(' ');
+            var result = from post in _dataContext.Posts as IEnumerable<Post>
+                         let titleWords = post.Title.ToLower().Split(new char[] {' '}, StringSplitOptions.RemoveEmptyEntries)
+                         let searchPhrases = GenerateSearchPhrases(searchKeywords)
+                         let matchingPhrases = searchPhrases
+                            .Where(phrase => titleWords.Contains(phrase))
+                         where matchingPhrases.Any()
+                         let matchCount = matchingPhrases.Count()
+                         orderby matchCount descending
+                         select new Post()
+                         {
+                             Id = post.Id,
+                             SubId = post.SubId,
+                             Title = post.Title,
+                             Image = post.Image,
+                             CreatedAt = post.CreatedAt,
+                             UpdatedAt = post.UpdatedAt,
+                             UserId = post.UserId,
+                             ViewNumber = post.ViewNumber
+                         };
+            
+            foreach (var post in result)
+            {
+                var item = _mapper.Map<PostResponseDto>(post);
+                var userShort = users.First(x => x.Id == post.UserId);
+                if (userShort is not null)
+                {
+                    item.UserShort.FullName = userShort.Fullname;
+                    item.UserShort.Id = userShort.Id;
+                    item.UserShort.Image = userShort.Image;
+                }
+                posts.Add(item);
+            }
+            return new ApiSuccessResult<List<PostResponseDto>>(posts);
+        }
+
+        private static IEnumerable<string> GenerateSearchPhrases(string[] searchKeywords)
+        {
+            List<string> searchPhrases = new();
+            for (int i = searchKeywords.Length; i >= 1; i--)
+            {
+                for (int j = 0; j <= searchKeywords.Length - i; j++)
+                {
+                    string phrase = string.Join(" ", searchKeywords.Skip(j).Take(i));
+                    searchPhrases.Add(phrase);
+                }
+            }
+            return searchPhrases;
         }
     }
 }

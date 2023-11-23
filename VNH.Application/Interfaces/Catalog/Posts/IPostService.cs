@@ -27,5 +27,6 @@ namespace VNH.Application.Interfaces.Posts
         Task<ApiResult<string>> DeteleComment(string id);
         Task<ApiResult<List<PostResponseDto>>> GetMyPostSaved(string id);
         Task<ApiResult<List<PostResponseDto>>> GetMyPost(string id);
+        Task<ApiResult<List<PostResponseDto>>> SearchPosts(string keyWord);
     }
 }

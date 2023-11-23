@@ -112,10 +112,6 @@ namespace VNH.Infrastructure
                            .AllowAnyHeader()
                            .AllowAnyMethod()
                            .AllowCredentials();
-                    //builder.WithOrigins("http://localhost:4200", "https://luongxuannhat.github.io")
-                    //       .AllowAnyHeader()
-                    //       .AllowAnyMethod()
-                    //       .AllowCredentials();
                 });
             });
             services.AddOptions();

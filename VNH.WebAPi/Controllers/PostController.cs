@@ -87,7 +87,7 @@ namespace VNH.WebAPi.Controllers
             var result = await _postService.GetSave(postFpk);
             return result is null ? BadRequest(result) : Ok(result);
         }
-        [HttpGet()]
+        [HttpGet("MyPostSaved")]
         [Authorize]
         public async Task<IActionResult> GetMyPostSaved()
         {
@@ -131,6 +131,12 @@ namespace VNH.WebAPi.Controllers
         public async Task<IActionResult> GetPostByTag(string tag)
         {
             var result = await _postService.GetPostByTag(tag);
+            return result is null ? BadRequest(result) : Ok(result);
+        }
+        [HttpGet("Search")]
+        public async Task<IActionResult> Search([FromQuery] string keyWord)
+        {
+            var result = await _postService.SearchPosts(keyWord);
             return result is null ? BadRequest(result) : Ok(result);
         }
         [HttpGet("Chat")]

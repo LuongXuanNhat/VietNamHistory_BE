@@ -1,9 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System.ComponentModel.DataAnnotations.Schema;
-using VNH.Application.DTOs.Catalog.HashTags;
+﻿using VNH.Application.DTOs.Catalog.HashTags;
 using VNH.Application.DTOs.Catalog.Users;
-using VNH.Domain;
 
 namespace VNH.Application.DTOs.Catalog.Posts
 {
