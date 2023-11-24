@@ -13,7 +13,7 @@ namespace VNH.Infrastructure.Migrations
         {
             migrationBuilder.AddColumn<string>(
                 name: "Introduction",
-                table: "User",
+                table: "UserShort",
                 type: "nvarchar(max)",
                 nullable: true);
         }
@@ -23,7 +23,7 @@ namespace VNH.Infrastructure.Migrations
         {
             migrationBuilder.DropColumn(
                 name: "Introduction",
-                table: "User");
+                table: "UserShort");
 
             }
     }

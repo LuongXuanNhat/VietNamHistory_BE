@@ -9,7 +9,7 @@ namespace VNH.Application.DTOs.Catalog.Users
     public class UserShortDto 
     {
         public Guid Id { get; set; }
-        public string FullName { get; set; }
+        public string FullName { get; set; } = string.Empty;
         public string? Image { get; set; } = string.Empty;
     }
 }

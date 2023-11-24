@@ -28,6 +28,10 @@ using VNH.Application.Interfaces.Catalog.HashTags;
 using VNH.Infrastructure.Implement.Catalog.HashTags;
 using VNH.Application.Interfaces.Catalog.Reports;
 using VNH.Infrastructure.Implement.Catalog.Reports;
+using VNH.Application.Interfaces.Documents;
+using VNH.Infrastructure.Implement.Catalog.Documents;
+using VNH.Application.Interfaces.Catalog.Forum;
+using VNH.Infrastructure.Implement.Catalog.Forum;
 
 namespace VNH.Infrastructure
 {
@@ -104,13 +108,10 @@ namespace VNH.Infrastructure
             {
                 options.AddPolicy("AllowAngularDev", builder =>
                 {
-                    builder.WithOrigins("http://localhost:4200")
+                    builder.WithOrigins("http://localhost:4200", "https://luongxuannhat.github.io")
                            .AllowAnyHeader()
                            .AllowAnyMethod()
                            .AllowCredentials();
-                    //builder.AllowAnyOrigin()
-                    //   .AllowAnyHeader()
-                    //   .AllowAnyMethod();
                 });
             });
             services.AddOptions();
@@ -127,8 +128,13 @@ namespace VNH.Infrastructure
             services.AddScoped<ITopicService, TopicService>();
             services.AddScoped<IPostService, PostService>();
             services.AddScoped<IReportService, ReportService>();
-
+            services.AddScoped<IDocumentService, DocumentService>();
+            services.AddScoped<IFileService, FileService>();
+            services.AddScoped<IQuestionService, QuestionService>();
+            services.AddScoped<IAnswerService, AnswerService>();
             services.AddSignalR();
+
+            
 
 
             return services;

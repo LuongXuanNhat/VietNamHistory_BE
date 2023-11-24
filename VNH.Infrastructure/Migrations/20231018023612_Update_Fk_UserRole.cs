@@ -15,7 +15,7 @@ namespace VNH.Infrastructure.Migrations
             name: "FK_AppUserRoles_AspNetUsers_UserId",
             table: "UserRoles",
             column: "UserId",
-            principalTable: "User", 
+            principalTable: "UserShort", 
             principalColumn: "Id",
             onDelete: ReferentialAction.Cascade);
         }
