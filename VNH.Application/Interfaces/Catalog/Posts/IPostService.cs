@@ -28,5 +28,6 @@ namespace VNH.Application.Interfaces.Posts
         Task<ApiResult<List<PostResponseDto>>> GetMyPostSaved(string id);
         Task<ApiResult<List<PostResponseDto>>> GetMyPost(string id);
         Task<ApiResult<List<PostResponseDto>>> SearchPosts(string keyWord);
+        Task<ApiResult<List<PostResponseDto>>> GetAllMobile();
     }
 }

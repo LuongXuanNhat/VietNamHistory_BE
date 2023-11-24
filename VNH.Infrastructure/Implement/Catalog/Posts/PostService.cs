@@ -245,8 +245,8 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
                 Image = user.Image
             };
             post.ViewNumber += 1;
-            var topic = await _dataContext.Topics.FirstAsync(x => x.Id == post.TopicId);
-            postResponse.TopicName = topic.Title;
+            var topic = await _dataContext.Topics.FirstOrDefaultAsync(x => x.Id == post.TopicId);
+            postResponse.TopicName = topic?.Title;
             postResponse.SaveNumber = await _dataContext.PostSaves.Where(x=>x.PostId.Equals(post.Id)).CountAsync();
             postResponse.CommentNumber = await _dataContext.PostComments.Where(x => x.PostId.Equals(post.Id)).CountAsync();
             postResponse.LikeNumber = await _dataContext.PostLikes.Where(x=>x.PostId.Equals(post.Id)).CountAsync();
@@ -260,6 +260,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
         {
             var posts = await _dataContext.Posts.ToListAsync();
             var users = await _dataContext.User.ToListAsync();
+            var topics = await _dataContext.Topics.ToListAsync();
 
             var result = new List<PostResponseDto>();
             foreach (var item in posts)
@@ -272,6 +273,33 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
                     post.UserShort.Id = userShort.Id;
                     post.UserShort.Image = userShort.Image;
                 }
+                post.TopicName = topics.FirstOrDefault(x => x.Id == item.TopicId)?.Title ?? "";
+                result.Add(post);
+            }
+
+            return new ApiSuccessResult<List<PostResponseDto>>(result);    
+        }
+        public async Task<ApiResult<List<PostResponseDto>>> GetAllMobile()
+        {
+            var posts = await _dataContext.Posts.ToListAsync();
+            var users = await _dataContext.User.ToListAsync();
+            var topics = await _dataContext.Topics.ToListAsync();
+
+            var result = new List<PostResponseDto>();
+            foreach (var item in posts)
+            {
+                var post = _mapper.Map<PostResponseDto>(item);
+                var userShort = users.First(x => x.Id == item.UserId);
+                if (userShort is not null)
+                {
+                    post.UserShort.FullName = userShort.Fullname;
+                    post.UserShort.Id = userShort.Id;
+                    post.UserShort.Image = userShort.Image;
+                }
+                post.TopicName = topics.FirstOrDefault(x => x.Id == item.TopicId)?.Title;
+                post.SaveNumber = await _dataContext.PostSaves.Where(x => x.PostId.Equals(post.Id)).CountAsync();
+                post.CommentNumber = await _dataContext.PostComments.Where(x => x.PostId.Equals(post.Id)).CountAsync();
+                post.LikeNumber = await _dataContext.PostLikes.Where(x => x.PostId.Equals(post.Id)).CountAsync();
                 result.Add(post);
             }
 

@@ -14,7 +14,6 @@ namespace VNH.WebAPi.Controllers
     public class PostController : ControllerBase
     {
         private readonly IPostService _postService;
-        private readonly ICommentService _commentService;
         public PostController(IPostService postService)
         {
             _postService = postService;
@@ -26,8 +25,12 @@ namespace VNH.WebAPi.Controllers
             var result = await _postService.GetAll();
             return result is null ? BadRequest(result) : Ok(result);
         }
-
-
+        [HttpGet("DiscoverMobile")]
+        public async Task<IActionResult> IndexMobile()
+        {
+            var result = await _postService.GetAllMobile();
+            return result is null ? BadRequest(result) : Ok(result);
+        }
         [HttpPost]
         [Authorize]
         [Consumes("multipart/form-data")]
