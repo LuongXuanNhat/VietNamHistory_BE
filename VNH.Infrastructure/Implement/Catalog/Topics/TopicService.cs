@@ -68,6 +68,17 @@ namespace VNH.Infrastructure.Implement.Catalog.Topics
             return new ApiSuccessResult<List<TopicReponseDto>>(topicResponse);
         }
 
+        public async Task<ApiResult<TopicReponseDto>> GetById(string idTopic)
+        {
+            var topic = await _dbContext.Topics.FirstOrDefaultAsync(x => x.Id == Guid.Parse(idTopic));
+            var result = new TopicReponseDto()
+            {
+                Id = topic.Id,
+                Title = topic.Title
+            };
+            return new ApiSuccessResult<TopicReponseDto>(result);
+        }
+
         public async Task<ApiResult<bool>> UpdateTopic(Guid topicId, string topicTitle)
         {
             var topic = await _dbContext.Topics.FirstOrDefaultAsync(x => x.Id == topicId);

@@ -145,16 +145,17 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
             {
                 return new ApiErrorResult<PostResponseDto>("Lỗi :Bài viết không được cập nhập (không tìm thấy bài viết)");
             }
-            if (updatePost.Image != string.Empty)
+            if (updatePost.Image != string.Empty && requestDto.Image != null)
             {
                 await _storageService.DeleteFileAsync(updatePost.Image);
+                updatePost.Image = await _image.SaveFile(requestDto.Image);
             }
-            updatePost.Image = await _image.SaveFile(requestDto.Image);
+            updatePost.Title = requestDto.Title;
             updatePost.UpdatedAt = DateTime.Now;
             updatePost.TopicId = requestDto.TopicId;
             updatePost.Content = requestDto.Content;
-            string formattedDateTime = DateTime.Now.ToString("HH:mm:ss.fff-dd-MM-yyyy");
-            var Id = SanitizeString(updatePost.Title);
+            string formattedDateTime = DateTime.Now.ToString("HH:mm:ss.fff-dd-MM-yy");
+            var Id = SanitizeString(requestDto.Title);
             updatePost.SubId = Id.Trim().Replace(" ", "-") + "-" + formattedDateTime;
             try
             {
@@ -531,7 +532,8 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
             _dataContext.PostComments.Update(postComment);
             await _dataContext.SaveChangesAsync();
 
-            var comments = await GetComment(comment.PostId);
+            var subPost = await _dataContext.Posts.FirstAsync(x => x.Id == comment.PostId);
+            var comments = await GetComment(subPost.SubId);
             await _commentHubContext.Clients.All.SendAsync("ReceiveComment", comments);
 
             return comments;
@@ -584,6 +586,9 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
             {
                 var post = _mapper.Map<PostResponseDto>(item);
                 result.Add(post);
+                post.SaveNumber = await _dataContext.PostSaves.Where(x => x.PostId.Equals(post.Id)).CountAsync();
+                post.CommentNumber = await _dataContext.PostComments.Where(x => x.PostId.Equals(post.Id)).CountAsync();
+                post.LikeNumber = await _dataContext.PostLikes.Where(x => x.PostId.Equals(post.Id)).CountAsync();
             }
 
             return new ApiSuccessResult<List<PostResponseDto>>(result);

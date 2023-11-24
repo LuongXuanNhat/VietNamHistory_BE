@@ -11,7 +11,7 @@ namespace VNH.Application.DTOs.Catalog.Posts
         public string PostId { get; set; } = String.Empty;
         public UserShortDto? UserShort { get; set; }
         public string Content { get; set; } = String.Empty;
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime? UpdatedAt { get; set; }
         public List<SubCommentDto>? SubComment { get; set; }
     }

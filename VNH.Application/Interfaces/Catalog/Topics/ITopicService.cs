@@ -14,5 +14,6 @@ namespace VNH.Application.Interfaces.Catalog.Topics
         Task<ApiResult<bool>> DeleteTopic(Guid topicId);
         Task<ApiResult<List<TopicReponseDto>>> CreateTopic(string topic, string userEmail);
         Task<ApiResult<bool>> UpdateTopic(Guid topicId, string topic);
+        Task<ApiResult<TopicReponseDto>> GetById(string idTopic);
     }
 }
