@@ -46,7 +46,11 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
             question.Id = Guid.NewGuid();
             question.CreateAt = DateTime.Now;
             question.AuthorId = user.Id;
+            question.ViewNumber = 0; 
 
+            string formattedDateTime = question.CreateAt.ToString("HHmmss.fff") + HandleCommon.GenerateRandomNumber().ToString();
+            var Id = HandleCommon.SanitizeString(requestDto.Title);
+            question.SubId = Id + "-" + formattedDateTime;
             try
             {
                 _dataContext.Questions.Add(question);
@@ -72,30 +76,8 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
                     await _dataContext.SaveChangesAsync();
                 }
 
-
-                var questionResponse = _mapper.Map<QuestionResponseDto>(question);
-
-                var userDto = new UserShortDto()
-                {
-                    FullName = user.Fullname,
-                    Id = user.Id,
-                    Image = user.Image,
-                };
-                questionResponse.UserShort = userDto;
-                var listRequestTag = await _dataContext.QuestionTags.Where(x => x.QuestionId.Equals(Guid.Parse(questionResponse.Id))).Select(x => x.TagId).ToListAsync();
-
-                var tags = await _dataContext.Tags
-                                    .Where(x => listRequestTag.Any(TagId => TagId == x.Id))
-                                    .ToListAsync();
-                foreach (var tag in tags)
-                {
-                    questionResponse.Tags.Add(new TagDto()
-                    {
-                        Name = tag.Name,
-                        Id = tag.Id,
-                    });
-                }
-                return new ApiSuccessResult<QuestionResponseDto>(questionResponse);
+                var result = await Detail(question.Id.ToString());
+                return result;
 
             }
             catch (Exception ex)
@@ -119,6 +101,10 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
             updateQuestion.UpdateAt = DateTime.Now;
             updateQuestion.Content = requestDto.Content;
             updateQuestion.Title = requestDto.Title;
+
+            string formattedDateTime = updateQuestion.CreateAt.ToString("HHmmss.fff") + HandleCommon.GenerateRandomNumber().ToString();
+            var Id = HandleCommon.SanitizeString(requestDto.Title);
+            updateQuestion.SubId = Id + "-" + formattedDateTime;
             try
             {
                 _dataContext.Questions.Update(updateQuestion);
@@ -144,31 +130,10 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
                 }
                 await _dataContext.SaveChangesAsync();
 
-                var questionResponse = _mapper.Map<QuestionResponseDto>(updateQuestion);
-
-                var useDto = new UserShortDto()
-                {
-                    FullName = user.Fullname,
-                    Id = user.Id,
-                    Image = user.Image
-                };
-                questionResponse.UserShort = useDto;
-                var listQuestionTag = await _dataContext.QuestionTags.Where(x => x.QuestionId.Equals(questionResponse.Id)).Select(x => x.TagId).ToListAsync();
-
-                var tags = await _dataContext.Tags
-                                    .Where(x => listQuestionTag.Any(TagId => TagId == x.Id))
-                                    .ToListAsync();
-                foreach (var tag in tags)
-                {
-                    questionResponse.Tags.Add(new TagDto()
-                    {
-                        Name = tag.Name,
-                        Id = tag.Id,
-                    });
-                }
+                var question = await Detail(updateQuestion.Id.ToString());
 
 
-                return new ApiSuccessResult<QuestionResponseDto>(questionResponse);
+                return question;
             }
             catch (Exception ex)
             {
@@ -176,7 +141,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
             }
         }
 
-        public async Task<ApiResult<QuestionResponseDto>> Detail(string Id)
+        public async Task<ApiResult<QuestionResponseDto>> Detail(string Id) 
         {
             var question = await _dataContext.Questions.FirstOrDefaultAsync(x => x.Id.Equals(Guid.Parse(Id)));
             if (question is null)
@@ -222,6 +187,10 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
             foreach (var item in questions)
             {
                 var question = _mapper.Map<QuestionResponseDto>(item);
+                question.CommentNumber = await _dataContext.Answers.Where(x => x.QuestionId.ToString() == question.Id).CountAsync();
+                question.SaveNumber    = await _dataContext.QuestionSaves.Where(x => x.QuestionId.ToString() == question.Id).CountAsync();
+                question.LikeNumber    = await _dataContext.QuestionLikes.Where(x => x.QuestionId.ToString() == question.Id).CountAsync();
+
                 var userShort = users.First(x => x.Id == item.AuthorId);
                 if (userShort is not null)
                 {
@@ -331,7 +300,42 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
             return new ApiSuccessResult<List<QuestionResponseDto>>(result);
         }
 
+        public async Task<ApiResult<QuestionResponseDto>> SubDetail(string subId)
+        {
+            var question = await _dataContext.Questions.FirstOrDefaultAsync(x => x.SubId.Equals(subId));
+            if (question is null)
+            {
+                return new ApiErrorResult<QuestionResponseDto>("Không tìm thấy câu hỏi");
+            }
+            var user = await _userManager.FindByIdAsync(question.AuthorId.ToString());
+            var questionResponse = _mapper.Map<QuestionResponseDto>(question);
 
+            var listQuestionTag = await _dataContext.QuestionTags.Where(x => x.QuestionId.Equals(Guid.Parse(questionResponse.Id))).Select(x => x.TagId).ToListAsync();
+            var tags = await _dataContext.Tags
+                                    .Where(x => listQuestionTag.Any(TagId => TagId == x.Id))
+                                    .ToListAsync();
+            foreach (var tag in tags)
+            {
+                questionResponse.Tags.Add(new()
+                {
+                    Name = tag.Name,
+                    Id = tag.Id,
+                });
+            }
+            questionResponse.UserShort = new()
+            {
+                FullName = user.Fullname,
+                Id = user.Id,
+                Image = user.Image
+            };
+            question.ViewNumber += 1;
+            questionResponse.SaveNumber = await _dataContext.QuestionSaves.Where(x => x.QuestionId.Equals(question.Id)).CountAsync();
+            questionResponse.CommentNumber = await _dataContext.Answers.Where(x => x.QuestionId.Equals(question.Id)).CountAsync();
+
+            _dataContext.Questions.Update(question);
+            await _dataContext.SaveChangesAsync();
+            return new ApiSuccessResult<QuestionResponseDto>(questionResponse);
+        }
     }
 
 

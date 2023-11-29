@@ -22,8 +22,6 @@ namespace VNH.WebAPi.Controllers
             _questionService = questionService; 
         }
 
-
-
         [HttpPost]
         [Authorize]
         [Consumes("multipart/form-data")]
@@ -32,8 +30,6 @@ namespace VNH.WebAPi.Controllers
             var result = await _questionService.Create(requestDto, User.Identity.Name);
             return result is null ? BadRequest(result) : Ok(result);
         }
-
-
 
         [HttpPut]
         [Authorize]
@@ -44,15 +40,23 @@ namespace VNH.WebAPi.Controllers
             return result == null ? BadRequest(result) : Ok(result);
         }
 
-
-        [HttpGet("{id}")]
+        [HttpGet("{subId}")]
         public async Task<IActionResult> Detail(string id)
         {
             var result = await _questionService.Detail(id);
-            return result is null ? BadRequest(result) : Ok(result);
+            if(result.IsSuccessed)
+                return Ok(result);
+            return  BadRequest(result);
         }
 
-
+        [HttpGet("Detail")]
+        public async Task<IActionResult> SubDetail(string subId)
+        {
+            var result = await _questionService.SubDetail(subId);
+            if(result.IsSuccessed)
+                return Ok(result);
+            return  BadRequest(result);
+        }
 
         [HttpGet]
         public async Task<IActionResult> Index()

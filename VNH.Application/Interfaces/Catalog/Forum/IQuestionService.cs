@@ -21,7 +21,6 @@ namespace VNH.Application.Interfaces.Catalog.Forum
 
         Task<ApiResult<List<string>>> GetAllTag(int numberTag);
         Task<ApiResult<List<QuestionResponseDto>>> GetQuestionByTag(string tag);
-
-
+        Task<ApiResult<QuestionResponseDto>> SubDetail(string subId);
     }
 }

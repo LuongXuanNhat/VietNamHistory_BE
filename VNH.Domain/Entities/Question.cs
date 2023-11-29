@@ -22,8 +22,9 @@ namespace VNH.Domain
         public Guid Id { get; set; }
         [StringLength(500)]
         public string Title { get; set; }
+        public string SubId { get; set; }
         public string Content { get; set; }
-        public int? ViewNumber { get; set; }
+        public int ViewNumber { get; set; }
         public Guid? AuthorId { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime? UpdateAt { get; set; }

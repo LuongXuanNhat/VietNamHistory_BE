@@ -50,10 +50,6 @@ namespace VNH.Infrastructure
                 .CreateLogger();
 
             services.AddScoped<IUserService, UserService>();
-            services.AddDbContext<VietNamHistoryContext>(options =>
-            {
-                options.UseSqlServer(configuration.GetConnectionString("DataConnect"));
-            });
             services.AddIdentity<User,Role>()
             .AddEntityFrameworkStores<VietNamHistoryContext>()
             .AddDefaultTokenProviders();
