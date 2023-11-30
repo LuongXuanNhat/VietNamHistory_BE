@@ -121,7 +121,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
                 return new ApiErrorResult<List<AnswerQuestionDto>>("Không tìm thấy câu hỏi bạn trả lời!");
             }
             questionAnswer.Content = answer.Content;
-            questionAnswer.UpdateAt = DateTime.Now;
+            questionAnswer.UpdatedAt = DateTime.Now;
 
             _dataContext.Answers.Update(questionAnswer);
             await _dataContext.SaveChangesAsync();
@@ -172,7 +172,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
                 return new ApiErrorResult<SubAnswerQuestionDto>("Không tìm thấy câu trả lời!");
             }
             subAns.Content = subAnswer.Content;
-            subAns.UpdateAt = DateTime.Now;
+            subAns.UpdatedAt = DateTime.Now;
 
             _dataContext.SubAnswers.Update(subAns);
             await _dataContext.SaveChangesAsync();

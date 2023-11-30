@@ -44,11 +44,11 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
             var user = await _userManager.FindByEmailAsync(name);
             var question = _mapper.Map<Question>(requestDto);
             question.Id = Guid.NewGuid();
-            question.CreateAt = DateTime.Now;
+            question.CreatedAt = DateTime.Now;
             question.AuthorId = user.Id;
             question.ViewNumber = 0; 
 
-            string formattedDateTime = question.CreateAt.ToString("HHmmss.fff") + HandleCommon.GenerateRandomNumber().ToString();
+            string formattedDateTime = question.CreatedAt.ToString("HHmmss.fff") + HandleCommon.GenerateRandomNumber().ToString();
             var Id = HandleCommon.SanitizeString(requestDto.Title);
             question.SubId = Id + "-" + formattedDateTime;
             try
@@ -98,11 +98,11 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
                 return new ApiErrorResult<QuestionResponseDto>("Lỗi :Câu hỏi không được cập nhập (không tìm thấy bài viết)");
             }
            
-            updateQuestion.UpdateAt = DateTime.Now;
+            updateQuestion.UpdatedAt = DateTime.Now;
             updateQuestion.Content = requestDto.Content;
             updateQuestion.Title = requestDto.Title;
 
-            string formattedDateTime = updateQuestion.CreateAt.ToString("HHmmss.fff") + HandleCommon.GenerateRandomNumber().ToString();
+            string formattedDateTime = updateQuestion.CreatedAt.ToString("HHmmss.fff") + HandleCommon.GenerateRandomNumber().ToString();
             var Id = HandleCommon.SanitizeString(requestDto.Title);
             updateQuestion.SubId = Id + "-" + formattedDateTime;
             try
@@ -170,6 +170,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
                 Image = user.Image
             };
             question.ViewNumber += 1;
+            questionResponse.ViewNumber += 1;
             questionResponse.SaveNumber = await _dataContext.QuestionSaves.Where(x => x.QuestionId.Equals(question.Id)).CountAsync();
             questionResponse.CommentNumber = await _dataContext.Answers.Where(x => x.QuestionId.Equals(question.Id)).CountAsync();
 
@@ -329,6 +330,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
                 Image = user.Image
             };
             question.ViewNumber += 1;
+            questionResponse.ViewNumber += 1;
             questionResponse.SaveNumber = await _dataContext.QuestionSaves.Where(x => x.QuestionId.Equals(question.Id)).CountAsync();
             questionResponse.CommentNumber = await _dataContext.Answers.Where(x => x.QuestionId.Equals(question.Id)).CountAsync();
 

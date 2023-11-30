@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using VNH.Application.DTOs.Catalog.Users;
 
 namespace VNH.Application.DTOs.Catalog.Forum.Answer
@@ -17,11 +12,11 @@ namespace VNH.Application.DTOs.Catalog.Forum.Answer
         public string QuestionId { get; set; } = string.Empty;
         public UserShortDto? UserShort { get; set; }
         public string Content { get; set; } = String.Empty;
-        public DateTime PubDate { get; set; }
-        public DateTime? UpdateAt { get; set; }
+        public DateTime? CreatedAt { get; set; } = DateTime.Now;
+        public DateTime? UpdatedAt { get; set; }
         public bool Confirm { get; set; } = false;
         public bool MostConfirm { get; set; } = false;
-        public List<SubAnswerQuestionDto>? SubAnswer { get; set; }
+        public List<SubAnswerQuestionDto>? SubAnswer { get; set; } = new();
 
     }
 
@@ -32,9 +27,9 @@ namespace VNH.Application.DTOs.Catalog.Forum.Answer
         public Guid AuthorId { get; set; }  
         public string Content { get; set; } = string.Empty;
         [Column(TypeName = "datetime")]
-        public DateTime? PubDate { get; set; }
+        public DateTime? CreatedAt { get; set; }
         [Column(TypeName = "datetime")]
-        public DateTime? UpdateAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
 
         public UserShortDto? UserShort { get; set; }
 

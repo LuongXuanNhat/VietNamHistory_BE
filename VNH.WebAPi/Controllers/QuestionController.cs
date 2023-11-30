@@ -40,7 +40,7 @@ namespace VNH.WebAPi.Controllers
             return result == null ? BadRequest(result) : Ok(result);
         }
 
-        [HttpGet("{subId}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> Detail(string id)
         {
             var result = await _questionService.Detail(id);

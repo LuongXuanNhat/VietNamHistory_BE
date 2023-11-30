@@ -10,8 +10,8 @@ namespace VNH.Application.DTOs.Catalog.Forum.Question
         public string? SubId { get; set; }
         public string Title { get; set; } = string.Empty;
         public string Content { get; set; } = string.Empty;
-        public DateTime? CreateAt { get; set; }
-        public DateTime? UpdateAt { get; set; }
+        public DateTime? CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
         public List<TagDto> Tags { get; set; } = new List<TagDto>();
         public UserShortDto UserShort { get; set; } = new UserShortDto();
         

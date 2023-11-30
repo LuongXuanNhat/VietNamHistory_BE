@@ -23,10 +23,10 @@ namespace VNH.Domain
         public string Content { get; set; }
         public Guid? AuthorId { get; set; }
         [Column(TypeName = "datetime")]
-        public DateTime? PubDate { get; set; }
+        public DateTime? CreatedAt { get; set; }
 
         [Column(TypeName = "datetime")]
-        public DateTime? UpdateAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
         public bool? Confirm { get; set; }
         public bool? MostConfirm { get; set; }
 

@@ -20,7 +20,7 @@ namespace VNH.Domain
         [Column(TypeName = "text")]
         public string Image { get; set; } = string.Empty;
         [Column(TypeName = "datetime")]
-        public DateTime? PubDate { get; set; }
+        public DateTime? CreatedAt { get; set; }
         [Required]
         [StringLength(255)]
         [Unicode(false)]
