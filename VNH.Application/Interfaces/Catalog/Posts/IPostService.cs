@@ -18,7 +18,7 @@ namespace VNH.Application.Interfaces.Posts
         Task<ApiResult<NumberReponse>> AddOrUnLikePost(PostFpkDto postFpk);
         Task<ApiResult<NumberReponse>> AddOrRemoveSavePost(PostFpkDto postFpk);
         Task<ApiResult<string>> ReportPost(ReportPostDto reportPostDto);
-        Task<List<ReportPostDto>> GetReport();
+        Task<ApiResult<List<ReportPostDto>>> GetReport();
         Task<ApiResult<NumberReponse>> GetLike(PostFpkDto postFpk);
         Task<ApiResult<NumberReponse>> GetSave(PostFpkDto postFpk);
         Task<ApiResult<List<PostResponseDto>>> GetPostByTag(string tag);

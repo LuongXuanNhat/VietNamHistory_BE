@@ -60,14 +60,14 @@ namespace VNH.WebAPi.Controllers
             return result is null ? BadRequest(result) : Ok(result);
         }
 
-        [HttpDelete]
+        [HttpDelete("Delete")]
         public async Task<IActionResult> Delete(string Id)
         {
             var result = await _postService.Delete(Id, User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "");
             return result is null ? BadRequest(result) : Ok(result);
         }
 
-        [HttpDelete("delete")]
+        [HttpDelete("Remove")]
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> DeleteAdmin(string Id)
         {
@@ -125,7 +125,7 @@ namespace VNH.WebAPi.Controllers
         public async Task<IActionResult> Report([FromBody] ReportPostDto reportPostDto)
         {
             var result = await _postService.ReportPost(reportPostDto);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
 
         [HttpGet("Report")]
@@ -133,7 +133,7 @@ namespace VNH.WebAPi.Controllers
         public async Task<IActionResult> GetReport()
         {
             var result = await _postService.GetReport();
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
         [HttpGet("FindByTag")]
         public async Task<IActionResult> GetPostByTag(string tag)

@@ -16,7 +16,7 @@ namespace VNH.Domain
             AnswerVotes = new HashSet<AnswerVote>();
             SubAnswers = new HashSet<SubAnswer>();
         }
-
+         
         [Key]
         public Guid Id { get; set; }
         public Guid QuestionId { get; set; }

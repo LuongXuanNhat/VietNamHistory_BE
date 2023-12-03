@@ -6,7 +6,7 @@ namespace VNH.Application.DTOs.Catalog.Forum.Answer
     public class AnswerQuestionDto
     {
 
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public Guid? Id { get; set; } = Guid.NewGuid();
         public Guid? AuthorId { get; set; }
 
         public string QuestionId { get; set; } = string.Empty;
@@ -22,12 +22,12 @@ namespace VNH.Application.DTOs.Catalog.Forum.Answer
 
     public class SubAnswerQuestionDto
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public Guid? Id { get; set; } = Guid.NewGuid();
         public Guid PreAnswerId { get; set; }
         public Guid AuthorId { get; set; }  
         public string Content { get; set; } = string.Empty;
         [Column(TypeName = "datetime")]
-        public DateTime? CreatedAt { get; set; }
+        public DateTime? CreatedAt { get; set; } = DateTime.Now;
         [Column(TypeName = "datetime")]
         public DateTime? UpdatedAt { get; set; }
 

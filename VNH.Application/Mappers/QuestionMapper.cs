@@ -12,9 +12,8 @@ namespace VNH.Application.Mappers
         {
 
             CreateMap<CreateQuestionDto, Question>().ReverseMap();
-
-            CreateMap<QuestionResponseDto, Question>().ReverseMap(); 
-
+            CreateMap<QuestionResponseDto, Question>().ReverseMap();
+            CreateMap<ReportQuestionDto, QuestionReportDetail>().ReverseMap();
 
         }
     }

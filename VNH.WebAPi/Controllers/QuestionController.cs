@@ -4,8 +4,6 @@ using System.Security.Claims;
 using VNH.Application.DTOs.Catalog.Forum.Question;
 using VNH.Application.DTOs.Catalog.Posts;
 using VNH.Application.Interfaces.Catalog.Forum;
-using VNH.Application.Interfaces.Posts;
-using VNH.Infrastructure.Implement.Catalog.Posts;
 
 namespace VNH.WebAPi.Controllers
 {
@@ -65,17 +63,28 @@ namespace VNH.WebAPi.Controllers
             return result is null ? BadRequest(result) : Ok(result);
         }
 
-        [HttpDelete]
+        [HttpDelete("Delete")]
         public async Task<IActionResult> Delete(string Id)
         {
             var result = await _questionService.Delete(Id, User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "");
             return result is null ? BadRequest(result) : Ok(result);
         }
-
-
+        [HttpPost("Like")]
+        [Authorize]
+        public async Task<IActionResult> Like([FromForm] QuestionFpkDto questionFpk)
+        {
+            var result = await _questionService.AddOrUnLikeQuestion(questionFpk);
+            return result is null ? BadRequest(result) : Ok(result);
+        }
+        [HttpGet("Like")]
+        public async Task<IActionResult> GetLikePost([FromQuery] QuestionFpkDto questionFpk)
+        {
+            var result = await _questionService.GetLike(questionFpk);
+            return result is null ? BadRequest(result) : Ok(result);
+        }
         [HttpGet("Save")]
         [Authorize]
-        public async Task<IActionResult> GetSaveQuestion([FromForm] QuestionFpkDto questionFpk)
+        public async Task<IActionResult> GetSaveQuestion([FromQuery] QuestionFpkDto questionFpk)
         {
             var result = await _questionService.GetSave(questionFpk);
             return result is null ? BadRequest(result) : Ok(result);
@@ -87,8 +96,43 @@ namespace VNH.WebAPi.Controllers
             var result = await _questionService.AddOrRemoveSaveQuestion(questionFpk);
             return result is null ? BadRequest(result) : Ok(result);
         }
+        [HttpGet("MyQuestionSaved")]
+        [Authorize]
+        public async Task<IActionResult> GetMyQuestionSaved()
+        {
+            var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "";
+            var result = await _questionService.GetMyQuestionSaved(id);
+            return result is null ? BadRequest(result) : Ok(result);
+        }
+        [HttpGet("MyQuestion")]
+        [Authorize]
+        public async Task<IActionResult> GetMyQuestion()
+        {
+            var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "";
+            var result = await _questionService.GetMyQuestion(id);
+            return result is null ? BadRequest(result) : Ok(result);
+        }
+        [HttpPost("Report")]
+        [Authorize]
+        public async Task<IActionResult> Report([FromBody] ReportQuestionDto reportquestionDto)
+        {
+            var result = await _questionService.ReportQuestion(reportquestionDto);
+            return result is null ? BadRequest(result) : Ok(result);
+        }
 
-
+        [HttpGet("Report")]
+        [Authorize(Roles = "admin, sensor")]
+        public async Task<IActionResult> GetReport()
+        {
+            var result = await _questionService.GetReport();
+            return result is null ? BadRequest(result) : Ok(result);
+        }
+        [HttpGet("Search")]
+        public async Task<IActionResult> Search([FromQuery] string keyWord)
+        {
+            var result = await _questionService.SearchQuestions(keyWord);
+            return result is null ? BadRequest(result) : Ok(result);
+        }
         [HttpGet("AllTag")]
         public async Task<IActionResult> GetAllTag( int numberTag)
         {

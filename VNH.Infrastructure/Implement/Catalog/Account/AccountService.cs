@@ -377,6 +377,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Account
             user.NormalizedEmail = email;
             user.NormalizedUserName = email;
             var changeEmailResult = await _userManager.ChangeEmailAsync(user, email, token);
+            await SendConfirmCodeToEmail(email, GetConfirmCode());
             if (changeEmailResult.Succeeded)
             {
                 return new ApiSuccessResult<string>( await GetToken(user));

@@ -11,8 +11,7 @@ using VNH.Application.Interfaces.Common;
 using VNH.Domain;
 using VNH.Infrastructure.Presenters.Migrations;
 using Microsoft.EntityFrameworkCore;
-using VNH.Application.DTOs.Catalog.Posts;
-using Microsoft.Extensions.Hosting;
+using VNH.Infrastructure.Implement.Common;
 
 namespace VNH.Infrastructure.Implement.Catalog.Documents
 {
@@ -43,8 +42,8 @@ namespace VNH.Infrastructure.Implement.Catalog.Documents
             document.FileName = await _document.SaveFile(requestDto.FileName);
             document.CreatedAt = DateTime.Now;
             document.UserId = user.Id;
-            string formattedDateTime = document.CreatedAt.ToString("HH:mm:ss.fff-dd-MM-yyyy");
-            document.SubId = SanitizeString(document.Title) + "-" + formattedDateTime;
+            string formattedDateTime = document.CreatedAt.ToString("HHmmss.fff") + HandleCommon.GenerateRandomNumber().ToString();
+            document.SubId = HandleCommon.SanitizeString(document.Title) + "-" + formattedDateTime;
             try
             {
                 _dataContext.Documents.Add(document);
@@ -71,29 +70,6 @@ namespace VNH.Infrastructure.Implement.Catalog.Documents
         }
 
 
-        private static string RemoveDiacritics(string input)
-        {
-            string normalizedString = input.Normalize(NormalizationForm.FormD);
-            StringBuilder stringBuilder = new StringBuilder();
-
-            foreach (char c in normalizedString)
-            {
-                if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
-                {
-                    stringBuilder.Append(c);
-                }
-            }
-
-            return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
-        }
-        private static string SanitizeString(string input)
-        {
-            string withoutDiacritics = RemoveDiacritics(input).Trim().Replace(" ", "-");
-            string sanitizedString = Regex.Replace(withoutDiacritics, "[^a-zA-Z0-9-]", "");
-
-            return sanitizedString;
-        }
-
         public async Task<ApiResult<DocumentReponseDto>> Update(CreateDocumentDto requestDto, string name)
         {
             var user = await _userManager.FindByEmailAsync(name);
@@ -112,8 +88,8 @@ namespace VNH.Infrastructure.Implement.Catalog.Documents
             updateDocument.UpdatedAt = DateTime.Now;
             updateDocument.Description = requestDto.Description;
             updateDocument.Title = requestDto.Title;    
-            string formattedDateTime = DateTime.Now.ToString("HH:mm:ss.fff-dd-MM-yyyy");
-            var Id = SanitizeString(updateDocument.Title);
+            string formattedDateTime = DateTime.Now.ToString("HHmmss.fff") + HandleCommon.GenerateRandomNumber().ToString();
+            var Id = HandleCommon.SanitizeString(updateDocument.Title);
             updateDocument.SubId = Id.Trim().Replace(" ", "-") + "-" + formattedDateTime;
             try
             {

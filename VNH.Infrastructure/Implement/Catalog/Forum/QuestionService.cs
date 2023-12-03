@@ -1,22 +1,13 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Text;
 using VNH.Application.DTOs.Catalog.Forum.Question;
-using VNH.Application.DTOs.Catalog.HashTags;
 using VNH.Application.DTOs.Catalog.Posts;
-using VNH.Application.DTOs.Catalog.Users;
+using VNH.Application.DTOs.Common;
 using VNH.Application.DTOs.Common.ResponseNotification;
 using VNH.Application.Interfaces.Catalog.Forum;
-using VNH.Application.Interfaces.Common;
 using VNH.Domain;
-using VNH.Domain.Entities;
 using VNH.Infrastructure.Implement.Common;
 using VNH.Infrastructure.Presenters.Migrations;
 
@@ -44,7 +35,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
             var user = await _userManager.FindByEmailAsync(name);
             var question = _mapper.Map<Question>(requestDto);
             question.Id = Guid.NewGuid();
-            question.CreatedAt = DateTime.Now;
+            question.CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time")); ;
             question.AuthorId = user.Id;
             question.ViewNumber = 0; 
 
@@ -98,7 +89,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
                 return new ApiErrorResult<QuestionResponseDto>("Lỗi :Câu hỏi không được cập nhập (không tìm thấy bài viết)");
             }
            
-            updateQuestion.UpdatedAt = DateTime.Now;
+            updateQuestion.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time")); ;
             updateQuestion.Content = requestDto.Content;
             updateQuestion.Title = requestDto.Title;
 
@@ -113,22 +104,25 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
                 var tagOfQuestion = await _dataContext.QuestionTags.Where(x => x.QuestionId.Equals(updateQuestion.Id)).ToListAsync();
                 _dataContext.QuestionTags.RemoveRange(tagOfQuestion);
 
-                foreach (var item in requestDto.Tag)
+                if (requestDto.Tag != null)
                 {
-                    var tag = new Tag()
+                    foreach (var item in requestDto.Tag)
                     {
-                        Id = Guid.NewGuid(),
-                        Name = item
-                    };
-                    var questionTag = new QuestionTag()
-                    {
-                        QuestionId = requestDto.Id,
-                        TagId = tag.Id
-                    };
-                    _dataContext.QuestionTags.Add(questionTag);
-                    _dataContext.Tags.Add(tag);
+                        var tag = new Tag()
+                        {
+                            Id = Guid.NewGuid(),
+                            Name = item
+                        };
+                        var questionTag = new QuestionTag()
+                        {
+                            QuestionId = requestDto.Id,
+                            TagId = tag.Id
+                        };
+                        _dataContext.QuestionTags.Add(questionTag);
+                        _dataContext.Tags.Add(tag);
+                    }
+                    await _dataContext.SaveChangesAsync();
                 }
-                await _dataContext.SaveChangesAsync();
 
                 var question = await Detail(updateQuestion.Id.ToString());
 
@@ -173,6 +167,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
             questionResponse.ViewNumber += 1;
             questionResponse.SaveNumber = await _dataContext.QuestionSaves.Where(x => x.QuestionId.Equals(question.Id)).CountAsync();
             questionResponse.CommentNumber = await _dataContext.Answers.Where(x => x.QuestionId.Equals(question.Id)).CountAsync();
+            questionResponse.LikeNumber = await _dataContext.QuestionLikes.Where(x => x.QuestionId.Equals(question.Id)).CountAsync();
 
             _dataContext.Questions.Update(question);
             await _dataContext.SaveChangesAsync();
@@ -220,12 +215,12 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
             return new ApiSuccessResult<string>("Đã xóa câu hỏi");
         }
 
-        public async Task<ApiResult<int>> AddOrRemoveSaveQuestion(QuestionFpkDto questionFpk)
+        public async Task<ApiResult<NumberReponse>> AddOrRemoveSaveQuestion(QuestionFpkDto questionFpk)
         {
             var question = await _dataContext.Questions.FirstOrDefaultAsync(x => x.Id.Equals(Guid.Parse(questionFpk.QuestionId)));
             if (question is null)
             {
-                return new ApiErrorResult<int>("Không tìm thấy câu hỏi");
+                return new ApiErrorResult<NumberReponse>("Không tìm thấy câu hỏi");
             }
             var check = _dataContext.QuestionSaves.Where(x => x.QuestionId == question.Id && x.UserId == Guid.Parse(questionFpk.UserId)).FirstOrDefault();
             var mess = "";
@@ -240,23 +235,23 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
                 };
                 _dataContext.QuestionSaves.Add(save);
                 await _dataContext.SaveChangesAsync();
-                return new ApiSuccessResult<int>(saveNumber + 1);
+                return new ApiSuccessResult<NumberReponse>(new() { Check = true, Quantity = saveNumber + 1 });
             }
             else
             {
                 _dataContext.QuestionSaves.Remove(check);
                 await _dataContext.SaveChangesAsync();
-                return new ApiSuccessResult<int>(saveNumber - 1);
+                return new ApiSuccessResult<NumberReponse>(new() { Check = true, Quantity = saveNumber - 1 });
             }
 
 
         }
-        public async Task<ApiResult<bool>> GetSave(QuestionFpkDto questionFpk)
+        public async Task<ApiResult<NumberReponse>> GetSave(QuestionFpkDto questionFpk)
         {
-            var question = _dataContext.Questions.First(x => x.Id.Equals(Guid.Parse(questionFpk.QuestionId)));
+            var question = await _dataContext.Questions.FirstOrDefaultAsync(x => x.Id.Equals(Guid.Parse(questionFpk.QuestionId)));
+            var number = await _dataContext.QuestionSaves.Where(x => x.QuestionId.Equals(question.Id)).CountAsync();
             var check = await _dataContext.QuestionSaves.Where(x => x.QuestionId.Equals(question.Id) && x.UserId == Guid.Parse(questionFpk.UserId)).FirstOrDefaultAsync();
-            var reuslt = check != null;
-            return new ApiSuccessResult<bool>(reuslt);
+            return new ApiSuccessResult<NumberReponse>(new() { Check = check != null, Quantity = number }) ;
         }
         public async Task<ApiResult<List<string>>> GetAllTag(int numberTag)
         {
@@ -337,6 +332,158 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
             _dataContext.Questions.Update(question);
             await _dataContext.SaveChangesAsync();
             return new ApiSuccessResult<QuestionResponseDto>(questionResponse);
+        }
+
+        public async Task<ApiResult<NumberReponse>> GetLike(QuestionFpkDto questionFpk)
+        {
+            var question = _dataContext.Questions.First(x => x.SubId.Equals(questionFpk.QuestionId));
+            var check = await _dataContext.QuestionLikes.Where(x => x.QuestionId.Equals(question.Id) && x.UserId == Guid.Parse(questionFpk.UserId)).FirstOrDefaultAsync();
+            var number = await _dataContext.QuestionLikes.Where(x => x.QuestionId.Equals(question.Id)).CountAsync();
+            return new ApiSuccessResult<NumberReponse>(new() { Check = (check != null), Quantity = number });
+        }
+
+        public async Task<ApiResult<NumberReponse>> AddOrUnLikeQuestion(QuestionFpkDto questionFpk)
+        {
+            var question = await _dataContext.Questions.FirstOrDefaultAsync(x => x.SubId.Equals(questionFpk.QuestionId));
+            if (question is null)
+            {
+                return new ApiErrorResult<NumberReponse>("Không tìm thấy câu hỏi");
+            }
+            var check = _dataContext.QuestionLikes.Where(x => x.QuestionId == question.Id && x.UserId == Guid.Parse(questionFpk.UserId)).FirstOrDefault();
+            var likeNumber = await _dataContext.QuestionLikes.Where(x => x.QuestionId == question.Id).CountAsync();
+            if (check is null)
+            {
+                var like = new QuestionLike()
+                {
+                    Id = Guid.NewGuid(),
+                    QuestionId = question.Id,
+                    UserId = Guid.Parse(questionFpk.UserId)
+                };
+                _dataContext.QuestionLikes.Add(like);
+                await _dataContext.SaveChangesAsync();
+                return new ApiSuccessResult<NumberReponse>(new() { Check = true, Quantity = likeNumber + 1 });
+            }
+            else
+            {
+                _dataContext.QuestionLikes.Remove(check);
+                await _dataContext.SaveChangesAsync();
+                return new ApiSuccessResult<NumberReponse>(new() { Check = false, Quantity = likeNumber - 1 });
+
+            }
+        }
+
+        public async Task<ApiResult<List<QuestionResponseDto>>> GetMyQuestion(string id)
+        {
+            var questions = await _dataContext.Questions.Where(x => x.AuthorId.Equals(Guid.Parse(id))).ToListAsync();
+            var result = new List<QuestionResponseDto>();
+            foreach (var item in questions)
+            {
+                var question = _mapper.Map<QuestionResponseDto>(item);
+                question.SaveNumber = await _dataContext.QuestionSaves.Where(x => x.QuestionId.Equals(item.Id)).CountAsync();
+                question.CommentNumber = await _dataContext.Answers.Where(x => x.QuestionId.Equals(item.Id)).CountAsync();
+                question.LikeNumber = await _dataContext.QuestionLikes.Where(x => x.QuestionId.Equals(item.Id)).CountAsync();
+                result.Add(question);
+            }
+
+            return new ApiSuccessResult<List<QuestionResponseDto>>(result);
+        }
+
+        public async Task<ApiResult<string>> ReportQuestion(ReportQuestionDto reportquestionDto)
+        {
+            var question = _dataContext.Questions.FirstOrDefault(x => x.SubId.Equals(reportquestionDto.QuestionId));
+            if (question == null)
+            {
+                return new ApiErrorResult<string>("Bài viết không tồn tại");
+            }
+            var reportQuestion = _mapper.Map<QuestionReportDetail>(reportquestionDto);
+            reportQuestion.Id = Guid.NewGuid();
+            reportQuestion.QuestionId = question.Id;
+            _dataContext.QuestionReportDetails.Add(reportQuestion);
+            await _dataContext.SaveChangesAsync();
+
+            return new ApiSuccessResult<string>("Đã gửi báo cáo đến kiểm duyệt viên! Chúng tôi sẽ phản hồi bạn sớm nhất có thể! Xin cảm ơn.");
+        }
+
+        public async Task<ApiResult<List<ReportQuestionDto>>> GetReport()
+        {
+            var reportPost = await _dataContext.QuestionReportDetails
+                .OrderByDescending(x => x.ReportDate)
+                .ToListAsync();
+            var results = new List<ReportQuestionDto>();
+            foreach (var item in reportPost)
+            {
+                results.Add(_mapper.Map<ReportQuestionDto>(item));
+            }
+            return new ApiSuccessResult<List<ReportQuestionDto>>(results);
+        }
+
+        public async Task<ApiResult<List<QuestionResponseDto>>> SearchQuestions(string keyWord)
+        {
+            if (keyWord.StartsWith("#"))
+            {
+                keyWord = keyWord.TrimStart('#');
+                return await GetQuestionByTag(keyWord);
+            }
+            var users = await _dataContext.User.ToListAsync();
+            var questions = new List<QuestionResponseDto>();
+            string[] searchKeywords = keyWord.ToLower().Split(' ');
+            var result = from question in _dataContext.Questions as IEnumerable<Question>
+                         let titleWords = question.Title.ToLower().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
+                         let searchPhrases = HandleCommon.GenerateSearchPhrases(searchKeywords)
+                         let matchingPhrases = searchPhrases
+                            .Where(phrase => titleWords.Contains(phrase))
+                         where matchingPhrases.Any()
+                         let matchCount = matchingPhrases.Count()
+                         orderby matchCount descending
+                         select new Question()
+                         {
+                             Id = question.Id,
+                             SubId = question.SubId,
+                             Title = question.Title,
+                             CreatedAt = question.CreatedAt,
+                             UpdatedAt = question.UpdatedAt,
+                             AuthorId = question.AuthorId,
+                             ViewNumber = question.ViewNumber,
+                         };
+
+            foreach (var question in result)
+            {
+                var item = _mapper.Map<QuestionResponseDto>(question);
+                var userShort = users.First(x => x.Id == question.AuthorId);
+                if (userShort is not null)
+                {
+                    item.UserShort.FullName = userShort.Fullname;
+                    item.UserShort.Id = userShort.Id;
+                    item.UserShort.Image = userShort.Image;
+                }
+                questions.Add(item);
+            }
+            return new ApiSuccessResult<List<QuestionResponseDto>>(questions);
+        }
+
+        public async Task<ApiResult<List<QuestionResponseDto>>> GetMyQuestionSaved(string id)
+        {
+            Guid userId = Guid.Parse(id);
+            var users = await _dataContext.User.ToListAsync();
+
+            var questions = await(
+                from questionSave in _dataContext.QuestionSaves
+                join question in _dataContext.Questions on questionSave.QuestionId equals question.Id
+                where questionSave.UserId == userId
+                select question
+            ).ToListAsync();
+
+            var result = new List<QuestionResponseDto>();
+            foreach (var item in questions)
+            {
+                var question = _mapper.Map<QuestionResponseDto>(item);
+                question.SaveNumber = await _dataContext.QuestionSaves.Where(x => x.QuestionId.Equals(question.Id)).CountAsync();
+                question.CommentNumber = await _dataContext.Answers.Where(x => x.QuestionId.Equals(question.Id)).CountAsync();
+                question.LikeNumber = await _dataContext.QuestionLikes.Where(x => x.QuestionId.Equals(question.Id)).CountAsync();
+                result.Add(question);
+            }
+
+            return new ApiSuccessResult<List<QuestionResponseDto>>(result);
         }
     }
 

@@ -48,7 +48,7 @@ namespace VNH.WebAPi.Controllers
             var result = await _answerService.UpdateAnswer(answer);
             return result is null ? BadRequest(result) : Ok(result);
         }
-        [HttpDelete]
+        [HttpDelete("delete")]
         [Authorize]
         public async Task<IActionResult> DeleteAnswer(string idAnswer)
         {
@@ -84,7 +84,7 @@ namespace VNH.WebAPi.Controllers
         }
 
 
-        [HttpDelete]
+        [HttpDelete("DeleteSub")]
         [Authorize]
         public async Task<IActionResult> DeleteSubAnswer(string idSubAnswer)
         {

@@ -2,15 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VNH.Application.DTOs.Catalog.Forum.Answer;
-using VNH.Application.DTOs.Catalog.Forum.Question;
-using VNH.Application.DTOs.Catalog.HashTags;
-using VNH.Application.DTOs.Catalog.Posts;
 using VNH.Application.DTOs.Catalog.Users;
 using VNH.Application.DTOs.Common.ResponseNotification;
 using VNH.Application.Interfaces.Catalog.Forum;
@@ -142,6 +134,10 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
             }
             _dataContext.Answers.Remove(answer);
             await _dataContext.SaveChangesAsync();
+
+            var answers = await GetAnswer(answer.QuestionId.ToString());
+            await _answerHubContext.Clients.All.SendAsync("ReceiveAnswer", answers);
+
             return new ApiSuccessResult<string>();
         }
 
@@ -157,19 +153,21 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
             sub.PreAnswerId = answer.Id;
             _dataContext.SubAnswers.Add(sub);
             await _dataContext.SaveChangesAsync();
+            var answers = await GetAnswer(answer.QuestionId.ToString());
+            await _answerHubContext.Clients.All.SendAsync("ReceiveAnswer", answers);
             return new ApiSuccessResult<string>("Trả lời thành công");
 
         }
 
 
-        public async Task<ApiResult<SubAnswerQuestionDto>> UpdateSubAnswer(SubAnswerQuestionDto subAnswer)
+        public async Task<ApiResult<string>> UpdateSubAnswer(SubAnswerQuestionDto subAnswer)
         {
 
             var user = await _userManager.FindByIdAsync(subAnswer.AuthorId.ToString());
             var subAns = await _dataContext.SubAnswers.FirstOrDefaultAsync(x => x.Id == subAnswer.Id);
             if (subAns == null)
             {
-                return new ApiErrorResult<SubAnswerQuestionDto>("Không tìm thấy câu trả lời!");
+                return new ApiErrorResult<string>("Không tìm thấy câu trả lời!");
             }
             subAns.Content = subAnswer.Content;
             subAns.UpdatedAt = DateTime.Now;
@@ -177,17 +175,10 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
             _dataContext.SubAnswers.Update(subAns);
             await _dataContext.SaveChangesAsync();
 
+            var answers = await GetAnswer(subAns.Id.ToString());
+            await _answerHubContext.Clients.All.SendAsync("ReceiveAnswer", answers);
 
-            var subAnsResponse = _mapper.Map<SubAnswerQuestionDto>(subAns);
-            var useDto = new UserShortDto()
-            {
-                FullName = user.Fullname,
-                Id = user.Id,
-                Image = user.Image
-            };
-            subAnsResponse.UserShort = useDto;
-
-            return new ApiSuccessResult<SubAnswerQuestionDto>(subAnsResponse);
+            return new ApiSuccessResult<string>("Đã cập nhập bình luận");
         }
 
         public async Task<ApiResult<string>> DeteleSubAnswer(string id)

@@ -1,18 +1,9 @@
 ﻿using AutoMapper;
-using Azure;
-using ImageMagick;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using System.Globalization;
-using System.Net.NetworkInformation;
-using System.Text;
-using System.Text.RegularExpressions;
-using VNH.Application.DTOs.Catalog.HashTags;
 using VNH.Application.DTOs.Catalog.Posts;
 using VNH.Application.DTOs.Catalog.Users;
 using VNH.Application.DTOs.Common;
@@ -298,7 +289,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
                 return  new ApiSuccessResult<NumberReponse>(new() { Check = true, Quantity = likeNumber + 1});
             } else
             {
-                _dataContext.PostLikes.Remove(check);
+                _dataContext.PostLikes.Remove(check); 
                 await _dataContext.SaveChangesAsync();
                 return  new ApiSuccessResult<NumberReponse>(new() { Check = false, Quantity = likeNumber - 1 });
   
@@ -354,8 +345,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
             return new ApiSuccessResult<string>("Đã gửi báo cáo đến kiểm duyệt viên! Chúng tôi sẽ phản hồi bạn sớm nhất có thể! Xin cảm ơn.");
         }
 
-        [Authorize(Roles = "admin")]
-        public async Task<List<ReportPostDto>> GetReport()
+        public async Task<ApiResult<List<ReportPostDto>>> GetReport()
         {
             var reportPost = await _dataContext.PostReportDetails
                 .OrderByDescending(x=>x.ReportDate)
@@ -365,7 +355,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
             {
                 results.Add(_mapper.Map<ReportPostDto>(item));
             }
-            return results;
+            return new ApiSuccessResult<List<ReportPostDto>>(results);
         }
 
         public async Task<ApiResult<NumberReponse>> GetLike(PostFpkDto postFpk)
@@ -478,6 +468,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
             }
             PostComment postComment = _mapper.Map<PostComment>(comment);
             postComment.PostId = post.Id;
+            postComment.UpdatedAt = DateTime.Now;
             _dataContext.PostComments.Add(postComment);
             await _dataContext.SaveChangesAsync();
             var comments = await GetComment(comment.PostId);
@@ -556,10 +547,10 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
             foreach (var item in posts)
             {
                 var post = _mapper.Map<PostResponseDto>(item);
-                result.Add(post);
                 post.SaveNumber = await _dataContext.PostSaves.Where(x => x.PostId.Equals(post.Id)).CountAsync();
                 post.CommentNumber = await _dataContext.PostComments.Where(x => x.PostId.Equals(post.Id)).CountAsync();
                 post.LikeNumber = await _dataContext.PostLikes.Where(x => x.PostId.Equals(post.Id)).CountAsync();
+                result.Add(post);
             }
 
             return new ApiSuccessResult<List<PostResponseDto>>(result);

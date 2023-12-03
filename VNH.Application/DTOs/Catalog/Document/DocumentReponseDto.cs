@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VNH.Application.DTOs.Catalog.Users;
+﻿using VNH.Application.DTOs.Catalog.Users;
 
 namespace VNH.Application.DTOs.Catalog.Document
 {
@@ -16,7 +11,7 @@ namespace VNH.Application.DTOs.Catalog.Document
 
         public string FileName {  get; set; } = string.Empty;
 
-        public DateTime? CreatedAt { get; set; }
+        public DateTime? CreatedAt { get; set; } = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time"));
         public DateTime? UpdatedAt { get; set; }
         public UserShortDto  UserShort { get; set; } = new UserShortDto();
         public int ViewNumber { get; set; } = 0;

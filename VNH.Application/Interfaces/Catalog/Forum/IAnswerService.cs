@@ -15,7 +15,7 @@ namespace VNH.Application.Interfaces.Catalog.Forum
 
         Task<ApiResult<string>> CreateSubAnswer(SubAnswerQuestionDto subAnswer);
 
-        Task<ApiResult<SubAnswerQuestionDto>> UpdateSubAnswer(SubAnswerQuestionDto answer);
+        Task<ApiResult<string>> UpdateSubAnswer(SubAnswerQuestionDto answer);
         Task<ApiResult<string>> DeteleSubAnswer(string id);
 
         Task<ApiResult<int>> ConfirmOrNoConfirm(AnswerFpkDto answerFpk);
