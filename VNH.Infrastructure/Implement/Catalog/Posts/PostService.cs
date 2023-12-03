@@ -183,7 +183,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
 
         public async Task<ApiResult<List<PostResponseDto>>> GetAll()
         {
-            var posts = await _dataContext.Posts.ToListAsync();
+            var posts = await _dataContext.Posts.OrderByDescending(x => x.CreatedAt).ToListAsync();
             var users = await _dataContext.User.ToListAsync();
             var topics = await _dataContext.Topics.ToListAsync();
 
@@ -206,7 +206,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
         }
         public async Task<ApiResult<List<PostResponseDto>>> GetAllMobile()
         {
-            var posts = await _dataContext.Posts.ToListAsync();
+            var posts = await _dataContext.Posts.OrderByDescending(x => x.CreatedAt).ToListAsync();
             var users = await _dataContext.User.ToListAsync();
             var topics = await _dataContext.Topics.ToListAsync();
 

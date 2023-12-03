@@ -64,12 +64,12 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
             }
 
             var users = await _dataContext.User.ToListAsync();
-            var answerQuestion = await _dataContext.Answers.Where(x => x.QuestionId.Equals(question.Id)).ToListAsync();
+            var answerQuestion = await _dataContext.Answers.Where(x => x.QuestionId.Equals(question.Id)).OrderByDescending(x => x.CreatedAt).ToListAsync();
             var subAnswerQuestion = await _dataContext.SubAnswers.ToListAsync();
             var result = new List<AnswerQuestionDto>();
             foreach(var item in answerQuestion)
             {
-                var subAnswer = subAnswerQuestion.Where(x => x.PreAnswerId.Equals(item.Id)).ToList();
+                var subAnswer = subAnswerQuestion.Where(x => x.PreAnswerId.Equals(item.Id)).OrderByDescending(x => x.CreatedAt).ToList();
                 var answ = _mapper.Map<AnswerQuestionDto>(item);
                 answ.UserShort = GetUserShort(users, item.AuthorId);
                 if(subAnswer.Count > 0)
@@ -175,10 +175,24 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
             _dataContext.SubAnswers.Update(subAns);
             await _dataContext.SaveChangesAsync();
 
-            var answers = await GetAnswer(subAns.Id.ToString());
+            var answers = await GetSubAnswer(subAns.PreAnswerId.ToString());
             await _answerHubContext.Clients.All.SendAsync("ReceiveAnswer", answers);
 
             return new ApiSuccessResult<string>("Đã cập nhập bình luận");
+        }
+
+        private async Task<List<SubAnswerQuestionDto>> GetSubAnswer(string? answerId)
+        {
+            List<SubAnswerQuestionDto> result = new();
+            var users = await _dataContext.User.ToListAsync();
+            var listSubAnswer = await _dataContext.SubAnswers.Where(x=>x.PreAnswerId.ToString() == answerId).ToListAsync();
+            foreach (var item in listSubAnswer)
+            {
+                var answer = _mapper.Map<SubAnswerQuestionDto>(item);
+                answer.UserShort = GetUserShort(users, item.AuthorId);
+                result.Add(answer);
+            }
+            return result;
         }
 
         public async Task<ApiResult<string>> DeteleSubAnswer(string id)
@@ -190,6 +204,10 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
             }
             _dataContext.SubAnswers.Remove(subAnswer);
             await _dataContext.SaveChangesAsync();
+
+            var answers = await GetSubAnswer(subAnswer.PreAnswerId.ToString());
+            await _answerHubContext.Clients.All.SendAsync("ReceiveAnswer", answers);
+
             return new ApiSuccessResult<string>();
         }
 

@@ -36,7 +36,7 @@ namespace VNH.WebAPi.Controllers
             var result = await _account.Authenticate(request);
             if (!result.IsSuccessed)
             {
-                return BadRequest(result);
+                return Ok(result);
             }
             var userPrincipal = _account.ValidateToken(result.ResultObj);
             var authProperties = new AuthenticationProperties

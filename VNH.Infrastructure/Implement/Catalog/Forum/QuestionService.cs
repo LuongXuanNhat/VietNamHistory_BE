@@ -176,7 +176,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
 
         public async Task<ApiResult<List<QuestionResponseDto>>> GetAll()
         {
-            var questions = await _dataContext.Questions.ToListAsync();
+            var questions = await _dataContext.Questions.OrderByDescending(x => x.CreatedAt).ToListAsync();
             var users = await _dataContext.User.ToListAsync();
 
             var result = new List<QuestionResponseDto>();
