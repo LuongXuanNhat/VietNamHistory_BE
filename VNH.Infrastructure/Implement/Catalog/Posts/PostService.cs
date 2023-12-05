@@ -88,7 +88,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
         {
             var user = await _userManager.FindByEmailAsync(name);
 
-            var updatePost = _dataContext.Posts.First(x=>x.Id.Equals(requestDto.Id));
+            var updatePost = _dataContext.Posts.First(x=>x.Id.Equals(requestDto.Id) && !x.IsDeleted);
             if (updatePost is null)
             {
                 return new ApiErrorResult<PostResponseDto>("Lỗi :Bài viết không được cập nhập (không tìm thấy bài viết)");
@@ -143,7 +143,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
 
         public async Task<ApiResult<PostResponseDto>> Detail(string Id)
         {
-            var post = await _dataContext.Posts.FirstOrDefaultAsync(x=>x.SubId.Equals(Id));
+            var post = await _dataContext.Posts.FirstOrDefaultAsync(x=>x.SubId.Equals(Id) && !x.IsDeleted);
             if (post is null)
             {
                 return new ApiErrorResult<PostResponseDto>("Không tìm thấy bài viết");
@@ -183,8 +183,8 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
 
         public async Task<ApiResult<List<PostResponseDto>>> GetAll()
         {
-            var posts = await _dataContext.Posts.OrderByDescending(x => x.CreatedAt).ToListAsync();
-            var users = await _dataContext.User.ToListAsync();
+            var posts = await _dataContext.Posts.Where(x=>!x.IsDeleted).OrderByDescending(x => x.CreatedAt).ToListAsync();
+            var users = await _dataContext.User.Where(x => !x.IsDeleted).ToListAsync();
             var topics = await _dataContext.Topics.ToListAsync();
 
             var result = new List<PostResponseDto>();
@@ -206,8 +206,8 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
         }
         public async Task<ApiResult<List<PostResponseDto>>> GetAllMobile()
         {
-            var posts = await _dataContext.Posts.OrderByDescending(x => x.CreatedAt).ToListAsync();
-            var users = await _dataContext.User.ToListAsync();
+            var posts = await _dataContext.Posts.Where(x => !x.IsDeleted).OrderByDescending(x => x.CreatedAt).ToListAsync();
+            var users = await _dataContext.User.Where(x => !x.IsDeleted).ToListAsync();
             var topics = await _dataContext.Topics.ToListAsync();
 
             var result = new List<PostResponseDto>();
@@ -233,17 +233,17 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
 
         public async Task<ApiResult<string>> Delete(string id, string userId)
         {
-            var post = await _dataContext.Posts.FirstOrDefaultAsync(x => x.Id.Equals(id) && x.UserId.ToString().Equals(userId));
+            var post = await _dataContext.Posts.FirstOrDefaultAsync(x => x.Id.Equals(id) && x.UserId.ToString().Equals(userId) && !x.IsDeleted);
             if (post is null)
             {
                 return new ApiErrorResult<string>("Không tìm thấy bài viết");
             }
-            if (post.Image != string.Empty)
-            {
-                await _storageService.DeleteFileAsync(post.Image);
-            }
-            _dataContext.Posts.Remove(post);
-
+            //if (post.Image != string.Empty)
+            //{
+            //    await _storageService.DeleteFileAsync(post.Image);
+            //}
+            post.IsDeleted = true;
+            _dataContext.Posts.Update(post);
             await _dataContext.SaveChangesAsync();
 
             return new ApiSuccessResult<string>("Đã xóa bài viết");
@@ -251,16 +251,17 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
 
         public async Task<ApiResult<string>> DeleteAdmin(string id)
         {
-            var post = await _dataContext.Posts.FirstOrDefaultAsync(x => x.Id.Equals(id));
+            var post = await _dataContext.Posts.FirstOrDefaultAsync(x => x.Id.Equals(id) && !x.IsDeleted);
             if (post is null)
             {
                 return new ApiErrorResult<string>("Không tìm thấy bài viết");
             }
-            if (post.Image != string.Empty)
-            {
-                await _storageService.DeleteFileAsync(post.Image);
-            }
-            _dataContext.Posts.Remove(post);
+            //if (post.Image != string.Empty)
+            //{
+            //    await _storageService.DeleteFileAsync(post.Image);
+            //}
+            post.IsDeleted = true;
+            _dataContext.Posts.Update(post);
 
             await _dataContext.SaveChangesAsync();
 
@@ -269,7 +270,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
 
         public async Task<ApiResult<NumberReponse>> AddOrUnLikePost(PostFpkDto postFpk)
         {
-            var post = await _dataContext.Posts.FirstOrDefaultAsync(x => x.SubId.Equals(postFpk.PostId));
+            var post = await _dataContext.Posts.FirstOrDefaultAsync(x => x.SubId.Equals(postFpk.PostId) && !x.IsDeleted);
             if (post is null)
             {
                 return new ApiErrorResult<NumberReponse>("Không tìm thấy bài viết");
@@ -300,7 +301,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
 
         public async Task<ApiResult<NumberReponse>> AddOrRemoveSavePost(PostFpkDto postFpk)
         {
-            var post = await _dataContext.Posts.FirstOrDefaultAsync(x => x.SubId.Equals(postFpk.PostId));
+            var post = await _dataContext.Posts.FirstOrDefaultAsync(x => x.SubId.Equals(postFpk.PostId) && !x.IsDeleted);
             if (post is null)
             {
                 return new ApiErrorResult<NumberReponse>("Không tìm thấy bài viết");
@@ -331,7 +332,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
 
         public async Task<ApiResult<string>> ReportPost(ReportPostDto reportPostDto)
         {
-            var post = _dataContext.Posts.FirstOrDefault(x => x.SubId.Equals(reportPostDto.PostId));
+            var post = _dataContext.Posts.FirstOrDefault(x => x.SubId.Equals(reportPostDto.PostId) && !x.IsDeleted);
             if (post == null)
             {
                 return new ApiErrorResult<string>("Bài viết không tồn tại");
@@ -360,7 +361,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
 
         public async Task<ApiResult<NumberReponse>> GetLike(PostFpkDto postFpk)
         {
-            var post = _dataContext.Posts.First(x => x.SubId.Equals(postFpk.PostId));
+            var post = _dataContext.Posts.First(x => x.SubId.Equals(postFpk.PostId) && !x.IsDeleted);
             var check = await _dataContext.PostLikes.Where(x => x.PostId.Equals(post.Id) && x.UserId == Guid.Parse(postFpk.UserId)).FirstOrDefaultAsync();
             var number = await _dataContext.PostLikes.Where(x => x.PostId.Equals(post.Id)).CountAsync();
             return new ApiSuccessResult<NumberReponse>(new() { Check = (check != null), Quantity = number});
@@ -368,7 +369,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
 
         public async Task<ApiResult<NumberReponse>> GetSave(PostFpkDto postFpk)
         {
-            var post = _dataContext.Posts.First(x => x.SubId.Equals(postFpk.PostId));
+            var post = _dataContext.Posts.First(x => x.SubId.Equals(postFpk.PostId) && !x.IsDeleted);
             var check = await _dataContext.PostSaves.Where(x => x.PostId.Equals(post.Id) && x.UserId == Guid.Parse(postFpk.UserId)).FirstOrDefaultAsync();
             var number = await _dataContext.PostSaves.Where(x => x.PostId.Equals(post.Id)).CountAsync();
             return new ApiSuccessResult<NumberReponse>(new() { Check = (check != null), Quantity = number });
@@ -386,7 +387,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
             {
                 return new ApiSuccessResult<List<PostResponseDto>>(new List<PostResponseDto>());
             }
-            var users = await _dataContext.User.ToListAsync();
+            var users = await _dataContext.User.Where(x => !x.IsDeleted).ToListAsync();
 
             var result = new List<PostResponseDto>();
             foreach (var item in posts)
@@ -410,12 +411,12 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
 
         public async Task<ApiResult<List<CommentPostDto>>> GetComment(string postId)
         {
-            var post = await _dataContext.Posts.FirstAsync(x => x.SubId.Equals(postId));
+            var post = await _dataContext.Posts.FirstAsync(x => x.SubId.Equals(postId) && !x.IsDeleted);
             if (post == null)
             {
                 return new ApiSuccessResult<List<CommentPostDto>>();
             }
-            var users = await _dataContext.User.ToListAsync();
+            var users = await _dataContext.User.Where(x => !x.IsDeleted).ToListAsync();
             var postComment = await _dataContext.PostComments.Where(x=>x.PostId.Equals(post.Id)).ToListAsync();
             var postSubComment = await _dataContext.PostSubComments.ToListAsync();
 
@@ -449,7 +450,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
         private  UserShortDto? GetUserShort(List<User> users, Guid? IdUser)
         {
             return users
-                .Where(x => x.Id.Equals(IdUser))
+                .Where(x => x.Id.Equals(IdUser) && !x.IsDeleted)
                 .Select(x => new UserShortDto
                 {
                     Id = x.Id,
@@ -461,7 +462,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
 
         public async Task<ApiResult<List<CommentPostDto>>> CreateComment(CommentPostDto comment)
         {
-            var post = await _dataContext.Posts.FirstOrDefaultAsync(x=>x.SubId.Equals(comment.PostId));
+            var post = await _dataContext.Posts.FirstOrDefaultAsync(x=>x.SubId.Equals(comment.PostId) && !x.IsDeleted);
             if (post == null)
             {
                 return new ApiErrorResult<List<CommentPostDto>>("Không tìm thấy bài đọc bạn bình luận, có thể nó đã bị xóa");
@@ -516,7 +517,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
         public async Task<ApiResult<List<PostResponseDto>>> GetMyPostSaved(string id)
         {
             Guid userId = Guid.Parse(id);
-            var users = await _dataContext.User.ToListAsync();
+            var users = await _dataContext.User.Where(x => !x.IsDeleted).ToListAsync();
 
             var posts = await (
                 from postSave in _dataContext.PostSaves
@@ -542,7 +543,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
         }
         public async Task<ApiResult<List<PostResponseDto>>> GetMyPost(string id)
         {
-            var posts = await _dataContext.Posts.Where(x=>x.UserId.Equals(Guid.Parse(id))).ToListAsync();
+            var posts = await _dataContext.Posts.Where(x=>x.UserId.Equals(Guid.Parse(id)) && !x.IsDeleted).ToListAsync();
             var result = new List<PostResponseDto>();
             foreach (var item in posts)
             {
@@ -563,10 +564,10 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
                 keyWord = keyWord.TrimStart('#');
                 return await GetPostByTag(keyWord);
             }
-            var users = await _dataContext.User.ToListAsync();
+            var users = await _dataContext.User.Where(x=> !x.IsDeleted).ToListAsync();
             var posts = new List<PostResponseDto>();
             string[] searchKeywords = keyWord.ToLower().Split(' ');
-            var result = from post in _dataContext.Posts as IEnumerable<Post>
+            var result = from post in _dataContext.Posts.Where(x => !x.IsDeleted) as IEnumerable<Post>
                          let titleWords = post.Title.ToLower().Split(new char[] {' '}, StringSplitOptions.RemoveEmptyEntries)
                          let searchPhrases = HandleCommon.GenerateSearchPhrases(searchKeywords)
                          let matchingPhrases = searchPhrases
@@ -609,7 +610,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
             DateTime currentDate = DateTime.Now;
             DateTime startDate = currentDate.AddDays(-30);
             var posts = await _dataContext.Posts
-                .Where(post => post.CreatedAt >= startDate && post.CreatedAt <= currentDate)
+                .Where(post => post.CreatedAt >= startDate && post.CreatedAt <= currentDate && !post.IsDeleted)
                 .Take(100)
                 .ToListAsync();
 
@@ -640,16 +641,16 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
         public async Task<ApiResult<List<PostResponseDto>>> FindByTopic(string topicName)
         {
             var posts = await _dataContext.Posts
-                            .Where(post => _dataContext.TopicDetails
+                            .Where(post => _dataContext.TopicDetails 
                                 .Any(postTag => _dataContext.Topics
                                 .Any(tagEntity => tagEntity.Title.ToLower().Equals(topicName.ToLower()) && tagEntity.Id == postTag.TopicId)
-                                && postTag.PostId == post.Id))
+                                && postTag.PostId == post.Id) && !post.IsDeleted)
                                 .ToListAsync();
             if (posts.IsNullOrEmpty())
             {
                 return new ApiSuccessResult<List<PostResponseDto>>(new List<PostResponseDto>());
             }
-            var users = await _dataContext.User.ToListAsync();
+            var users = await _dataContext.User.Where(x => !x.IsDeleted).ToListAsync();
 
             var result = new List<PostResponseDto>();
             foreach (var item in posts)

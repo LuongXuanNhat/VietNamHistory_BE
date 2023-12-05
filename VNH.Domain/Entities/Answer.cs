@@ -29,6 +29,7 @@ namespace VNH.Domain
         public DateTime? UpdatedAt { get; set; }
         public bool? Confirm { get; set; }
         public bool? MostConfirm { get; set; }
+        public bool IsDeleted { get; set; } = false;
 
         [ForeignKey("AuthorId")]
         [InverseProperty("Answers")]

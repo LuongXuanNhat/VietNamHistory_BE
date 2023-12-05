@@ -8,14 +8,14 @@ namespace VNH.Application.DTOs.Catalog.Forum.Answer
 
         public Guid? Id { get; set; } = Guid.NewGuid();
         public Guid? AuthorId { get; set; }
-
         public string QuestionId { get; set; } = string.Empty;
         public UserShortDto? UserShort { get; set; }
         public string Content { get; set; } = String.Empty;
-        public DateTime? CreatedAt { get; set; } = DateTime.Now;
+        public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public bool Confirm { get; set; } = false;
         public bool MostConfirm { get; set; } = false;
+        public int VoteNumber { get; set; } = 0;
         public List<SubAnswerQuestionDto>? SubAnswer { get; set; } = new();
 
     }
@@ -27,7 +27,7 @@ namespace VNH.Application.DTOs.Catalog.Forum.Answer
         public Guid AuthorId { get; set; }  
         public string Content { get; set; } = string.Empty;
         [Column(TypeName = "datetime")]
-        public DateTime? CreatedAt { get; set; } = DateTime.Now;
+        public DateTime? CreatedAt { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime? UpdatedAt { get; set; }
 

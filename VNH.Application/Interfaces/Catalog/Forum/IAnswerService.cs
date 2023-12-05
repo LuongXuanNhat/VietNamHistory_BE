@@ -1,4 +1,5 @@
 ﻿using VNH.Application.DTOs.Catalog.Forum.Answer;
+using VNH.Application.DTOs.Common;
 using VNH.Application.DTOs.Common.ResponseNotification;
 using VNH.Domain;
 
@@ -18,8 +19,7 @@ namespace VNH.Application.Interfaces.Catalog.Forum
         Task<ApiResult<string>> UpdateSubAnswer(SubAnswerQuestionDto answer);
         Task<ApiResult<string>> DeteleSubAnswer(string id);
 
-        Task<ApiResult<int>> ConfirmOrNoConfirm(AnswerFpkDto answerFpk);
-
-
+        Task<ApiResult<NumberReponse>> ConfirmedByQuestioner(string answerId);
+        Task<ApiResult<NumberReponse>> VoteConfirmByUser(AnswerFpkDto answer);
     }
 }

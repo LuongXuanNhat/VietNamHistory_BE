@@ -28,7 +28,9 @@ namespace VNH.Domain
 
         [Column(TypeName = "datetime")]
         public DateTime CreatedAt { get; set; }
-       
+        public bool IsDeleted { get; set; } = false;
+
+
 
         [ForeignKey("AuthorId")]
         [InverseProperty("Questions")]

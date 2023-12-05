@@ -33,6 +33,7 @@ namespace VNH.Domain
         public Guid UserId { get; set; }
         public string Image { get; set; } = string.Empty;
         public int ViewNumber { get; set; }
+        public bool IsDeleted { get; set; } = false;
 
         [ForeignKey("TopicId")]
         [InverseProperty("Posts")]

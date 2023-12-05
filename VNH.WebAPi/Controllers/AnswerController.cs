@@ -97,14 +97,26 @@ namespace VNH.WebAPi.Controllers
             return result is null ? BadRequest(result) : Ok(result);
         }
 
+        [HttpPost("Confirm")]
+        [Authorize]
+        public async Task<IActionResult> ConfirmAnswer(AnswerFpkDto answer)
+        {
+            var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if(id == answer.QuestionUserId)
+            {
+                var result = await _answerService.ConfirmedByQuestioner(answer.AnswerId);
+                return Ok(result);
+            } 
+            return Ok();
+ 
+        }
         [HttpPost("Vote")]
         [Authorize]
-        public async Task<IActionResult> Vote([FromForm] AnswerFpkDto answerFpk)
+        public async Task<IActionResult> Vote(AnswerFpkDto answer)
         {
-            var result = await _answerService.ConfirmOrNoConfirm(answerFpk);
-            return result is null ? BadRequest(result) : Ok(result);
+            var result = await _answerService.VoteConfirmByUser(answer);
+            return Ok(result);
         }
-
 
     }
 }

@@ -13,16 +13,12 @@ namespace VNH.Domain
         [Key]
         public Guid Id { get; set; }
         [Required]
-        [StringLength(255)]
         public string Title { get; set; }
         [Column(TypeName = "text")]
         public string Description { get; set; } = string.Empty;
         [Column(TypeName = "text")]
         public string Image { get; set; } = string.Empty;
-        [Column(TypeName = "datetime")]
-        public DateTime? CreatedAt { get; set; }
         [Required]
-        [StringLength(255)]
         [Unicode(false)]
         public string Url { get; set; }
     }

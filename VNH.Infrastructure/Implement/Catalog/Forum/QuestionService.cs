@@ -83,7 +83,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
         {
             var user = await _userManager.FindByEmailAsync(name);
 
-            var updateQuestion = _dataContext.Questions.First(x => x.Id.Equals(requestDto.Id));
+            var updateQuestion = _dataContext.Questions.First(x => x.Id.Equals(requestDto.Id) && !x.IsDeleted);
             if (updateQuestion is null)
             {
                 return new ApiErrorResult<QuestionResponseDto>("Lỗi :Câu hỏi không được cập nhập (không tìm thấy bài viết)");
@@ -137,7 +137,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
 
         public async Task<ApiResult<QuestionResponseDto>> Detail(string Id) 
         {
-            var question = await _dataContext.Questions.FirstOrDefaultAsync(x => x.Id.Equals(Guid.Parse(Id)));
+            var question = await _dataContext.Questions.FirstOrDefaultAsync(x => x.Id.Equals(Guid.Parse(Id)) && !x.IsDeleted);
             if (question is null)
             {
                 return new ApiErrorResult<QuestionResponseDto>("Không tìm thấy câu hỏi");
@@ -176,7 +176,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
 
         public async Task<ApiResult<List<QuestionResponseDto>>> GetAll()
         {
-            var questions = await _dataContext.Questions.OrderByDescending(x => x.CreatedAt).ToListAsync();
+            var questions = await _dataContext.Questions.Where(x=> !x.IsDeleted).OrderByDescending(x => x.CreatedAt).ToListAsync();
             var users = await _dataContext.User.ToListAsync();
 
             var result = new List<QuestionResponseDto>();
@@ -207,8 +207,9 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
             {
                 return new ApiErrorResult<string>("Không tìm thấy câu hỏi");
             }
-          
-            _dataContext.Questions.Remove(question);
+
+            question.IsDeleted = true;
+            _dataContext.Questions.Update(question);
 
             await _dataContext.SaveChangesAsync();
 
@@ -217,7 +218,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
 
         public async Task<ApiResult<NumberReponse>> AddOrRemoveSaveQuestion(QuestionFpkDto questionFpk)
         {
-            var question = await _dataContext.Questions.FirstOrDefaultAsync(x => x.Id.Equals(Guid.Parse(questionFpk.QuestionId)));
+            var question = await _dataContext.Questions.FirstOrDefaultAsync(x => x.Id.Equals(Guid.Parse(questionFpk.QuestionId)) && !x.IsDeleted);
             if (question is null)
             {
                 return new ApiErrorResult<NumberReponse>("Không tìm thấy câu hỏi");
@@ -248,7 +249,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
         }
         public async Task<ApiResult<NumberReponse>> GetSave(QuestionFpkDto questionFpk)
         {
-            var question = await _dataContext.Questions.FirstOrDefaultAsync(x => x.Id.Equals(Guid.Parse(questionFpk.QuestionId)));
+            var question = await _dataContext.Questions.FirstOrDefaultAsync(x => x.Id.Equals(Guid.Parse(questionFpk.QuestionId)) && !x.IsDeleted);
             var number = await _dataContext.QuestionSaves.Where(x => x.QuestionId.Equals(question.Id)).CountAsync();
             var check = await _dataContext.QuestionSaves.Where(x => x.QuestionId.Equals(question.Id) && x.UserId == Guid.Parse(questionFpk.UserId)).FirstOrDefaultAsync();
             return new ApiSuccessResult<NumberReponse>(new() { Check = check != null, Quantity = number }) ;
@@ -272,7 +273,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
                             .Where(question => _dataContext.QuestionTags
                                 .Any(questionTag => _dataContext.Tags
                                 .Any(tagEntity => tagEntity.Name.ToLower().Contains(tag.ToLower()) && tagEntity.Id == questionTag.TagId)
-                                && questionTag.QuestionId == question.Id))
+                                && questionTag.QuestionId == question.Id) && !question.IsDeleted)
                                 .ToListAsync();
             if (questions.IsNullOrEmpty())
             {
@@ -298,7 +299,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
 
         public async Task<ApiResult<QuestionResponseDto>> SubDetail(string subId)
         {
-            var question = await _dataContext.Questions.FirstOrDefaultAsync(x => x.SubId.Equals(subId));
+            var question = await _dataContext.Questions.Where(x=> !x.IsDeleted).FirstOrDefaultAsync(x => x.SubId.Equals(subId));
             if (question is null)
             {
                 return new ApiErrorResult<QuestionResponseDto>("Không tìm thấy câu hỏi");
@@ -336,7 +337,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
 
         public async Task<ApiResult<NumberReponse>> GetLike(QuestionFpkDto questionFpk)
         {
-            var question = _dataContext.Questions.First(x => x.SubId.Equals(questionFpk.QuestionId));
+            var question = _dataContext.Questions.First(x => x.SubId.Equals(questionFpk.QuestionId) && !x.IsDeleted);
             var check = await _dataContext.QuestionLikes.Where(x => x.QuestionId.Equals(question.Id) && x.UserId == Guid.Parse(questionFpk.UserId)).FirstOrDefaultAsync();
             var number = await _dataContext.QuestionLikes.Where(x => x.QuestionId.Equals(question.Id)).CountAsync();
             return new ApiSuccessResult<NumberReponse>(new() { Check = (check != null), Quantity = number });
@@ -344,7 +345,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
 
         public async Task<ApiResult<NumberReponse>> AddOrUnLikeQuestion(QuestionFpkDto questionFpk)
         {
-            var question = await _dataContext.Questions.FirstOrDefaultAsync(x => x.SubId.Equals(questionFpk.QuestionId));
+            var question = await _dataContext.Questions.FirstOrDefaultAsync(x => x.SubId.Equals(questionFpk.QuestionId) && !x.IsDeleted);
             if (question is null)
             {
                 return new ApiErrorResult<NumberReponse>("Không tìm thấy câu hỏi");
@@ -374,7 +375,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
 
         public async Task<ApiResult<List<QuestionResponseDto>>> GetMyQuestion(string id)
         {
-            var questions = await _dataContext.Questions.Where(x => x.AuthorId.Equals(Guid.Parse(id))).ToListAsync();
+            var questions = await _dataContext.Questions.Where(x => x.AuthorId.Equals(Guid.Parse(id)) && !x.IsDeleted).ToListAsync();
             var result = new List<QuestionResponseDto>();
             foreach (var item in questions)
             {
@@ -390,7 +391,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
 
         public async Task<ApiResult<string>> ReportQuestion(ReportQuestionDto reportquestionDto)
         {
-            var question = _dataContext.Questions.FirstOrDefault(x => x.SubId.Equals(reportquestionDto.QuestionId));
+            var question = _dataContext.Questions.FirstOrDefault(x => x.SubId.Equals(reportquestionDto.QuestionId) && !x.IsDeleted);
             if (question == null)
             {
                 return new ApiErrorResult<string>("Bài viết không tồn tại");
@@ -477,6 +478,13 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
             foreach (var item in questions)
             {
                 var question = _mapper.Map<QuestionResponseDto>(item);
+                var userShort = users.First(x => x.Id == item.AuthorId);
+                if (userShort is not null)
+                {
+                    question.UserShort.FullName = userShort.Fullname;
+                    question.UserShort.Id = userShort.Id;
+                    question.UserShort.Image = userShort.Image;
+                }
                 question.SaveNumber = await _dataContext.QuestionSaves.Where(x => x.QuestionId.Equals(question.Id)).CountAsync();
                 question.CommentNumber = await _dataContext.Answers.Where(x => x.QuestionId.Equals(question.Id)).CountAsync();
                 question.LikeNumber = await _dataContext.QuestionLikes.Where(x => x.QuestionId.Equals(question.Id)).CountAsync();
