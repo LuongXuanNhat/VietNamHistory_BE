@@ -157,16 +157,19 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
             sub.PreAnswerId = answer.Id;
             _dataContext.SubAnswers.Add(sub);
             await _dataContext.SaveChangesAsync();
+            var answers = await GetAnswer( answer.QuestionId.ToString());
+            await _answerHubContext.Clients.All.SendAsync("ReceiveAnswer", answers);
             return new ApiSuccessResult<string>("Trả lời thành công");
-
         }
 
 
+    
         public async Task<ApiResult<SubAnswerQuestionDto>> UpdateSubAnswer(SubAnswerQuestionDto subAnswer)
         {
 
             var user = await _userManager.FindByIdAsync(subAnswer.AuthorId.ToString());
             var subAns = await _dataContext.SubAnswers.FirstOrDefaultAsync(x => x.Id == subAnswer.Id);
+            var answer = await _dataContext.Answers.FirstOrDefaultAsync(x => x.Id.Equals(subAnswer.PreAnswerId));
             if (subAns == null)
             {
                 return new ApiErrorResult<SubAnswerQuestionDto>("Không tìm thấy câu trả lời!");
@@ -176,16 +179,11 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
 
             _dataContext.SubAnswers.Update(subAns);
             await _dataContext.SaveChangesAsync();
-
-
             var subAnsResponse = _mapper.Map<SubAnswerQuestionDto>(subAns);
-            var useDto = new UserShortDto()
-            {
-                FullName = user.Fullname,
-                Id = user.Id,
-                Image = user.Image
-            };
-            subAnsResponse.UserShort = useDto;
+
+            var answers = await GetAnswer(answer.QuestionId.ToString());
+            await _answerHubContext.Clients.All.SendAsync("ReceiveAnswer", answers);
+
 
             return new ApiSuccessResult<SubAnswerQuestionDto>(subAnsResponse);
         }
