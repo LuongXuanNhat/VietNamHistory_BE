@@ -24,7 +24,7 @@ namespace VNH.Domain
         [StringLength(500)]
         public string Description { get; set; }
         public string SubId { get; set; }
-
+        public bool IsDeleted { get; set; } = false;
         public string FileName { get; set; }
         [StringLength(255)]
         [Unicode(false)]

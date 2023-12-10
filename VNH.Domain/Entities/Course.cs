@@ -31,6 +31,7 @@ namespace VNH.Domain {
         [Column(TypeName = "datetime")]
         public DateTime? UpdatedAt { get; set; }
         public string Image { get; set; } = string.Empty;
+        public bool IsDeleted { get; set; } = false;
         [ForeignKey("UserId")]
         [InverseProperty("Courses")]
         public virtual User User { get; set; }

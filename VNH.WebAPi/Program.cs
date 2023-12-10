@@ -6,6 +6,10 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Options;
 using VNH.Infrastructure.Presenters;
+using Microsoft.Extensions.Configuration;
+using VNH.Infrastructure.Presenters.Migrations;
+using Microsoft.EntityFrameworkCore;
+using VNH.Application.Interfaces.Catalog.Forum;
 
 namespace VNH.WebAPi
 {
@@ -17,6 +21,13 @@ namespace VNH.WebAPi
 
             // Add services to the container.
             // Add DI in other layer
+            var connectionString = builder.Environment.IsDevelopment()
+                                 ? builder.Configuration.GetConnectionString("LocalDataConnect")
+                                 : builder.Configuration.GetConnectionString("DataConnect");
+            builder.Services.AddDbContext<VietNamHistoryContext>(options =>
+            {
+                options.UseSqlServer(connectionString);
+            });
             builder.Services.AddInfrastructure(builder.Configuration);
             builder.Services.AddApplication();
 
@@ -118,10 +129,8 @@ namespace VNH.WebAPi
             {
                 app.Logger.LogInformation("Request RemoteIp: {RemoteIpAddress}",
                     context.Connection.RemoteIpAddress);
-
                 await next(context);
             });
-            
             
             app.UseStaticFiles();
             app.UseForwardedHeaders();

@@ -8,14 +8,20 @@ namespace VNH.Infrastructure.Presenters
     {
         public async Task SendComment(CommentPostDto comment)
         {
-            // Broadcast the comment to all connected clients
+            // Broadcast the subAnswer to all connected clients
             await Clients.All.SendAsync("ReceiveComment", comment);
         }
 
         public async Task SendAnswer(AnswerQuestionDto comment)
         {
-       
             await Clients.All.SendAsync("ReceiveAnswer", comment);
         }
+
+        //public async Task SendSubAnswer(List<SubAnswerQuestionDto> subAnswer)
+        //{
+        //    await Clients.All.SendAsync("ReceiveSubAnswer", subAnswer);
+        //}
+
+
     }
 }

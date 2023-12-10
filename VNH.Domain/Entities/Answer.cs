@@ -16,19 +16,20 @@ namespace VNH.Domain
             AnswerVotes = new HashSet<AnswerVote>();
             SubAnswers = new HashSet<SubAnswer>();
         }
-
+         
         [Key]
         public Guid Id { get; set; }
         public Guid QuestionId { get; set; }
         public string Content { get; set; }
         public Guid? AuthorId { get; set; }
         [Column(TypeName = "datetime")]
-        public DateTime? PubDate { get; set; }
+        public DateTime? CreatedAt { get; set; }
 
         [Column(TypeName = "datetime")]
-        public DateTime? UpdateAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
         public bool? Confirm { get; set; }
         public bool? MostConfirm { get; set; }
+        public bool IsDeleted { get; set; } = false;
 
         [ForeignKey("AuthorId")]
         [InverseProperty("Answers")]

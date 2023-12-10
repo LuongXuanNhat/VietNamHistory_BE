@@ -50,6 +50,10 @@ namespace VNH.Infrastructure.Implement.Catalog.Account
         public async Task<ApiResult<string>> Authenticate(LoginRequest request)
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
+            if(user != null && user.IsDeleted)
+            {
+                user = null;
+            }
 
             var errorMessages = new Dictionary<Func<bool>, string>
             {
@@ -88,7 +92,8 @@ namespace VNH.Infrastructure.Implement.Catalog.Account
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Email,user.Email),
                 new Claim(ClaimTypes.Role, string.Join(";",roles)),
-                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.Name, user.Email),
+                new Claim(ClaimTypes.Surname, user.Fullname),
             };
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Tokens:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -377,6 +382,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Account
             user.NormalizedEmail = email;
             user.NormalizedUserName = email;
             var changeEmailResult = await _userManager.ChangeEmailAsync(user, email, token);
+            await SendConfirmCodeToEmail(email, GetConfirmCode());
             if (changeEmailResult.Succeeded)
             {
                 return new ApiSuccessResult<string>( await GetToken(user));

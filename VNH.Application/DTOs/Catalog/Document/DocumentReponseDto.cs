@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VNH.Application.DTOs.Catalog.Users;
+﻿using VNH.Application.DTOs.Catalog.Users;
 
 namespace VNH.Application.DTOs.Catalog.Document
 {

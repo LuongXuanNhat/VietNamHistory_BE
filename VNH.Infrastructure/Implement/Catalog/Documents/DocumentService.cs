@@ -11,8 +11,8 @@ using VNH.Application.Interfaces.Common;
 using VNH.Domain;
 using VNH.Infrastructure.Presenters.Migrations;
 using Microsoft.EntityFrameworkCore;
-using VNH.Application.DTOs.Catalog.Posts;
-using Microsoft.Extensions.Hosting;
+using VNH.Infrastructure.Implement.Common;
+using VNH.Application.DTOs.Catalog.Forum.Question;
 
 namespace VNH.Infrastructure.Implement.Catalog.Documents
 {
@@ -43,8 +43,8 @@ namespace VNH.Infrastructure.Implement.Catalog.Documents
             document.FileName = await _document.SaveFile(requestDto.FileName);
             document.CreatedAt = DateTime.Now;
             document.UserId = user.Id;
-            string formattedDateTime = document.CreatedAt.ToString("HH:mm:ss.fff-dd-MM-yyyy");
-            document.SubId = SanitizeString(document.Title) + "-" + formattedDateTime;
+            string formattedDateTime = document.CreatedAt.ToString("HHmmss.fff") + HandleCommon.GenerateRandomNumber().ToString();
+            document.SubId = HandleCommon.SanitizeString(document.Title) + "-" + formattedDateTime;
             try
             {
                 _dataContext.Documents.Add(document);
@@ -71,29 +71,6 @@ namespace VNH.Infrastructure.Implement.Catalog.Documents
         }
 
 
-        private static string RemoveDiacritics(string input)
-        {
-            string normalizedString = input.Normalize(NormalizationForm.FormD);
-            StringBuilder stringBuilder = new StringBuilder();
-
-            foreach (char c in normalizedString)
-            {
-                if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
-                {
-                    stringBuilder.Append(c);
-                }
-            }
-
-            return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
-        }
-        private static string SanitizeString(string input)
-        {
-            string withoutDiacritics = RemoveDiacritics(input).Trim().Replace(" ", "-");
-            string sanitizedString = Regex.Replace(withoutDiacritics, "[^a-zA-Z0-9-]", "");
-
-            return sanitizedString;
-        }
-
         public async Task<ApiResult<DocumentReponseDto>> Update(CreateDocumentDto requestDto, string name)
         {
             var user = await _userManager.FindByEmailAsync(name);
@@ -112,8 +89,8 @@ namespace VNH.Infrastructure.Implement.Catalog.Documents
             updateDocument.UpdatedAt = DateTime.Now;
             updateDocument.Description = requestDto.Description;
             updateDocument.Title = requestDto.Title;    
-            string formattedDateTime = DateTime.Now.ToString("HH:mm:ss.fff-dd-MM-yyyy");
-            var Id = SanitizeString(updateDocument.Title);
+            string formattedDateTime = DateTime.Now.ToString("HHmmss.fff") + HandleCommon.GenerateRandomNumber().ToString();
+            var Id = HandleCommon.SanitizeString(updateDocument.Title);
             updateDocument.SubId = Id.Trim().Replace(" ", "-") + "-" + formattedDateTime;
             try
             {
@@ -168,7 +145,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Documents
 
 
 
-        public async Task<ApiResult<DocumentReponseDto>> Detail(string Id)
+        public async Task<ApiResult<DocumentReponseDto>> Detail(string Id) 
         {
             var document = await _dataContext.Documents.FirstOrDefaultAsync(x=>x.SubId.Equals(Id));
             if (document is null)
@@ -251,6 +228,41 @@ namespace VNH.Infrastructure.Implement.Catalog.Documents
 
         }
 
+        public async Task<ApiResult<List<DocumentReponseDto>>> Search(string keyWord)
+        {
+            var users = await _dataContext.User.ToListAsync();
+            var documents = new List<DocumentReponseDto>();
+            string[] searchKeywords = keyWord.ToLower().Split(' ');
+            var result = from document in _dataContext.Documents as IEnumerable<Document>
+                         let titleWords = document.Title.ToLower().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
+                         let searchPhrases = HandleCommon.GenerateSearchPhrases(searchKeywords)
+                         let matchingPhrases = searchPhrases
+                            .Where(phrase => titleWords.Contains(phrase))
+                         where matchingPhrases.Any()
+                         let matchCount = matchingPhrases.Count()
+                         orderby matchCount descending
+                         select new Document()
+                         {
+                             Id = document.Id,
+                             SubId = document.SubId,
+                             Title = document.Title,
+                             CreatedAt = document.CreatedAt,
+                             UpdatedAt = document.UpdatedAt,
+                         };
 
+            foreach (var document in result)
+            {
+                var item = _mapper.Map<DocumentReponseDto>(document);
+                var userShort = users.FirstOrDefault(x => x.Id == document.UserId);
+                if (userShort is not null)
+                {
+                    item.UserShort.FullName = userShort.Fullname;
+                    item.UserShort.Id = userShort.Id;
+                    item.UserShort.Image = userShort.Image;
+                }
+                documents.Add(item);
+            }
+            return new ApiSuccessResult<List<DocumentReponseDto>>(documents);
+        }
     }
 }

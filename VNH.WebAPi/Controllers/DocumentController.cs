@@ -52,7 +52,7 @@ namespace VNH.WebAPi.Controllers
             return result is null ? BadRequest(result) : Ok(result);
         }
 
-        [HttpDelete]
+        [HttpDelete("Delete")]
         public async Task<IActionResult> Delete(string Id)
         {
             var result = await _documentService.Delete(Id, User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "");
@@ -67,9 +67,6 @@ namespace VNH.WebAPi.Controllers
             return result is null ? BadRequest(result) : Ok(result);
         }
 
-
-
-
         [HttpPost("Save")]
         [Authorize]
         public async Task<IActionResult> Save([FromForm] DocumentFpkDto docsFpk)
@@ -78,7 +75,12 @@ namespace VNH.WebAPi.Controllers
             return result is null ? BadRequest(result) : Ok(result);
         }
 
-
+        [HttpGet("Search")]
+        public async Task<IActionResult> Search(string keyWord)
+        {
+            var result = await _documentService.Search(keyWord);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
+        }
 
     }
 }

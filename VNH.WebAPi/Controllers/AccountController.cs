@@ -36,7 +36,7 @@ namespace VNH.WebAPi.Controllers
             var result = await _account.Authenticate(request);
             if (!result.IsSuccessed)
             {
-                return BadRequest(result);
+                return Ok(result);
             }
             var userPrincipal = _account.ValidateToken(result.ResultObj);
             var authProperties = new AuthenticationProperties
@@ -266,7 +266,7 @@ namespace VNH.WebAPi.Controllers
         public async Task<IActionResult> ForgetPassword([FromQuery] string email)
         {
             var result = await _account.ForgetPassword(email);
-            return result.IsSuccessed ? Ok(result) : BadRequest(result);
+            return Ok(result);
         }
 
         [HttpGet("ForgetPassword/ConfirmCode")]
@@ -281,7 +281,7 @@ namespace VNH.WebAPi.Controllers
         public async Task<IActionResult> ResetPassword(ResetPassDto resetPass)
         {
             var result = await _account.ResetPassword(resetPass);
-            return result.IsSuccessed ? Ok(result) : BadRequest(result);
+            return Ok(result);
 
         }
 

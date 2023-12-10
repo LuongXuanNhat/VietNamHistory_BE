@@ -12,6 +12,7 @@ using AutoMapper;
 using VNH.Application.Interfaces.Common;
 using Microsoft.AspNetCore.Http;
 using VNH.Infrastructure.Implement.Common;
+using Microsoft.EntityFrameworkCore;
 
 namespace VNH.Infrastructure.Implement.Catalog.Users
 {
@@ -70,13 +71,14 @@ namespace VNH.Infrastructure.Implement.Catalog.Users
 
         public async Task<ApiResult<string>> GetImage(string email)
         {
-            var user = await _userManager.FindByNameAsync(email);
+            var user = await _dataContext.User.FirstOrDefaultAsync(x=>x.Email.Equals(email));
+            if(user is null) return new ApiSuccessResult<string>(string.Empty);
             return new ApiSuccessResult<string>(user.Image);
         }
 
-        public async Task<ApiResult<string>> SetImageUser(string name, IFormFile image)
+        public async Task<ApiResult<string>> SetImageUser(string email, IFormFile image)
         {
-            var user = await _userManager.FindByNameAsync(name);
+            var user = await _dataContext.User.FirstOrDefaultAsync(x => x.Email.Equals(email));
             if (user.Image != string.Empty)
             {
                 await _storageService.DeleteFileAsync(user.Image);

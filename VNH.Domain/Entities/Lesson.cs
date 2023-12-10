@@ -22,11 +22,13 @@ namespace VNH.Domain
         public string Description { get; set; }
         public Guid? CourseId { get; set; }
         public Guid? ExerciseId { get; set; }
+        public bool IsDeleted { get; set; } = false;
 
         [ForeignKey("CourseId")]
         [InverseProperty("Lessons")]
         public virtual Course Course { get; set; }
         [InverseProperty("IdNavigation")]
         public virtual Exercise Exercise { get; set; }
+
     }
 }

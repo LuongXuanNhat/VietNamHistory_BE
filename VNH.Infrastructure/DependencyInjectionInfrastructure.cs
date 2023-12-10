@@ -32,6 +32,8 @@ using VNH.Application.Interfaces.Documents;
 using VNH.Infrastructure.Implement.Catalog.Documents;
 using VNH.Application.Interfaces.Catalog.Forum;
 using VNH.Infrastructure.Implement.Catalog.Forum;
+using VNH.Application.Interfaces.Catalog.NewsHistory;
+using VNH.Infrastructure.Implement.Catalog.NewsHistory;
 
 namespace VNH.Infrastructure
 {
@@ -50,10 +52,6 @@ namespace VNH.Infrastructure
                 .CreateLogger();
 
             services.AddScoped<IUserService, UserService>();
-            services.AddDbContext<VietNamHistoryContext>(options =>
-            {
-                options.UseSqlServer(configuration.GetConnectionString("DataConnect"));
-            });
             services.AddIdentity<User,Role>()
             .AddEntityFrameworkStores<VietNamHistoryContext>()
             .AddDefaultTokenProviders();
@@ -108,13 +106,10 @@ namespace VNH.Infrastructure
             {
                 options.AddPolicy("AllowAngularDev", builder =>
                 {
-                    builder.WithOrigins("http://localhost:4200")
+                    builder.WithOrigins("http://localhost:4200", "https://luongxuannhat.github.io", "https://toiyeulichsu.com")
                            .AllowAnyHeader()
                            .AllowAnyMethod()
                            .AllowCredentials();
-                    //builder.AllowAnyOrigin()
-                    //   .AllowAnyHeader()
-                    //   .AllowAnyMethod();
                 });
             });
             services.AddOptions();
@@ -135,6 +130,7 @@ namespace VNH.Infrastructure
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<IQuestionService, QuestionService>();
             services.AddScoped<IAnswerService, AnswerService>();
+            services.AddScoped<INewsService, NewsService>();
             services.AddSignalR();
 
             

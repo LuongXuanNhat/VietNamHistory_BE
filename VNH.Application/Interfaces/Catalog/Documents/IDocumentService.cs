@@ -15,6 +15,6 @@ namespace VNH.Application.Interfaces.Documents
         Task<ApiResult<bool>> GetSave(DocumentFpkDto docsFpk);
 
         Task<ApiResult<int>> AddOrRemoveSaveDocs(DocumentFpkDto docsFpk);
-
+        Task<ApiResult<List<DocumentReponseDto>>> Search(string keyWord);
     }
 }

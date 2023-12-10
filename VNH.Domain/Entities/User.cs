@@ -49,6 +49,7 @@ namespace VNH.Domain
         public Gender Gender { get; set; }
         public string Image { get; set; } = string.Empty;
         public string NumberConfirm { get; set; } // Confirm Email
+        public bool IsDeleted { get; set; } = false;
         [InverseProperty("User")]
         public virtual ICollection<AnswerVote> AnswerVotes { get; set; }
         [InverseProperty("Author")]

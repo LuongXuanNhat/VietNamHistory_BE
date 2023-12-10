@@ -17,7 +17,8 @@ namespace VNH.Application.DTOs.Catalog.Forum.Answer
         public string QuestionId { get; set; } = string.Empty;
 
         [Column(TypeName = "datetime")]
-        public DateTime? PubDate { get; set; }
+        public DateTime? CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
         public UserShortDto UserShort { get; set; } = new UserShortDto();
         public bool Confirm { get; set; }
         public bool MostConfirm { get; set; }
