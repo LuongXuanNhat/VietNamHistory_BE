@@ -11,7 +11,7 @@ namespace VNH.Application.DTOs.Catalog.Document
 
         public string FileName {  get; set; } = string.Empty;
 
-        public DateTime? CreatedAt { get; set; } = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time"));
+        public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public UserShortDto  UserShort { get; set; } = new UserShortDto();
         public int ViewNumber { get; set; } = 0;

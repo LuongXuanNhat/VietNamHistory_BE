@@ -12,6 +12,7 @@ using VNH.Domain;
 using VNH.Infrastructure.Presenters.Migrations;
 using Microsoft.EntityFrameworkCore;
 using VNH.Infrastructure.Implement.Common;
+using VNH.Application.DTOs.Catalog.Forum.Question;
 
 namespace VNH.Infrastructure.Implement.Catalog.Documents
 {
@@ -144,7 +145,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Documents
 
 
 
-        public async Task<ApiResult<DocumentReponseDto>> Detail(string Id)
+        public async Task<ApiResult<DocumentReponseDto>> Detail(string Id) 
         {
             var document = await _dataContext.Documents.FirstOrDefaultAsync(x=>x.SubId.Equals(Id));
             if (document is null)
@@ -227,6 +228,41 @@ namespace VNH.Infrastructure.Implement.Catalog.Documents
 
         }
 
+        public async Task<ApiResult<List<DocumentReponseDto>>> Search(string keyWord)
+        {
+            var users = await _dataContext.User.ToListAsync();
+            var documents = new List<DocumentReponseDto>();
+            string[] searchKeywords = keyWord.ToLower().Split(' ');
+            var result = from document in _dataContext.Documents as IEnumerable<Document>
+                         let titleWords = document.Title.ToLower().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
+                         let searchPhrases = HandleCommon.GenerateSearchPhrases(searchKeywords)
+                         let matchingPhrases = searchPhrases
+                            .Where(phrase => titleWords.Contains(phrase))
+                         where matchingPhrases.Any()
+                         let matchCount = matchingPhrases.Count()
+                         orderby matchCount descending
+                         select new Document()
+                         {
+                             Id = document.Id,
+                             SubId = document.SubId,
+                             Title = document.Title,
+                             CreatedAt = document.CreatedAt,
+                             UpdatedAt = document.UpdatedAt,
+                         };
 
+            foreach (var document in result)
+            {
+                var item = _mapper.Map<DocumentReponseDto>(document);
+                var userShort = users.FirstOrDefault(x => x.Id == document.UserId);
+                if (userShort is not null)
+                {
+                    item.UserShort.FullName = userShort.Fullname;
+                    item.UserShort.Id = userShort.Id;
+                    item.UserShort.Image = userShort.Image;
+                }
+                documents.Add(item);
+            }
+            return new ApiSuccessResult<List<DocumentReponseDto>>(documents);
+        }
     }
 }

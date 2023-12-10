@@ -288,14 +288,28 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
                     UserId = Guid.Parse(answer.UserId)
                 };
                 _dataContext.AnswerVotes.Add(answerVote);
+                await _dataContext.SaveChangesAsync();
+                var numberVote = await _dataContext.AnswerVotes.Where(x => x.AnswerId == Guid.Parse(answer.AnswerId)).CountAsync();
+                return new ApiSuccessResult<NumberReponse>(new() { Check = true, Quantity = numberVote });
+
             }
             else
             {
                 _dataContext.AnswerVotes.Remove(userVote);
+                await _dataContext.SaveChangesAsync();
+                var numberVote = await _dataContext.AnswerVotes.Where(x => x.AnswerId == Guid.Parse(answer.AnswerId)).CountAsync();
+                return new ApiSuccessResult<NumberReponse>(new() { Check = false, Quantity = numberVote });
+
             }
-            await _dataContext.SaveChangesAsync();
-            var numberVote = await _dataContext.AnswerVotes.Where(x=>x.AnswerId == Guid.Parse(answer.AnswerId)).CountAsync();
-            return new ApiSuccessResult<NumberReponse>(new() { Check = true, Quantity = numberVote });
+        }
+
+        public async Task<ApiResult<NumberReponse>> GetMyVote(string answerId, string userId)
+        {
+            var myVotes = await _dataContext.AnswerVotes.Where(x => x.AnswerId.ToString().Equals(answerId) && x.UserId.ToString().Equals(userId)).FirstOrDefaultAsync();
+            if(myVotes != null)
+            {
+                return new ApiSuccessResult<NumberReponse>(new() { Check = false, Quantity = 0 }) ;
+            } return new ApiSuccessResult<NumberReponse>(new() { Check = true, Quantity = 0 });
         }
     }
 }

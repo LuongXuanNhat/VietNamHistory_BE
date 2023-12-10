@@ -75,7 +75,12 @@ namespace VNH.WebAPi.Controllers
             return result is null ? BadRequest(result) : Ok(result);
         }
 
-
+        [HttpGet("Search")]
+        public async Task<IActionResult> Search(string keyWord)
+        {
+            var result = await _documentService.Search(keyWord);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
+        }
 
     }
 }

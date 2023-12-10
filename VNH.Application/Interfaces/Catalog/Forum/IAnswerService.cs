@@ -21,5 +21,6 @@ namespace VNH.Application.Interfaces.Catalog.Forum
 
         Task<ApiResult<NumberReponse>> ConfirmedByQuestioner(string answerId);
         Task<ApiResult<NumberReponse>> VoteConfirmByUser(AnswerFpkDto answer);
+        Task<ApiResult<NumberReponse>> GetMyVote(string answerId, string userId);
     }
 }
