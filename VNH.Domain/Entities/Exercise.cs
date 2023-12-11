@@ -37,8 +37,6 @@ namespace VNH.Domain
         [ForeignKey("Id")]
         [InverseProperty("Exercise")]
         public virtual Lesson IdNavigation { get; set; }
-        [InverseProperty("IdNavigation")]
-        public virtual Quiz Quiz { get; set; }
         [InverseProperty("Exercise")]
         public virtual ICollection<ExerciseDetail> ExerciseDetails { get; set; }
     }

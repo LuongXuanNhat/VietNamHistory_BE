@@ -58,6 +58,13 @@ namespace VNH.Infrastructure.Presenters.Migrations
         public virtual DbSet<Topic> Topics { get; set; }
         public virtual DbSet<TopicDetail> TopicDetails { get; set; }
         public virtual DbSet<User> User { get; set; }
+
+        public virtual DbSet<QuizAnswer> QuizAnswers { get; set; }
+        public virtual DbSet<MultipleChoice> MultipleChoices { get; set; }
+        public virtual DbSet<ExamHistory> ExamHistories { get; set; }
+
+
+
         #endregion
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -452,11 +459,17 @@ namespace VNH.Infrastructure.Presenters.Migrations
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
-                entity.HasOne(d => d.IdNavigation)
-                    .WithOne(p => p.Quiz)
-                    .HasForeignKey<Quiz>(d => d.Id)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Quiz__Id__29221CFB");
+                entity.HasOne(d => d.MultipleChoice)
+                     .WithMany(p => p.Quiz)
+                     .HasForeignKey(d => d.MultipleChoiceId)
+                     .HasConstraintName("FK__MultipleChoice__Id__07C12930");
+
+
+
+                entity.HasMany(d => d.QuizAnswers)
+                   .WithOne(p => p.Quiz)
+                   .HasForeignKey(d => d.QuizId)
+                   .HasConstraintName("FK__QuizAnswers__QuizId__1AD3FVA4");
             });
 
             modelBuilder.Entity<Search>(entity =>
@@ -521,6 +534,28 @@ namespace VNH.Infrastructure.Presenters.Migrations
 
                 
             });
+
+            modelBuilder.Entity<MultipleChoice>(entity =>
+            {
+
+                entity.HasOne(e => e.ExamHistories).WithOne(d => d.MultipleChoice).HasForeignKey<ExamHistory>(e => e.MultipleChoiceId);
+
+                entity.HasOne(e=>e.User).WithMany(d=>d.MultipleChoices).HasForeignKey(e=>e.UserId).HasConstraintName("FK__MultipleChoice__UserId__06CD04F7");
+            });
+
+
+
+            modelBuilder.Entity<ExamHistory>(entity =>
+            {
+
+                entity.HasOne(e => e.MultipleChoice).WithOne(d => d.ExamHistories).HasForeignKey<ExamHistory>(e => e.MultipleChoiceId);
+            });
+
+
+
+
+       
+
 
             modelBuilder.Entity<IdentityUserRole<Guid>>().ToTable("UserRoles").HasKey(x => new { x.UserId, x.RoleId });
             modelBuilder.Entity<IdentityUserLogin<Guid>>().ToTable("AppUserLogins").HasKey(x => x.UserId);

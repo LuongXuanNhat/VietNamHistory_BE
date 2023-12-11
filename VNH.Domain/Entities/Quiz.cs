@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
+using VNH.Domain.Entities;
 
 namespace VNH.Domain
 {
@@ -13,20 +14,19 @@ namespace VNH.Domain
     {
         [Key]
         public Guid Id { get; set; }
-        public string Question { get; set; }
-        [StringLength(500)]
-        public string Answer1 { get; set; }
-        [StringLength(500)]
-        public string Answer2 { get; set; }
-        [StringLength(500)]
-        public string Answer3 { get; set; }
-        [StringLength(500)]
-        public string Answer4 { get; set; }
-        [StringLength(500)]
-        public string RightAnswer { get; set; }
 
-        [ForeignKey("Id")]
+        [StringLength(500)]
+        public string Content { get; set; }
+        
+
+        public Guid MultipleChoiceId { get; set; } =Guid.Empty;
+
         [InverseProperty("Quiz")]
-        public virtual Exercise IdNavigation { get; set; }
+        public virtual ICollection<QuizAnswer> QuizAnswers { get; set; }
+
+        [ForeignKey("MultipleChoiceId")]
+        [InverseProperty("Quiz")]
+        public virtual MultipleChoice MultipleChoice { get; set; }
+
     }
 }

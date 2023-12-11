@@ -29,6 +29,7 @@ namespace VNH.Domain
             PostSaves = new HashSet<PostSave>();
             PostSubComments = new HashSet<PostSubComment>();
             Posts = new HashSet<Post>();
+            MultipleChoices = new HashSet<MultipleChoice>();
             QuestionLikes = new HashSet<QuestionLike>();
             QuestionReportDetails = new HashSet<QuestionReportDetail>();
             QuestionSaves = new HashSet<QuestionSave>();
@@ -54,6 +55,9 @@ namespace VNH.Domain
         public virtual ICollection<AnswerVote> AnswerVotes { get; set; }
         [InverseProperty("Author")]
         public virtual ICollection<Answer> Answers { get; set; }
+        [InverseProperty("User")]
+        public virtual ICollection<MultipleChoice> MultipleChoices{ get; set; }
+
         [InverseProperty("User")]
         public virtual ICollection<CourseComment> CourseComments { get; set; }
         [InverseProperty("User")]

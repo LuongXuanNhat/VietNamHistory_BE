@@ -32,6 +32,8 @@ using VNH.Application.Interfaces.Documents;
 using VNH.Infrastructure.Implement.Catalog.Documents;
 using VNH.Application.Interfaces.Catalog.Forum;
 using VNH.Infrastructure.Implement.Catalog.Forum;
+using VNH.Application.Interfaces.Catalog.MultipleChoices;
+using VNH.Infrastructure.Implement.Catalog.MultipleChoices;
 
 namespace VNH.Infrastructure
 {
@@ -117,7 +119,7 @@ namespace VNH.Infrastructure
             services.AddSingleton<ISendMailService, SendMailService>();
 
             services.AddSingleton<IStorageService, StorageService>();
-
+        
             services.AddScoped<IImageService, ImageService>();
             services.AddScoped<IHashTag, TagService>();
             services.AddScoped<IAccountService, AccountService>();
@@ -128,6 +130,7 @@ namespace VNH.Infrastructure
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<IQuestionService, QuestionService>();
             services.AddScoped<IAnswerService, AnswerService>();
+            services.AddScoped<IMultipleChoiceService, MultipleChoiceService>();
             services.AddSignalR();
 
             
