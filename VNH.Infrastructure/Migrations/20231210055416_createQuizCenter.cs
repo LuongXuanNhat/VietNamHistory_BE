@@ -106,7 +106,7 @@ namespace VNH.Infrastructure.Migrations
                     MultipleChoiceId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Scores = table.Column<int>(type: "int", nullable: false),
-                    CompletionTime = table.Column<DateTime>(type: "datetime", nullable: false),
+                    CompletionTime = table.Column<int>(type: "int", nullable: false),
                     StarDate = table.Column<DateTime>(type: "datetime", nullable: false)
                 },
                 constraints: table =>

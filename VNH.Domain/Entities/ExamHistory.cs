@@ -22,8 +22,8 @@ namespace VNH.Domain.Entities
 
         public int Scores { get; set; }
 
-        [Column(TypeName = "datetime")]
-        public DateTime CompletionTime { get; set; }
+      
+        public int CompletionTime { get; set; }
 
         [Column(TypeName = "datetime")]
         public DateTime StarDate { get; set; }

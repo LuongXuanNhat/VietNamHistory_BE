@@ -34,6 +34,8 @@ using VNH.Application.Interfaces.Catalog.Forum;
 using VNH.Infrastructure.Implement.Catalog.Forum;
 using VNH.Application.Interfaces.Catalog.MultipleChoices;
 using VNH.Infrastructure.Implement.Catalog.MultipleChoices;
+using VNH.Application.Interfaces.Catalog.ExamHistory;
+using VNH.Infrastructure.Implement.Catalog.ExamHistorys;
 
 namespace VNH.Infrastructure
 {
@@ -131,6 +133,7 @@ namespace VNH.Infrastructure
             services.AddScoped<IQuestionService, QuestionService>();
             services.AddScoped<IAnswerService, AnswerService>();
             services.AddScoped<IMultipleChoiceService, MultipleChoiceService>();
+            services.AddScoped<IExamHistoryService, ExamHistoryService>();
             services.AddSignalR();
 
             
