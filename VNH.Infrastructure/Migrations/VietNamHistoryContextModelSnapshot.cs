@@ -341,6 +341,9 @@ namespace VNH.Infrastructure.Migrations
                     b.Property<string>("FileName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("FilePath")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -359,6 +362,9 @@ namespace VNH.Infrastructure.Migrations
                         .HasMaxLength(255)
                         .IsUnicode(false)
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<long>("View")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -954,49 +960,49 @@ namespace VNH.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("d30e1353-0163-43c1-b757-7957981b0eda"),
-                            CreatedAt = new DateTime(2023, 12, 5, 18, 39, 16, 240, DateTimeKind.Local).AddTicks(5119),
+                            CreatedAt = new DateTime(2023, 12, 12, 9, 47, 16, 299, DateTimeKind.Local).AddTicks(1611),
                             Description = " Báo cáo này được sử dụng khi người dùng chia sẻ nội dung cá nhân của bạn mà bạn cho rằng vi phạm quyền riêng tư của bạn.",
                             Title = "Nội dung vi phạm quy định về quyền riêng tư"
                         },
                         new
                         {
                             Id = new Guid("25752490-4ba5-4abb-ac3b-192205cd1b6e"),
-                            CreatedAt = new DateTime(2023, 12, 5, 18, 39, 16, 240, DateTimeKind.Local).AddTicks(5130),
+                            CreatedAt = new DateTime(2023, 12, 12, 9, 47, 16, 299, DateTimeKind.Local).AddTicks(1627),
                             Description = "Sử dụng khi bạn thấy nội dung bài đăng chứa lời lẽ xúc phạm, kỳ thị hoặc có tính chất đe doạ đến người khác.",
                             Title = "Nội dung xấu, xúc phạm, hay kỳ thị"
                         },
                         new
                         {
                             Id = new Guid("bab1da58-6921-44b9-837f-c58d3998497b"),
-                            CreatedAt = new DateTime(2023, 12, 5, 18, 39, 16, 240, DateTimeKind.Local).AddTicks(5132),
+                            CreatedAt = new DateTime(2023, 12, 12, 9, 47, 16, 299, DateTimeKind.Local).AddTicks(1630),
                             Description = "Dùng khi bạn thấy nội dung chứa hình ảnh hoặc video bạo lực hoặc đội nhóm xấu, hoặc khuyến khích hành vi bạo lực.",
                             Title = "Chứa nội dung bạo lực hoặc đội nhóm xấu"
                         },
                         new
                         {
                             Id = new Guid("349ed807-6107-436f-9a4c-9d6183fbc444"),
-                            CreatedAt = new DateTime(2023, 12, 5, 18, 39, 16, 240, DateTimeKind.Local).AddTicks(5135),
+                            CreatedAt = new DateTime(2023, 12, 12, 9, 47, 16, 299, DateTimeKind.Local).AddTicks(1632),
                             Description = "Sử dụng khi bạn thấy nội dung chứa hình ảnh tự tử hoặc khuyến khích hành vi tự gây thương tổn.",
                             Title = "Chứa nội dung tự tử hoặc tự gây thương tổn"
                         },
                         new
                         {
                             Id = new Guid("c4ddb872-06c5-4779-a8a3-a55e5b2c5347"),
-                            CreatedAt = new DateTime(2023, 12, 5, 18, 39, 16, 240, DateTimeKind.Local).AddTicks(5137),
+                            CreatedAt = new DateTime(2023, 12, 12, 9, 47, 16, 299, DateTimeKind.Local).AddTicks(1634),
                             Description = "Sử dụng khi bạn cho rằng Nội dung vi phạm quyền sở hữu trí tuệ hoặc bản quyền, chẳng hạn như sử dụng hình ảnh hoặc video mà bạn sở hữu mà không có sự cho phép.",
                             Title = "Nội dung vi phạm bản quyền hoặc sở hữu trí tuệ"
                         },
                         new
                         {
                             Id = new Guid("4a780087-9058-41c9-b84b-944d1a502010"),
-                            CreatedAt = new DateTime(2023, 12, 5, 18, 39, 16, 240, DateTimeKind.Local).AddTicks(5139),
+                            CreatedAt = new DateTime(2023, 12, 12, 9, 47, 16, 299, DateTimeKind.Local).AddTicks(1640),
                             Description = "Sử dụng khi bạn thấy rằng nội dung chứa thông tin sai lệch, giả mạo hoặc vi phạm quy tắc về sự thật và trung thực.",
                             Title = "Bài đăng chứa thông tin sai lệch hoặc giả mạo"
                         },
                         new
                         {
                             Id = new Guid("3043c693-b3c9-453e-9876-31c943222576"),
-                            CreatedAt = new DateTime(2023, 12, 5, 18, 39, 16, 240, DateTimeKind.Local).AddTicks(5141),
+                            CreatedAt = new DateTime(2023, 12, 12, 9, 47, 16, 299, DateTimeKind.Local).AddTicks(1642),
                             Description = "Dùng khi bạn muốn báo cáo vì nó quá nhiều thông báo hoặc quảng cáo không mong muốn.",
                             Title = "Nội dung xuất hiện quá nhiều thông báo hoặc quảng cáo không mong muốn"
                         });
@@ -1025,21 +1031,21 @@ namespace VNH.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("a18be9c0-aa65-4af8-bd17-00bd9344e575"),
-                            ConcurrencyStamp = "0280c004-4c9d-4c8d-b5db-b082e6f7acb0",
+                            ConcurrencyStamp = "888867a4-0df8-48f5-92ea-be3390ce5b56",
                             Name = "admin",
                             NormalizedName = "admin"
                         },
                         new
                         {
                             Id = new Guid("cfafcfcd-d796-43f4-8ac0-ead43bd2f18a"),
-                            ConcurrencyStamp = "b7987496-177d-4832-9dfa-b9bbd1d9f845",
+                            ConcurrencyStamp = "a7fa582e-0c4f-40cb-9a4a-bb514b928765",
                             Name = "teacher",
                             NormalizedName = "teacher"
                         },
                         new
                         {
                             Id = new Guid("5d4e4081-91f8-4fc0-b8eb-9860b7849604"),
-                            ConcurrencyStamp = "ef959ed9-61b1-490f-99c0-7f0e4dede450",
+                            ConcurrencyStamp = "c50b8b3c-ebb1-4513-a0fc-fcb20188d503",
                             Name = "student",
                             NormalizedName = "student"
                         });
@@ -1231,7 +1237,7 @@ namespace VNH.Infrastructure.Migrations
                         {
                             Id = new Guid("d1f771da-b318-42f8-a003-5a15614216f5"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "8ef2dc7b-f7d6-4b9e-a78f-762bbc8312be",
+                            ConcurrencyStamp = "0a0db25c-06b1-42b2-a22a-a859b5f47748",
                             DateOfBirth = new DateTime(2002, 3, 18, 0, 0, 0, 0, DateTimeKind.Local),
                             Email = "admin@gmail.com",
                             EmailConfirmed = true,
@@ -1242,7 +1248,7 @@ namespace VNH.Infrastructure.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "onionwebdev@gmail.com",
                             NormalizedUserName = "admin",
-                            PasswordHash = "AQAAAAEAACcQAAAAEFYvExancfwhSmTXA7fMTCW4e2eH7v0R7f+24QMimThVbykB6RkZFmfzHeqHbq5r6w==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEEGRB/XryRjGgXPuq/6e4gUEc4SYzxHYaTfPjMmehGxm6QAyYn2WPfXZxOWCcfrPAg==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,

@@ -11,7 +11,7 @@ namespace VNH.Application.Mappers
         {
             CreateMap<CreateDocumentDto, Document>()
                .ForMember(dest => dest.FileName, opt => opt.Ignore());
-            CreateMap<Document,DocumentReponseDto>().ForMember(dest => dest.FileName, opt => opt.Ignore());
+            CreateMap<Document,DocumentReponseDto>().ReverseMap().ForMember(dest => dest.FileName, opt => opt.Ignore());
         }
     }
 }

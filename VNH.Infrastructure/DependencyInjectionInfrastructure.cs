@@ -50,6 +50,13 @@ namespace VNH.Infrastructure
                 .WriteTo.File("log.txt", rollingInterval: RollingInterval.Day)
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
                 .CreateLogger();
+            Console.WriteLine($"Working Directory: {Directory.GetCurrentDirectory()}");
+
+            var connectionString = configuration.GetConnectionString("LocalMySqlConnect");
+            services.AddDbContext<VietNamHistoryContext>(options =>
+            {
+                options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+            });
 
             services.AddScoped<IUserService, UserService>();
             services.AddIdentity<User,Role>()
@@ -102,16 +109,7 @@ namespace VNH.Infrastructure
             {
                 options.LoggingFields = HttpLoggingFields.RequestPropertiesAndHeaders;
             });
-            services.AddCors(options =>
-            {
-                options.AddPolicy("AllowAngularDev", builder =>
-                {
-                    builder.WithOrigins("http://localhost:4200", "https://luongxuannhat.github.io", "https://toiyeulichsu.com")
-                           .AllowAnyHeader()
-                           .AllowAnyMethod()
-                           .AllowCredentials();
-                });
-            });
+
             services.AddOptions();
             services.AddSession();
             var mailsettings = configuration.GetSection("MailSettings");  

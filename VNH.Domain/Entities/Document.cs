@@ -23,6 +23,7 @@ namespace VNH.Domain
         public string Title { get; set; }
         [StringLength(500)]
         public string Description { get; set; }
+        public string FilePath { get; set; }
         public string SubId { get; set; }
         public bool IsDeleted { get; set; } = false;
         public string FileName { get; set; }
@@ -33,7 +34,7 @@ namespace VNH.Domain
         public DateTime CreatedAt { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime? UpdatedAt { get; set; }
-
+        public long View { get; set; }
         [ForeignKey("UserId")]
         [InverseProperty("Documents")]
         public virtual User User { get; set; }

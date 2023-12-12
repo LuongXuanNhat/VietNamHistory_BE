@@ -64,7 +64,7 @@ namespace VNH.Infrastructure.Presenters.Migrations
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(SystemConstants.ConnectString);
+                optionsBuilder.UseMySql(SystemConstants.ConnectString, ServerVersion.AutoDetect(SystemConstants.ConnectString));
             }
         }
 

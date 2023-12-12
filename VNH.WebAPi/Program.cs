@@ -1,15 +1,14 @@
-using VNH.Application;
+﻿using VNH.Application;
 using VNH.Infrastructure;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.Extensions.Options;
 using VNH.Infrastructure.Presenters;
-using Microsoft.Extensions.Configuration;
 using VNH.Infrastructure.Presenters.Migrations;
 using Microsoft.EntityFrameworkCore;
-using VNH.Application.Interfaces.Catalog.Forum;
+using Serilog;
+using Microsoft.Extensions.Configuration;
 
 namespace VNH.WebAPi
 {
@@ -21,13 +20,15 @@ namespace VNH.WebAPi
 
             // Add services to the container.
             // Add DI in other layer
-            var connectionString = builder.Environment.IsDevelopment()
-                                 ? builder.Configuration.GetConnectionString("LocalDataConnect")
-                                 : builder.Configuration.GetConnectionString("DataConnect");
-            builder.Services.AddDbContext<VietNamHistoryContext>(options =>
-            {
-                options.UseSqlServer(connectionString);
-            });
+
+            //var connectionString = builder.Environment.IsDevelopment()
+            //                     ? builder.Configuration.GetConnectionString("LocalDataConnect")
+            //                     : builder.Configuration.GetConnectionString("DataConnect");
+            //builder.Services.AddDbContext<VietNamHistoryContext>(options =>
+            //{
+            //    options.UseSqlServer(connectionString);
+            //});
+
             builder.Services.AddInfrastructure(builder.Configuration);
             builder.Services.AddApplication();
 
@@ -43,7 +44,6 @@ namespace VNH.WebAPi
             builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
-
 
             #region  SwaggerGen Configuration
             builder.Services.AddSwaggerGen(c =>
@@ -122,38 +122,45 @@ namespace VNH.WebAPi
                 app.UseSwagger();
                 app.UseSwaggerUI();
             //}
-            app.UseForwardedHeaders();
+            app.UseHttpsRedirection();
             app.UseHttpLogging();
-
-            app.Use(async (context, next) =>
-            {
-                app.Logger.LogInformation("Request RemoteIp: {RemoteIpAddress}",
-                    context.Connection.RemoteIpAddress);
-                await next(context);
-            });
-            
-            app.UseStaticFiles();
             app.UseForwardedHeaders();
-            
-            app.UseSession();
-            app.UseHttpsRedirection();
-            app.UseRouting();
-            app.UseCors("AllowAngularDev");
-            app.UseAuthentication();
-            app.UseAuthorization();
-            app.MapControllers();
-            app.UseHttpsRedirection();
+            app.UseResponseCaching();
+            app.UseStaticFiles();
             app.UseCookiePolicy(new CookiePolicyOptions()
             {
                 MinimumSameSitePolicy = SameSiteMode.Lax
             });
+            app.UseRouting();
+            app.UseSession();
+            app.UseCors(options =>
+            {
+            options.WithOrigins("http://localhost:4200",
+                                "https://luongxuannhat.github.io", 
+                                "https://toiyeulichsu.com")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+            });
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+            app.Use(async (context, next) =>
+            {
+                app.Logger.LogInformation("Request RemoteIp: {RemoteIpAddress}", context.Connection.RemoteIpAddress);
+                context.Response.Headers.Add("Access-Control-Allow-Origin", "http://localhost:4200");
+                context.Response.Headers.Add("Access-Control-Allow-Headers", "Content-Type, Accept");
+                await next(context);
+            });
+            app.MapControllers();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHub<ChatSignalR>("/commentHub");
             });
+            
+            
             app.Run();
         }
-
 
     }
 }

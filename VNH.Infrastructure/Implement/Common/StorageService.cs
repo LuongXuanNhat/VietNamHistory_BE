@@ -6,11 +6,14 @@ namespace VNH.Infrastructure.Implement.Common
     public class StorageService : IStorageService
     {
         private readonly string _userContentFolder;
+        private readonly string _userDocumentFolder;
         private const string USER_CONTENT_FOLDER_NAME = "Images";
+        private const string USER_DOCUMENT_FOLDER_NAME = "Documents";
 
         public StorageService(IWebHostEnvironment webHostEnvironment)
         {
             _userContentFolder = Path.Combine(webHostEnvironment.WebRootPath, USER_CONTENT_FOLDER_NAME);
+            _userDocumentFolder = Path.Combine(webHostEnvironment.WebRootPath, USER_DOCUMENT_FOLDER_NAME);
         }
 
         public string GetFileUrl(string fileName)
@@ -33,6 +36,13 @@ namespace VNH.Infrastructure.Implement.Common
             {
                 await Task.Run(() => File.Delete(filePath));
             }
+        }
+
+        public async Task SaveFileDocAsync(Stream mediaBinaryStream, string fileName)
+        {
+            var filePath = Path.Combine(_userDocumentFolder, fileName);
+            using var output = new FileStream(filePath, FileMode.Create);
+            await mediaBinaryStream.CopyToAsync(output);
         }
     }
 }

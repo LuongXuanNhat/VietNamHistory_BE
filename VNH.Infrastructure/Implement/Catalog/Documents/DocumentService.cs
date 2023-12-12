@@ -12,7 +12,6 @@ using VNH.Domain;
 using VNH.Infrastructure.Presenters.Migrations;
 using Microsoft.EntityFrameworkCore;
 using VNH.Infrastructure.Implement.Common;
-using VNH.Application.DTOs.Catalog.Forum.Question;
 
 namespace VNH.Infrastructure.Implement.Catalog.Documents
 {
@@ -38,9 +37,12 @@ namespace VNH.Infrastructure.Implement.Catalog.Documents
         public async Task<ApiResult<DocumentReponseDto>> Create(CreateDocumentDto requestDto,string name)
         {
             var user = await _userManager.FindByEmailAsync(name);
-            var document = _mapper.Map<Document>(requestDto);
+            var document = new Document();
+            document.Title = requestDto.Title;
+            document.Description = requestDto.Description;
             document.Id = Guid.NewGuid();
-            document.FileName = await _document.SaveFile(requestDto.FileName);
+            document.FileName = requestDto.FileName.FileName;
+            document.FilePath = await _document.SaveFile(requestDto.FileName);
             document.CreatedAt = DateTime.Now;
             document.UserId = user.Id;
             string formattedDateTime = document.CreatedAt.ToString("HHmmss.fff") + HandleCommon.GenerateRandomNumber().ToString();
@@ -85,7 +87,8 @@ namespace VNH.Infrastructure.Implement.Catalog.Documents
             {
                 await _storageService.DeleteFileAsync(updateDocument.FileName);
             }
-            updateDocument.FileName = await _document.SaveFile(requestDto.FileName);
+            updateDocument.FileName = requestDto.FileName.FileName;
+            updateDocument.FilePath = await _document.SaveFile(requestDto.FileName);
             updateDocument.UpdatedAt = DateTime.Now;
             updateDocument.Description = requestDto.Description;
             updateDocument.Title = requestDto.Title;    
@@ -156,13 +159,15 @@ namespace VNH.Infrastructure.Implement.Catalog.Documents
                 .UserId.ToString());
             var documentResponse = _mapper.Map<DocumentReponseDto>(document);
             documentResponse.FileName = document.FileName;
-            documentResponse
-                .UserShort = new()
+            documentResponse.UserShort = new()
             {
                 FullName = user.Fullname,
                 Id = user.Id,
                 Image = user.Image
             };
+            document.View += 1;
+            documentResponse.View += 1;
+            _dataContext.Documents.Update(document);
 
             await _dataContext.SaveChangesAsync();
             return new ApiSuccessResult<DocumentReponseDto>(documentResponse);

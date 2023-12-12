@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using VNH.Application.DTOs.Catalog.Document;
-using VNH.Application.DTOs.Catalog.Posts;
 using VNH.Application.Interfaces.Documents;
 
 namespace VNH.WebAPi.Controllers
@@ -82,5 +81,6 @@ namespace VNH.WebAPi.Controllers
             return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
 
+       
     }
 }
