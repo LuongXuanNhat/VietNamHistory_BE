@@ -14,15 +14,6 @@ namespace VNH.Domain
         [Key]
         public Guid Id { get; set; }
         public string Question { get; set; }
-        [StringLength(500)]
-        public string Answer1 { get; set; }
-        [StringLength(500)]
-        public string Answer2 { get; set; }
-        [StringLength(500)]
-        public string Answer3 { get; set; }
-        [StringLength(500)]
-        public string Answer4 { get; set; }
-        [StringLength(500)]
         public string RightAnswer { get; set; }
 
         [ForeignKey("Id")]

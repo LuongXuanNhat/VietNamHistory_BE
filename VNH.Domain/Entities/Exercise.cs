@@ -18,9 +18,6 @@ namespace VNH.Domain
 
         [Key]
         public Guid Id { get; set; }
-        [Required]
-        [StringLength(255)]
-        [Unicode(false)]
         public string Title { get; set; }
         [Column(TypeName = "text")]
         public string Description { get; set; }

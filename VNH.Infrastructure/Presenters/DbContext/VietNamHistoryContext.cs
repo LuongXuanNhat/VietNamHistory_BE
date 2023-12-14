@@ -73,11 +73,14 @@ namespace VNH.Infrastructure.Presenters.Migrations
             modelBuilder.Entity<Notification>(entity =>
             {
                 entity.Property(x => x.Id).ValueGeneratedNever();
+                entity.Property(x=>x.Title).HasColumnType("text");
             });
 
             modelBuilder.Entity<NotificationDetail>(entity =>
             {
                 entity.Property(x => x.Id).ValueGeneratedNever();
+                entity.Property(x => x.Content).HasColumnType("text");
+
 
                 entity.HasOne(p => p.Notification)
                     .WithMany(x => x.NotificationDetails)
@@ -93,6 +96,7 @@ namespace VNH.Infrastructure.Presenters.Migrations
             modelBuilder.Entity<Answer>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(x => x.Content).HasColumnType("text");
 
                 entity.HasOne(d => d.Author)
                     .WithMany(p => p.Answers)
@@ -119,6 +123,8 @@ namespace VNH.Infrastructure.Presenters.Migrations
             modelBuilder.Entity<Course>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(x => x.CourseName).HasColumnType("text");
+                entity.Property(x => x.Description).HasColumnType("text");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Courses)
@@ -129,6 +135,7 @@ namespace VNH.Infrastructure.Presenters.Migrations
             modelBuilder.Entity<CourseComment>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(x => x.Content).HasColumnType("text");
 
                 entity.HasOne(d => d.Course)
                     .WithMany(p => p.CourseComments)
@@ -174,6 +181,7 @@ namespace VNH.Infrastructure.Presenters.Migrations
             modelBuilder.Entity<CourseSubComment>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(x => x.Content).HasColumnType("text");
 
                 entity.HasOne(d => d.PreComment)
                     .WithMany(p => p.CourseSubComments)
@@ -189,6 +197,8 @@ namespace VNH.Infrastructure.Presenters.Migrations
             modelBuilder.Entity<Document>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(x => x.Title).HasColumnType("text");
+                entity.Property(x => x.Description).HasColumnType("text");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Documents)
@@ -214,6 +224,7 @@ namespace VNH.Infrastructure.Presenters.Migrations
             modelBuilder.Entity<Exercise>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(x => x.Title).HasColumnType("text");
 
                 entity.HasOne(d => d.IdNavigation)
                     .WithOne(p => p.Exercise)
@@ -240,6 +251,8 @@ namespace VNH.Infrastructure.Presenters.Migrations
             modelBuilder.Entity<Lesson>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(x => x.Description).HasColumnType("text");
+                entity.Property(x => x.Title).HasColumnType("text");
 
                 entity.HasOne(d => d.Course)
                     .WithMany(p => p.Lessons)
@@ -250,10 +263,15 @@ namespace VNH.Infrastructure.Presenters.Migrations
             modelBuilder.Entity<News>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(x => x.Description).HasColumnType("text");
+                entity.Property(x => x.Title).HasColumnType("text");
             });
 
             modelBuilder.Entity<Post>(entity =>
             {
+                entity.Property(x => x.Content).HasColumnType("text");
+                entity.Property(x => x.Title).HasColumnType("text");
+
                 entity.HasOne(d => d.Topic)
                     .WithMany(p => p.Posts)
                     .HasForeignKey(d => d.TopicId)
@@ -268,6 +286,7 @@ namespace VNH.Infrastructure.Presenters.Migrations
             modelBuilder.Entity<PostComment>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(x => x.Content).HasColumnType("text");
 
                 entity.HasOne(d => d.Post)
                     .WithMany(p => p.PostComments)
@@ -300,11 +319,14 @@ namespace VNH.Infrastructure.Presenters.Migrations
             modelBuilder.Entity<Report>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(x => x.Description).HasColumnType("text");
+                entity.Property(x => x.Title).HasColumnType("text");
             });
 
             modelBuilder.Entity<PostReportDetail>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(x => x.Description).HasColumnType("text");
 
                 entity.HasOne(d => d.Post)
                     .WithMany(p => p.PostReportDetails)
@@ -355,6 +377,7 @@ namespace VNH.Infrastructure.Presenters.Migrations
             modelBuilder.Entity<PostSubComment>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(x => x.Content).HasColumnType("text");
 
                 entity.HasOne(d => d.PreComment)
                     .WithMany(p => p.PostSubComments)
@@ -370,6 +393,8 @@ namespace VNH.Infrastructure.Presenters.Migrations
             modelBuilder.Entity<Question>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(x => x.Title).HasColumnType("text");
+                entity.Property(x => x.Content).HasColumnType("text");
 
                 entity.HasOne(d => d.Author)
                     .WithMany(p => p.Questions)
@@ -401,6 +426,7 @@ namespace VNH.Infrastructure.Presenters.Migrations
             modelBuilder.Entity<QuestionReportDetail>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(x => x.Description).HasColumnType("text");
 
                 entity.HasOne(d => d.Question)
                     .WithMany(p => p.QuestionReportDetails)
@@ -462,6 +488,7 @@ namespace VNH.Infrastructure.Presenters.Migrations
             modelBuilder.Entity<Search>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(x => x.Content).HasColumnType("text");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Searches)
@@ -472,6 +499,7 @@ namespace VNH.Infrastructure.Presenters.Migrations
             modelBuilder.Entity<SubAnswer>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(x => x.Content).HasColumnType("text");
 
                 entity.HasOne(d => d.Author)
                     .WithMany(p => p.SubAnswers)
@@ -487,11 +515,14 @@ namespace VNH.Infrastructure.Presenters.Migrations
             modelBuilder.Entity<Tag>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(x => x.Name).HasColumnType("text");
+
             });
 
             modelBuilder.Entity<Topic>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(x => x.Title).HasColumnType("text");
 
                 entity.HasOne(d => d.Author)
                     .WithMany(p => p.Topics)
@@ -518,8 +549,10 @@ namespace VNH.Infrastructure.Presenters.Migrations
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
                 entity.Property(e => e.Image).HasMaxLength(3 * 1024 * 1024);
+                entity.Property(x => x.Fullname).HasColumnType("text");
+                entity.Property(x => x.Introduction).HasColumnType("text");
 
-                
+
             });
 
             modelBuilder.Entity<IdentityUserRole<Guid>>().ToTable("UserRoles").HasKey(x => new { x.UserId, x.RoleId });

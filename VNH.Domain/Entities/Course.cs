@@ -20,9 +20,6 @@ namespace VNH.Domain {
 
         [Key]
         public Guid Id { get; set; }
-        [Required]
-        [StringLength(255)]
-        [Unicode(false)]
         public string CourseName { get; set; }
         public string Description { get; set; }
         public Guid? UserId { get; set; }
