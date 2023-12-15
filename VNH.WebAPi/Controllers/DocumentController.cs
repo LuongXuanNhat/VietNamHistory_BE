@@ -75,7 +75,26 @@ namespace VNH.WebAPi.Controllers
             return result is null ? BadRequest(result) : Ok(result);
         }
 
+        [HttpGet("Search")]
+        public async Task<IActionResult> Search(string keyWord)
+        {
+            var result = await _documentService.Search(keyWord);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
+        }
 
-
+        [HttpGet("MySave")]
+        public async Task<IActionResult> GetMySave()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "";
+            var result = await _documentService.GetMySave(userId);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
+        }
+        [HttpGet("MyDocument")]
+        public async Task<IActionResult> GetMyDocument()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "";
+            var result = await _documentService.GetMyDocument(userId);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
+        }
     }
 }

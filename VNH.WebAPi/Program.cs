@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using VNH.Infrastructure.Presenters.Migrations;
 using Microsoft.EntityFrameworkCore;
 using VNH.Application.Interfaces.Catalog.Forum;
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 
 namespace VNH.WebAPi
 {
@@ -110,9 +111,20 @@ namespace VNH.WebAPi
                 };
             });
 
-         
+
 
             #endregion
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAngularDev", builder =>
+                {
+                    builder.WithOrigins("http://localhost:4200", "https://luongxuannhat.github.io", "https://toiyeulichsu.com")
+                           .AllowAnyHeader()
+                           .AllowAnyMethod()
+                           .AllowCredentials();
+                });
+            });
 
             var app = builder.Build();
 
@@ -122,7 +134,6 @@ namespace VNH.WebAPi
                 app.UseSwagger();
                 app.UseSwaggerUI();
             //}
-            app.UseForwardedHeaders();
             app.UseHttpLogging();
 
             app.Use(async (context, next) =>
@@ -134,7 +145,6 @@ namespace VNH.WebAPi
             
             app.UseStaticFiles();
             app.UseForwardedHeaders();
-            
             app.UseSession();
             app.UseHttpsRedirection();
             app.UseRouting();
@@ -142,7 +152,6 @@ namespace VNH.WebAPi
             app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
-            app.UseHttpsRedirection();
             app.UseCookiePolicy(new CookiePolicyOptions()
             {
                 MinimumSameSitePolicy = SameSiteMode.Lax

@@ -115,6 +115,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
                         };
                         var questionTag = new QuestionTag()
                         {
+                            Id = Guid.NewGuid(),
                             QuestionId = requestDto.Id,
                             TagId = tag.Id
                         };

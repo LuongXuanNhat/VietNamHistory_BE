@@ -36,6 +36,8 @@ using VNH.Application.Interfaces.Catalog.MultipleChoices;
 using VNH.Infrastructure.Implement.Catalog.MultipleChoices;
 using VNH.Application.Interfaces.Catalog.ExamHistory;
 using VNH.Infrastructure.Implement.Catalog.ExamHistorys;
+using VNH.Application.Interfaces.Catalog.NewsHistory;
+using VNH.Infrastructure.Implement.Catalog.NewsHistory;
 
 namespace VNH.Infrastructure
 {
@@ -104,24 +106,15 @@ namespace VNH.Infrastructure
             {
                 options.LoggingFields = HttpLoggingFields.RequestPropertiesAndHeaders;
             });
-            services.AddCors(options =>
-            {
-                options.AddPolicy("AllowAngularDev", builder =>
-                {
-                    builder.WithOrigins("http://localhost:4200", "https://luongxuannhat.github.io")
-                           .AllowAnyHeader()
-                           .AllowAnyMethod()
-                           .AllowCredentials();
-                });
-            });
+            
             services.AddOptions();
             services.AddSession();
             var mailsettings = configuration.GetSection("MailSettings");  
             services.Configure<MailSettings>(mailsettings);
             services.AddSingleton<ISendMailService, SendMailService>();
-
             services.AddSingleton<IStorageService, StorageService>();
-        
+
+            services.AddScoped<INewsService, NewsService>();
             services.AddScoped<IImageService, ImageService>();
             services.AddScoped<IHashTag, TagService>();
             services.AddScoped<IAccountService, AccountService>();

@@ -25,9 +25,8 @@ namespace VNH.Domain
         public string Description { get; set; }
         public string SubId { get; set; }
         public bool IsDeleted { get; set; } = false;
+        public string FilePath { get; set; }
         public string FileName { get; set; }
-        [StringLength(255)]
-        [Unicode(false)]
         public Guid? UserId { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime CreatedAt { get; set; }

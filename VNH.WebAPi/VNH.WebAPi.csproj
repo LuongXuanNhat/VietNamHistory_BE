@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <Folder Include="ViewModels\Common\" />
+    <Folder Include="wwwroot\Documents\" />
   </ItemGroup>
 
   <ItemGroup>

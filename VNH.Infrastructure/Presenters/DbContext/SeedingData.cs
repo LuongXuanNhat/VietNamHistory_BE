@@ -122,6 +122,141 @@ namespace VNH.Infrastructure.Presenters.DbContext
                 Description = "Dùng khi bạn muốn báo cáo vì nó quá nhiều thông báo hoặc quảng cáo không mong muốn."
             }
             );
+
+            modelBuilder.Entity<Topic>().HasData(
+                new Topic()
+                {
+                    Id = new Guid(),
+                    AuthorId = adminId,
+                    Title = "Lịch sử Cổ đại"
+                },
+                new Topic()
+                {
+                    Id = Guid.NewGuid(),
+                    AuthorId = adminId,
+                    Title = "Thời kỳ Trung đại"
+                },
+                new Topic()
+                {
+                    Id = Guid.NewGuid(),
+                    AuthorId = adminId,
+                    Title = "Lịch sử thời kỳ thuộc địa"
+                },
+                new Topic()
+                {
+                    Id = Guid.NewGuid(),
+                    AuthorId = adminId,
+                    Title = "Chiến tranh Việt Nam"
+                },
+                new Topic()
+                {
+                    Id = Guid.NewGuid(),
+                    AuthorId = adminId,
+                    Title = "Thời kỳ đổi mới"
+                },
+                new Topic()
+                {
+                    Id = Guid.NewGuid(),
+                    AuthorId = adminId,
+                    Title = "Văn hóa và Nghệ thuật"
+                },
+                new Topic
+                {
+                    Id = Guid.NewGuid(),
+                    AuthorId = adminId,
+                    Title = "Đời sống trong xã cổ Đông Sơn."
+                },
+                new Topic
+                {
+                    Id = Guid.NewGuid(),
+                    AuthorId = adminId,
+                    Title = "Vương quốc Âu Lạc."
+                },
+                new Topic
+                {
+                    Id = Guid.NewGuid(),
+                    AuthorId = adminId,
+                    Title = "Triều đại Lý."
+                },
+                new Topic()
+                {
+                    Id = Guid.NewGuid(),
+                    AuthorId = adminId,
+                    Title = "Những thăng trầm của triều đại Lê"
+                },
+                new Topic()
+                {
+                    Id = Guid.NewGuid(),
+                    AuthorId = adminId,
+                    Title = "Thời kỳ thuộc địa Pháp"
+                },
+                new Topic()
+                {
+                    Id = Guid.NewGuid(),
+                    AuthorId = adminId,
+                    Title = "Phong trào Duy Tân"
+                },
+                new Topic()
+                {
+                    Id = Guid.NewGuid(),
+                    AuthorId = adminId,
+                    Title = "Chiến tranh Pháp-Đông Dương"
+                },
+                new Topic()
+                {
+                    Id = Guid.NewGuid(),
+                    AuthorId = adminId,
+                    Title = "Chiến tranh Việt Nam"
+                },
+                new Topic()
+                {
+                    Id = Guid.NewGuid(),
+                    AuthorId = adminId,
+                    Title = "Chính sách đổi mới"
+                },
+                new Topic()
+                {
+                    Id = Guid.NewGuid(),
+                    AuthorId = adminId,
+                    Title = "Thách thức hiện đại hóa"
+                },
+                new Topic()
+                {
+                    Id = Guid.NewGuid(),
+                    AuthorId = adminId,
+                    Title = "Văn hóa dân gian"
+                },
+                new Topic()
+                {
+                    Id = Guid.NewGuid(),
+                    AuthorId = adminId,
+                    Title = "Nghệ thuật và văn hóa đương đại"
+                },
+                new Topic()
+                {
+                    Id = Guid.NewGuid(),
+                    AuthorId = adminId,
+                    Title = "Giao lưu văn hóa quốc tế"
+                },
+                new Topic()
+                {
+                    Id = Guid.NewGuid(),
+                    AuthorId = adminId,
+                    Title = "Nhà Nguyễn"
+                },
+                new Topic()
+                {
+                    Id = Guid.NewGuid(),
+                    AuthorId = adminId,
+                    Title = "Anh hùng"
+                },
+                new Topic()
+                {
+                    Id = Guid.NewGuid(),
+                    AuthorId = adminId,
+                    Title = "Nhà Hậu Lê"
+                }
+            );
         }
     }
 }

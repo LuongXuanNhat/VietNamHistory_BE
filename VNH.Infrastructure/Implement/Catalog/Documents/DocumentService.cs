@@ -12,6 +12,8 @@ using VNH.Domain;
 using VNH.Infrastructure.Presenters.Migrations;
 using Microsoft.EntityFrameworkCore;
 using VNH.Infrastructure.Implement.Common;
+using DocumentFormat.OpenXml.Office2010.Excel;
+using VNH.Application.DTOs.Catalog.Posts;
 
 namespace VNH.Infrastructure.Implement.Catalog.Documents
 {
@@ -39,11 +41,12 @@ namespace VNH.Infrastructure.Implement.Catalog.Documents
             var user = await _userManager.FindByEmailAsync(name);
             var document = _mapper.Map<Document>(requestDto);
             document.Id = Guid.NewGuid();
-            document.FileName = await _document.SaveFile(requestDto.FileName);
-            document.CreatedAt = DateTime.Now;
-            document.UserId = user.Id;
             string formattedDateTime = document.CreatedAt.ToString("HHmmss.fff") + HandleCommon.GenerateRandomNumber().ToString();
             document.SubId = HandleCommon.SanitizeString(document.Title) + "-" + formattedDateTime;
+            document.FilePath = await _document.SaveFile(requestDto.FileName, document.SubId);
+            document.CreatedAt = DateTime.Now;
+            document.UserId = user.Id;
+           
             try
             {
                 _dataContext.Documents.Add(document);
@@ -82,15 +85,17 @@ namespace VNH.Infrastructure.Implement.Catalog.Documents
             }
             if (updateDocument.FileName != string.Empty)
             {
-                await _storageService.DeleteFileAsync(updateDocument.FileName);
+                await _storageService.DeleteDocFileAsync(updateDocument.FileName);
             }
-            updateDocument.FileName = await _document.SaveFile(requestDto.FileName);
-            updateDocument.UpdatedAt = DateTime.Now;
-            updateDocument.Description = requestDto.Description;
-            updateDocument.Title = requestDto.Title;    
+            updateDocument.Title = requestDto.Title;
             string formattedDateTime = DateTime.Now.ToString("HHmmss.fff") + HandleCommon.GenerateRandomNumber().ToString();
             var Id = HandleCommon.SanitizeString(updateDocument.Title);
             updateDocument.SubId = Id.Trim().Replace(" ", "-") + "-" + formattedDateTime;
+            updateDocument.FileName = await _document.SaveFile(requestDto.FileName, updateDocument.SubId);
+            updateDocument.UpdatedAt = DateTime.Now;
+            updateDocument.Description = requestDto.Description;
+            
+            
             try
             {
                 _dataContext.Documents.Update(updateDocument);
@@ -226,7 +231,84 @@ namespace VNH.Infrastructure.Implement.Catalog.Documents
 
 
         }
+        public async Task<ApiResult<List<DocumentReponseDto>>> Search(string keyWord)
+        {
+            var users = await _dataContext.User.Where(x=>!x.IsDeleted).ToListAsync();
+            var documents = new List<DocumentReponseDto>();
+            string[] searchKeywords = keyWord.ToLower().Split(' ');
+            var result = from document in _dataContext.Documents as IEnumerable<Document>
+                         let titleWords = document.Title.ToLower().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
+                         let searchPhrases = HandleCommon.GenerateSearchPhrases(searchKeywords)
+                         let matchingPhrases = searchPhrases
+                            .Where(phrase => titleWords.Contains(phrase))
+                         where matchingPhrases.Any()
+                         let matchCount = matchingPhrases.Count()
+                         orderby matchCount descending
+                         select new Document()
+                         {
+                             Id = document.Id,
+                             SubId = document.SubId,
+                             Title = document.Title,
+                             CreatedAt = document.CreatedAt,
+                             UpdatedAt = document.UpdatedAt,
+                         };
 
+            foreach (var document in result)
+            {
+                var item = _mapper.Map<DocumentReponseDto>(document);
+                var userShort = users.FirstOrDefault(x => x.Id == document.UserId);
+                if (userShort is not null)
+                {
+                    item.UserShort.FullName = userShort.Fullname;
+                    item.UserShort.Id = userShort.Id;
+                    item.UserShort.Image = userShort.Image;
+                }
+                documents.Add(item);
+            }
+            return new ApiSuccessResult<List<DocumentReponseDto>>(documents);
+        }
 
+        public async Task<ApiResult<List<DocumentReponseDto>>> GetMyDocument(string userId)
+        {
+            var documents = await _dataContext.Documents.Where(x => x.UserId.Equals(Guid.Parse(userId)) && !x.IsDeleted).ToListAsync();
+            var result = new List<DocumentReponseDto>();
+            foreach (var item in documents)
+            {
+                var post = _mapper.Map<DocumentReponseDto>(item);
+                post.SaveNumber = await _dataContext.DocumentSaves.Where(x => x.DocumentId.Equals(post.Id)).CountAsync();
+                post.ViewNumber = await _dataContext.PostComments.Where(x => x.PostId.Equals(post.Id)).CountAsync();
+                result.Add(post);
+            }
+
+            return new ApiSuccessResult<List<DocumentReponseDto>>(result);
+        }
+
+        public async Task<ApiResult<List<DocumentReponseDto>>> GetMySave(string userId)
+        {
+            Guid UserId = Guid.Parse(userId);
+            var users = await _dataContext.User.Where(x => !x.IsDeleted).ToListAsync();
+
+            var documents = await (
+                from postSave in _dataContext.DocumentSaves
+                join post in _dataContext.Documents on postSave.DocumentId equals post.Id
+                where postSave.UserId == UserId
+                select post
+            ).ToListAsync();
+
+            var result = new List<DocumentReponseDto>();
+            foreach (var item in documents)
+            {
+                var document = _mapper.Map<DocumentReponseDto>(item);
+                var userShort = users.First(x => x.Id == item.UserId);
+                if (userShort is not null)
+                {
+                    document.UserShort.FullName = userShort.Fullname;
+                    document.UserShort.Id = userShort.Id;
+                    document.UserShort.Image = userShort.Image;
+                }
+                result.Add(document);
+            }
+            return new ApiSuccessResult<List<DocumentReponseDto>>(result);
+        }
     }
 }

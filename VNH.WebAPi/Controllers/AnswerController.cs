@@ -118,5 +118,12 @@ namespace VNH.WebAPi.Controllers
             return Ok(result);
         }
 
+        [HttpGet("GetMyVote")]
+        [Authorize]
+        public async Task<IActionResult> GetVote(string answerId, string userId)
+        {
+            var result = await _answerService.GetMyVote(answerId, userId);
+            return Ok(result);
+        }
     }
 }

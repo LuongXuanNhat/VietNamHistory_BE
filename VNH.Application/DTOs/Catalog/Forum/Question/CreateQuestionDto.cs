@@ -9,7 +9,7 @@ namespace VNH.Application.DTOs.Catalog.Forum.Question
     public class CreateQuestionDto
     {
         public Guid? Id { get; set; } = Guid.NewGuid();
-        public string? SubId { get; set; }  
+        public string? SubId { get; set; }  = string.Empty;
         public string? Title { get; set; } = string.Empty;
         public string? Content { get; set; } = string.Empty;
         public List<string>? Tag { get; set; }
