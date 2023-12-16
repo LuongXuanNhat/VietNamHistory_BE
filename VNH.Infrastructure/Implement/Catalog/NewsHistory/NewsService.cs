@@ -94,7 +94,7 @@ namespace VNH.Infrastructure.Implement.Catalog.NewsHistory
 
         }
 
-        public async Task<List<News>> GetNews(string url)
+        public async Task<ApiResult<List<News>>> GetNews(string url)
         {
             var httpClient = new HttpClient();
             var html = httpClient.GetStringAsync(url).Result;
@@ -129,7 +129,7 @@ namespace VNH.Infrastructure.Implement.Catalog.NewsHistory
                 }
             }
 
-            return newsList;
+            return new ApiSuccessResult<List<News>>(newsList);
         }
     }
 }

@@ -44,6 +44,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Documents
             string formattedDateTime = document.CreatedAt.ToString("HHmmss.fff") + HandleCommon.GenerateRandomNumber().ToString();
             document.SubId = HandleCommon.SanitizeString(document.Title) + "-" + formattedDateTime;
             document.FilePath = await _document.SaveFile(requestDto.FileName, document.SubId);
+            document.FileName = document.SubId;
             document.CreatedAt = DateTime.Now;
             document.UserId = user.Id;
            
@@ -91,11 +92,11 @@ namespace VNH.Infrastructure.Implement.Catalog.Documents
             string formattedDateTime = DateTime.Now.ToString("HHmmss.fff") + HandleCommon.GenerateRandomNumber().ToString();
             var Id = HandleCommon.SanitizeString(updateDocument.Title);
             updateDocument.SubId = Id.Trim().Replace(" ", "-") + "-" + formattedDateTime;
-            updateDocument.FileName = await _document.SaveFile(requestDto.FileName, updateDocument.SubId);
+            updateDocument.FilePath = await _document.SaveFile(requestDto.FileName, updateDocument.SubId);
             updateDocument.UpdatedAt = DateTime.Now;
             updateDocument.Description = requestDto.Description;
-            
-            
+            updateDocument.FileName = updateDocument.SubId;
+
             try
             {
                 _dataContext.Documents.Update(updateDocument);

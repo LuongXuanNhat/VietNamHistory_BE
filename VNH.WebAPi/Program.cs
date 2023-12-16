@@ -128,12 +128,9 @@ namespace VNH.WebAPi
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
-            //if (app.Environment.IsDevelopment())
-            //{
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            //}
+            app.UseSwagger();
+            app.UseSwaggerUI();
+
             app.UseHttpLogging();
 
             app.Use(async (context, next) =>
@@ -147,6 +144,7 @@ namespace VNH.WebAPi
             app.UseForwardedHeaders();
             app.UseSession();
             app.UseHttpsRedirection();
+            
             app.UseRouting();
             app.UseCors("AllowAngularDev");
             app.UseAuthentication();

@@ -4,7 +4,7 @@ using VNH.Domain;
 
 namespace VNH.WebAPi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class NewsController : ControllerBase
     {
@@ -26,7 +26,7 @@ namespace VNH.WebAPi.Controllers
         public async Task<IActionResult> GetNews()
         {
             string url = "https://danviet.vn/lich-su-viet-nam.html";
-            List<News> newsList = await _newsService.GetNews(url);
+            var newsList = await _newsService.GetNews(url);
             return Ok(newsList);
         }
 
