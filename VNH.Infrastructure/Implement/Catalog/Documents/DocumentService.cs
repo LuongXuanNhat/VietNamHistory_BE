@@ -41,11 +41,11 @@ namespace VNH.Infrastructure.Implement.Catalog.Documents
             var user = await _userManager.FindByEmailAsync(name);
             var document = _mapper.Map<Document>(requestDto);
             document.Id = Guid.NewGuid();
+            document.CreatedAt = DateTime.Now;
             string formattedDateTime = document.CreatedAt.ToString("HHmmss.fff") + HandleCommon.GenerateRandomNumber().ToString();
             document.SubId = HandleCommon.SanitizeString(document.Title) + "-" + formattedDateTime;
             document.FilePath = await _document.SaveFile(requestDto.FileName, document.SubId);
             document.FileName = document.SubId;
-            document.CreatedAt = DateTime.Now;
             document.UserId = user.Id;
            
             try

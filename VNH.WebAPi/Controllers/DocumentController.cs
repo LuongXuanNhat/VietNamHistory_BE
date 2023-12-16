@@ -8,7 +8,7 @@ using VNH.Application.Interfaces.Documents;
 namespace VNH.WebAPi.Controllers
 {
 
-    [Route("Document")]
+    [Route("[controller]")]
     [ApiController]
     public class DocumentController : ControllerBase
     {
@@ -19,7 +19,7 @@ namespace VNH.WebAPi.Controllers
         }
 
 
-        [HttpGet()]
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             var result = await _documentService.GetAll();
