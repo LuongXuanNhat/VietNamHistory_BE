@@ -1,0 +1,75 @@
+﻿@using VNH.Application.DTOs.Catalog.Users;
+@using VNH.Domain.Enums;
+@model VNH.Application.DTOs.Catalog.Users.UserDetailDto
+
+@{
+    ViewData["Title"] = "Chỉnh sửa thông tin người dùng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <h1 class="">Cập nhật người dùng</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+        <li class="breadcrumb-item active">Cập nhật người dùng</li>
+    </ol>
+    <div class="card mb-4">
+        <div class="card-body" style="padding-left: 2.5rem; padding-right: 2.5rem">
+            <div>
+                <form asp-action="Edit" enctype="multipart/form-data">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="form-group">
+                        <label asp-for="Fullname" class="control-label"></label>
+                        <input asp-for="Fullname" class="form-control" />
+                        <span asp-validation-for="Fullname" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        @{
+                            if (Model.DateOfBirth != null)
+                            {
+                                string formattedDateOfBirth = Model.DateOfBirth.ToString();
+                            }
+
+                        }
+                        <label asp-for="DateOfBirth" class="control-label"></label>
+                        <input asp-for="DateOfBirth" class="form-control" placeholder="@Html.DisplayFor(model => model.DateOfBirth)" asp-format="{0:dd/MM/yyyy}" />
+                        <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                    </div>
+
+@* 
+                    <div class="form-group">
+                        <label asp-for="Gender" class="control-label"></label>
+                        @Html.DropDownListFor(model => model.Gender, new SelectList(new[]
+                        {
+                        new SelectListItem { Value = "2", Text = "Không" },
+                        new SelectListItem { Value = "0", Text = "Nam" },
+                        new SelectListItem { Value = "1", Text = "Nữ" }
+                        }, "Value", "Text"), "Chọn Danh mục", new { @class = "form-control" })
+
+                    </div> *@
+
+                    <div class="form-group">
+                        <label asp-for="Email" class="control-label"></label>
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="PhoneNumber" class="control-label"></label>
+                        <input asp-for="PhoneNumber" class="form-control" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Introduction" class="control-label"></label>
+                        <input asp-for="Introduction" class="form-control" />
+                        <span asp-validation-for="Introduction" class="text-danger"></span>
+                    </div>
+                   
+                    <div class="form-group" style="text-align: end;">
+                        <a class="btn btn-success" asp-action="Index" asp-controller="User">Về danh sách</a>
+                        <input type="submit" value="Lưu lại" class="btn btn-primary" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

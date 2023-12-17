@@ -8,6 +8,8 @@ namespace VNH.Application.DTOs.Catalog.Users
 {
     public class UserDetailDto
     {
+
+        public Guid Id { get; set; }
         [StringLength(200)]
         public string Fullname { get; set; } = string.Empty;
         public virtual string UserName { get; set; } = string.Empty;
@@ -15,7 +17,7 @@ namespace VNH.Application.DTOs.Catalog.Users
         [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? DateOfBirth { get; set; }
         [StringLength(50)]
-        public Gender Gender { get; set; }
+        public Gender? Gender { get; set; }
         public virtual string Email { get; set; } = string.Empty;
         public virtual string PhoneNumber { get; set; } = string.Empty;
         public virtual string Introduction { get; set; } = string.Empty;

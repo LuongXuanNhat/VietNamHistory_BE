@@ -8,7 +8,7 @@ namespace VNH.Domain.Enums
 {
     public enum Confirm
     {
-        Yes,
-        No
+        Yes =1,
+        No = 0
     }
 }

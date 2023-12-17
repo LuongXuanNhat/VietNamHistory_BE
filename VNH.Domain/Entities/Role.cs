@@ -10,7 +10,7 @@ namespace VNH.Domain
 {
     public class Role : IdentityRole<Guid>
     {
-
+ 
 
     }
 }

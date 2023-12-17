@@ -1,0 +1,33 @@
+﻿@using VNH.Application.DTOs.Catalog.Users;
+@model RegisterRequest
+@{
+    ViewData["Title"] = "Thêm người dùng";
+}
+<hr />
+<div class="row" style="padding: 1.5rem;">
+    <div class="col-md-4" style="width: 100%;">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+           
+            <div class="form-group">
+                <label asp-for="Password" class="control-label"></label>
+                <input asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ConfirmPassword" class="control-label"></label>
+                <input asp-for="ConfirmPassword" class="form-control" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+            <div class="form-group m-3" style="text-align: end">
+                <input type="submit" value="Thêm" class="btn btn-primary" />
+                <a class="btn btn-success" asp-action="Index" asp-controller="User">Về danh sách</a>
+            </div>
+        </form>
+    </div>
+</div>

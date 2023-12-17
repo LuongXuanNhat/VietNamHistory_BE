@@ -1,0 +1,34 @@
+﻿@model AdminHistoryUI.ViewModels.Users.UserDeleteRequest
+
+@{
+    ViewData["Title"] = "Xóa tài khoản";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <h1 class="mt-4">Khóa tài khoản người dùng</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+        <li class="breadcrumb-item active">Khóa user</li>
+    </ol>
+    <div class="card mb-4">
+
+        <div class="card-body">
+            <div class="col-md-12">
+                <dl class="row">
+                    <dt class="col-sm-2">
+                        @Html.DisplayNameFor(model => model.Id)
+                    </dt>
+                    <dd class="col-sm-6">
+                        @Html.DisplayFor(model => model.Id)
+                    </dd>
+                    <form class="col-sm-4" asp-action="Delete" style="text-align: end">
+                        <input asp-for="Id" type="hidden" />
+                        <input type="submit" value="Khóa" class="btn btn-danger" />
+                        <a class="btn btn-success" asp-action="Index" asp-controller="User">Về danh sách</a>
+                    </form>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>

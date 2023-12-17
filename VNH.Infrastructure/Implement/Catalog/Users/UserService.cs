@@ -13,6 +13,8 @@ using VNH.Application.Interfaces.Common;
 using Microsoft.AspNetCore.Http;
 using VNH.Infrastructure.Implement.Common;
 using Microsoft.EntityFrameworkCore;
+using VNH.Application.DTOs.Common.Users;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 
 namespace VNH.Infrastructure.Implement.Catalog.Users
 {
@@ -51,6 +53,17 @@ namespace VNH.Infrastructure.Implement.Catalog.Users
             return new ApiSuccessResult<UserDetailDto>(userDetail);
         }
 
+        public async Task<ApiResult<UserDetailDto>> GetUserById(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null) return new ApiErrorResult<UserDetailDto>("Lỗi");
+            var userDetail = _mapper.Map<UserDetailDto>(user);
+            return new ApiSuccessResult<UserDetailDto>(userDetail);
+
+        }
+
+
+
         public async Task<ApiResult<UserDetailDto>> Update(UserUpdateDto request)
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
@@ -69,10 +82,35 @@ namespace VNH.Infrastructure.Implement.Catalog.Users
             }
         }
 
+
+        public async Task<ApiResult<bool>> UpdateForAdmin(Guid id,UserUpdateDto request)
+        {
+            if (await _userManager.Users.AnyAsync(x => x.Email == request.Email && x.Id != id))
+            {
+                return new ApiErrorResult<bool>("Emai đã tồn tại");
+            }
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            _mapper.Map(request, user);
+            var updateResult = await _userManager.UpdateAsync(user);
+            if (updateResult.Succeeded)
+            {
+                return new ApiSuccessResult<bool>();
+            }
+            else
+            {
+                return new ApiErrorResult<bool>("Cập nhật không thành công");
+
+            }
+
+        }
+
+
+
+
         public async Task<ApiResult<string>> GetImage(string email)
         {
-            var user = await _dataContext.User.FirstOrDefaultAsync(x=>x.Email.Equals(email));
-            if(user is null) return new ApiSuccessResult<string>(string.Empty);
+            var user = await _dataContext.User.FirstOrDefaultAsync(x => x.Email.Equals(email));
+            if (user is null) return new ApiSuccessResult<string>(string.Empty);
             return new ApiSuccessResult<string>(user.Image);
         }
 
@@ -87,6 +125,58 @@ namespace VNH.Infrastructure.Implement.Catalog.Users
             _dataContext.User.Update(user);
             await _dataContext.SaveChangesAsync();
             return new ApiSuccessResult<string>("Cập nhập ảnh đại diện thành công");
+        }
+
+        public async Task<ApiResult<List<UserDetailDto>>> getAllUser()
+        {
+            var result = await _dataContext.Users.ToListAsync();
+            var response = _mapper.Map<List<UserDetailDto>>(result);
+            return new ApiSuccessResult<List<UserDetailDto>>(response);
+        }
+
+        public async Task<ApiResult<bool>> Delete(Guid id)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user == null)
+            {
+                return new ApiErrorResult<bool>("User không tồn tại");
+            }
+            user.IsDeleted = true;
+            var reult = await _userManager.UpdateAsync(user);
+
+            if (reult.Succeeded)
+                return new ApiSuccessResult<bool>();
+
+            return new ApiErrorResult<bool>("Xóa không thành công");
+        }
+
+        public async Task<ApiResult<bool>> RoleAssign(Guid id, RoleAssignRequest request)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user == null)
+            {
+                return new ApiErrorResult<bool>("Tài khoản không tồn tại");
+            }
+            var removedRoles = request.Roles.Where(x => x.Selected == false).Select(x => x.Name).ToList();
+            foreach (var roleName in removedRoles)
+            {
+                if (await _userManager.IsInRoleAsync(user, roleName) == true)
+                {
+                    await _userManager.RemoveFromRoleAsync(user, roleName);
+                }
+            }
+            await _userManager.RemoveFromRolesAsync(user, removedRoles);
+
+            var addedRoles = request.Roles.Where(x => x.Selected).Select(x => x.Name).ToList();
+            foreach (var roleName in addedRoles)
+            {
+                if (await _userManager.IsInRoleAsync(user, roleName) == false)
+                {
+                    await _userManager.AddToRoleAsync(user, roleName);
+                }
+            }
+
+            return new ApiSuccessResult<bool>();
         }
     }
 }

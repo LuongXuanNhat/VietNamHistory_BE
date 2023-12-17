@@ -11,6 +11,12 @@ namespace VNH.Application.DTOs.Catalog.Users
 {
     public class RegisterRequest
     {
+        public RegisterRequest()
+        {
+            Email = string.Empty;
+            Password = string.Empty;
+            ConfirmPassword = string.Empty;
+        }
         public RegisterRequest(string email, string password, string confirmpassword) {
             Email = email;
             Password = password;

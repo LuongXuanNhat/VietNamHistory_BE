@@ -1,0 +1,64 @@
+﻿@using VNH.Application.DTOs.Catalog.Users;
+@model List<UserDetailDto>
+@{
+    ViewData["Title"] = "Danh mục người dùng";
+   
+}
+<div class="container-fluid px-4">
+   
+   
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table me-1"></i>
+            Danh sách người dùng
+        </div>
+        <div class="col-md-6 col-xs-12 ">
+            <a class="btn btn-success m-3" asp-action="Create" asp-controller="User">Tạo mới</a>
+        </div>
+        <div class="card-body">
+            <table id="datatablesSimple">
+                <thead>
+                    <tr>
+                        <th>Tên đầy đủ</th>
+                        <th>Ngày sinh</th>
+                        <th>Giới thiệu</th>
+                        <th>Giới tính</th>
+                        <th>Email</th>
+                        <th>Số điện thoại</th>
+                        <th>Chức năng</th>
+                    </tr>
+                </thead>
+              
+                <tbody>
+                    @if (Model != null)
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <th>@Html.DisplayFor(modelItem => item.Fullname)</th>
+                                <th>@Html.DisplayFor(modelItem => item.DateOfBirth)</th>
+                                <th>@Html.DisplayFor(modelItem => item.Introduction)</th>
+                                <th>@Html.DisplayFor(modelItem => item.Gender)</th>
+                                <th>@Html.DisplayFor(modelItem => item.Email)</th>
+                                <th>@Html.DisplayFor(modelItem => item.PhoneNumber)</th>
+                                <th >
+                                    <a title="Sửa" href="@Url.Action("Edit", new { id = item.Id })"><i class="fa fa-edit"></i></a>
+                                    <a title="Xem chi tiết" href="@Url.Action("Details", new { id = item.Id })"><i class="fa-solid fa-eye"></i></a>
+
+                                    <a title="Khóa tài khoản" href="@Url.Action("Delete", new { id = item.Id })"><i class="fa-solid fa-user-lock"></i></a>
+                                    <a title="Gán quyền" href=""><i class="fa-solid fa-unlock"></i></a>
+                                </th>
+                            </tr>
+                        }
+
+                    }
+                   
+
+
+               
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

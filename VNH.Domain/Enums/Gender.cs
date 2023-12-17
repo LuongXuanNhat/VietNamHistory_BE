@@ -1,10 +1,12 @@
 ﻿
+using System.ComponentModel.DataAnnotations;
+
 namespace VNH.Domain.Enums
 {
     public enum Gender
     {
-        male,
-        female,
-        none
+        male = 0,
+        female = 1,
+        none = 2,
     }
 }

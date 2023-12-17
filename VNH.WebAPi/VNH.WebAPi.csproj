@@ -24,10 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ViewModels\Common\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\VNH.Application\VNH.Application.csproj" />
     <ProjectReference Include="..\VNH.Infrastructure\VNH.Infrastructure.csproj" />
   </ItemGroup>

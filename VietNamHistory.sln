@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VNH.Application", "VNH.Appl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VNH.UnitTest", "VNH.UnitTest\VNH.UnitTest.csproj", "{BC906807-FC49-44A4-96DB-B3625997A0BF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminHistoryUI", "AdminHistoryUI\AdminHistoryUI.csproj", "{0013E3CB-2B4F-451A-B41D-05C2CE64FC65}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +43,10 @@ Global
 		{BC906807-FC49-44A4-96DB-B3625997A0BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BC906807-FC49-44A4-96DB-B3625997A0BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BC906807-FC49-44A4-96DB-B3625997A0BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0013E3CB-2B4F-451A-B41D-05C2CE64FC65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0013E3CB-2B4F-451A-B41D-05C2CE64FC65}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0013E3CB-2B4F-451A-B41D-05C2CE64FC65}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0013E3CB-2B4F-451A-B41D-05C2CE64FC65}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
