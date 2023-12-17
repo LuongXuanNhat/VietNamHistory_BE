@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using VNH.Application.DTOs.Catalog.MultipleChoiceDto;
 using VNH.Application.DTOs.Catalog.Posts;
@@ -85,70 +86,178 @@ namespace VNH.Infrastructure.Implement.Catalog.MultipleChoices
 
         }
 
+        /* static List<QuizDto> ReadQuestionFromDocx(IFormFile file)
+         {
+             List<QuizDto> quizzes = new List<QuizDto>();
+             using(var stream = file.OpenReadStream())
+
+                     using (WordprocessingDocument doc = WordprocessingDocument.Open(stream, false))
+                     {
+                         var body = doc.MainDocumentPart.Document.Body;
+                         var paragraphs = body.Elements<Paragraph>();
+
+                         QuizDto currentQuiz = null;
+
+                         foreach (var paragraph in paragraphs)
+                         {
+                             var text = paragraph.InnerText.Trim();
+                             if (text.StartsWith("Câu hỏi:"))
+                             {
+                                 currentQuiz = new QuizDto
+                                 {
+                                     Content = text.Substring("Câu hỏi:".Length).Trim(),
+                                     QuizAnswers = new List<QuizAnswerDto>()
+
+                                 };
+                             }
+                             else if (text.StartsWith("-"))
+                             {
+                                 var answerText = text.Substring(1).Trim();
+                                 var isCorrectt = answerText.EndsWith("(Đúng)");
+
+                                 if (isCorrectt)
+                                 {
+                                     answerText = answerText.Substring(0, answerText.Length - "(Đúng)".Length).Trim();
+                                 }
+
+                                 var answer = new QuizAnswerDto
+                                 {
+
+                                     Content = answerText,
+                                     isCorrect = isCorrectt
+
+
+                                 };
+                                 currentQuiz.QuizAnswers.Add(answer);
+
+
+                             }
+                     else if (currentQuiz != null)
+                     {
+                         quizzes.Add(currentQuiz);
+                         currentQuiz = null;
+
+                     }
+
+                   }
+                     }
+                     return quizzes;
+
+
+
+
+         }*/
+
+
+
+
+        /*static List<QuizDto> ReadQuestionFromDocx(IFormFile file)
+            {
+                List<QuizDto> quizzes = new List<QuizDto>();
+                using (var stream = file.OpenReadStream())
+                using (WordprocessingDocument doc = WordprocessingDocument.Open(stream, false))
+                {
+                    var body = doc.MainDocumentPart.Document.Body;
+                    var paragraphs = body.Elements<Paragraph>();
+
+                    QuizDto currentQuiz = null;
+
+                    foreach (var paragraph in paragraphs)
+                    {
+                        var text = paragraph.InnerText.Trim();
+
+                        if (text.StartsWith("Câu"))
+                        {
+                            // Start of a new question
+                            currentQuiz = new QuizDto
+                            {
+                                Content = text.Trim(),
+                                QuizAnswers = new List<QuizAnswerDto>()
+                            };
+                            quizzes.Add(currentQuiz);
+                        }
+                        else if (Regex.IsMatch(text, @"^[ABCD][\.\)]"))
+                        {
+                            // Answer choices
+                            currentQuiz.QuizAnswers.Add(new QuizAnswerDto
+                            {
+                                Content = text.Trim(),
+                                isCorrect = false // Default to false
+                            });
+                        }
+                        else if (text.StartsWith("Đáp án đúng:"))
+                        {
+                            // Identifying the correct answer
+                            var correctAnswer = text.Split(':')[1].Trim();
+                            foreach (var answer in currentQuiz.QuizAnswers)
+                            {
+                                if (answer.Content.StartsWith(correctAnswer))
+                                {
+                                    answer.isCorrect = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                return quizzes;
+            }
+        */
+
+
+
+
         static List<QuizDto> ReadQuestionFromDocx(IFormFile file)
         {
             List<QuizDto> quizzes = new List<QuizDto>();
-            using(var stream = file.OpenReadStream())
-                
-                    using (WordprocessingDocument doc = WordprocessingDocument.Open(stream, false))
+            using (var stream = file.OpenReadStream())
+            using (WordprocessingDocument doc = WordprocessingDocument.Open(stream, false))
+            {
+                var body = doc.MainDocumentPart.Document.Body;
+                var paragraphs = body.Elements<Paragraph>();
+
+                QuizDto currentQuiz = null;
+
+                foreach (var paragraph in paragraphs)
+                {
+                    var text = paragraph.InnerText.Trim();
+
+                    if (text.StartsWith("Câu"))
                     {
-                        var body = doc.MainDocumentPart.Document.Body;
-                        var paragraphs = body.Elements<Paragraph>();
-
-                        QuizDto currentQuiz = null;
-
-                        foreach (var paragraph in paragraphs)
+                        var questionContent = Regex.Replace(text, @"^Câu\s*\d+\s*:\s*", "").Trim();
+                        currentQuiz = new QuizDto
                         {
-                            var text = paragraph.InnerText.Trim();
-                            if (text.StartsWith("Câu hỏi:"))
-                            {
-                                currentQuiz = new QuizDto
-                                {
-                                    Content = text.Substring("Câu hỏi:".Length).Trim(),
-                                    QuizAnswers = new List<QuizAnswerDto>()
-
-                                };
-                            }
-                            else if (text.StartsWith("-"))
-                            {
-                                var answerText = text.Substring(1).Trim();
-                                var isCorrectt = answerText.EndsWith("(Đúng)");
-
-                                if (isCorrectt)
-                                {
-                                    answerText = answerText.Substring(0, answerText.Length - "(Đúng)".Length).Trim();
-                                }
-
-                                var answer = new QuizAnswerDto
-                                {
-                                 
-                                    Content = answerText,
-                                    isCorrect = isCorrectt
-                                    
-
-                                };
-                                currentQuiz.QuizAnswers.Add(answer);
-                                
-
-                            }
-                    else if (currentQuiz != null)
-                    {
+                            Content = questionContent,
+                            QuizAnswers = new List<QuizAnswerDto>()
+                        };
                         quizzes.Add(currentQuiz);
-                        currentQuiz = null;
-
                     }
-
-                  }
+                    else if (Regex.IsMatch(text, @"^[ABCD][\.\)]"))
+                    {
+                        // Answer choices
+                        currentQuiz.QuizAnswers.Add(new QuizAnswerDto
+                        {
+                            Content = text.Trim(),
+                            isCorrect = false // Default to false
+                        });
                     }
-                    return quizzes;
-                
-                
-          
+                    else if (text.StartsWith("Đáp án đúng:"))
+                    {
+                        var correctAnswerLabel = text.Split(':')[1].Trim();
+                        foreach (var answer in currentQuiz.QuizAnswers)
+                        {
+                            if (answer.Content.StartsWith(correctAnswerLabel))
+                            {
+                                answer.isCorrect = true;
+                            }
 
+                            answer.Content = Regex.Replace(answer.Content, @"^[ABCD][\.\)]\s*", "").Trim();
+                        }
+                    }
+                }
+            }
+            return quizzes;
         }
-
-
-
 
         public async Task<ApiResult<MultipleChoiceResponseDto>> Detail(string id)
         {
