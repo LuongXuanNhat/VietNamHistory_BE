@@ -10,7 +10,7 @@ namespace VNH.Application.DTOs.Catalog.MultipleChoiceDto
     public class CreateQuizDto
     {
         public string? Id { get; set; } = Guid.NewGuid().ToString();
-
+         
         public string Title { get; set; } = string.Empty;
 
         public string Description { get; set; } = string.Empty;

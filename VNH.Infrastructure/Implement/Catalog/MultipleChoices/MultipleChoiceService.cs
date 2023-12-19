@@ -52,7 +52,7 @@ namespace VNH.Infrastructure.Implement.Catalog.MultipleChoices
                 _dataContext.MultipleChoices.Add(multipleChoice);
                 await _dataContext.SaveChangesAsync();
                 foreach(var quiestion in quiz)
-                {
+                { 
                     var quizz = new Quiz()
                     {
                         Id = Guid.NewGuid(),

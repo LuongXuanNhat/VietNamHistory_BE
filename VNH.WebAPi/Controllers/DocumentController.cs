@@ -61,7 +61,7 @@ namespace VNH.WebAPi.Controllers
 
         [HttpGet("Save")]
         [Authorize]
-        public async Task<IActionResult> GetSaveDocs([FromForm] DocumentFpkDto docsFpk)
+        public async Task<IActionResult> GetSaveDocs([FromQuery] DocumentFpkDto docsFpk)
         {
             var result = await _documentService.GetSave(docsFpk);
             return result is null ? BadRequest(result) : Ok(result);

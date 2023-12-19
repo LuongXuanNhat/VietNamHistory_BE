@@ -61,11 +61,11 @@ namespace VNH.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: true),
-                    Image = table.Column<string>(type: "text", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime", nullable: true),
-                    Url = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: false)
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Image = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Url = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -136,6 +136,7 @@ namespace VNH.Infrastructure.Migrations
                     Gender = table.Column<int>(type: "int", nullable: false),
                     Image = table.Column<string>(type: "nvarchar(max)", maxLength: 3145728, nullable: true),
                     NumberConfirm = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -188,6 +189,13 @@ namespace VNH.Infrastructure.Migrations
                       principalTable: "Roles",
                       principalColumn: "Id",
                       onDelete: ReferentialAction.Cascade);
+
+                    table.ForeignKey(
+                        name: "FK_AppUserRoles_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -200,7 +208,8 @@ namespace VNH.Infrastructure.Migrations
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime", nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "datetime", nullable: true),
-                    Image = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Image = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -220,8 +229,10 @@ namespace VNH.Infrastructure.Migrations
                     Title = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     SubId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    FilePath = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     FileName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", unicode: false, maxLength: 255, nullable: true),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime", nullable: true)
                 },
@@ -233,6 +244,29 @@ namespace VNH.Infrastructure.Migrations
                         column: x => x.UserId,
                         principalTable: "User",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MultipleChoise",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime", maxLength: 500, nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime", nullable: true),
+                    WorkTime = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MultipleChoise", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK__MultipleChoice__UserId__06CD04F7",
+                        column: x => x.UserId,
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -274,7 +308,8 @@ namespace VNH.Infrastructure.Migrations
                     ViewNumber = table.Column<int>(type: "int", nullable: false),
                     AuthorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "datetime", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -406,7 +441,8 @@ namespace VNH.Infrastructure.Migrations
                     UrlVideo = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
                     Description = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
                     CourseId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    ExerciseId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    ExerciseId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -442,6 +478,47 @@ namespace VNH.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ExamHistory",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    MultipleChoiceId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Scores = table.Column<int>(type: "int", nullable: false),
+                    CompletionTime = table.Column<int>(type: "int", nullable: false),
+                    StarDate = table.Column<DateTime>(type: "datetime", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ExamHistory", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ExamHistory_MultipleChoise_MultipleChoiceId",
+                        column: x => x.MultipleChoiceId,
+                        principalTable: "MultipleChoise",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Quiz",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    MultipleChoiceId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Quiz", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK__MultipleChoice__Id__07C12930",
+                        column: x => x.MultipleChoiceId,
+                        principalTable: "MultipleChoise",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Answer",
                 columns: table => new
                 {
@@ -452,7 +529,8 @@ namespace VNH.Infrastructure.Migrations
                     CreatedAt = table.Column<DateTime>(type: "datetime", nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "datetime", nullable: true),
                     Confirm = table.Column<bool>(type: "bit", nullable: true),
-                    MostConfirm = table.Column<bool>(type: "bit", nullable: true)
+                    MostConfirm = table.Column<bool>(type: "bit", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -587,7 +665,8 @@ namespace VNH.Infrastructure.Migrations
                     UpdatedAt = table.Column<DateTime>(type: "datetime", nullable: true),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Image = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ViewNumber = table.Column<int>(type: "int", nullable: false)
+                    ViewNumber = table.Column<int>(type: "int", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -656,12 +735,33 @@ namespace VNH.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "QuizAnswer",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    QuizId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    isCorrect = table.Column<bool>(type: "bit", maxLength: 500, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_QuizAnswer", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK__QuizAnswers__QuizId__1AD3FVA4",
+                        column: x => x.QuizId,
+                        principalTable: "Quiz",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AnswerVote",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     AnswerId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    QuestionId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -885,28 +985,6 @@ namespace VNH.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Quiz",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Question = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Answer1 = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    Answer2 = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    Answer3 = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    Answer4 = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    RightAnswer = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Quiz", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK__Quiz__Id__29221CFB",
-                        column: x => x.Id,
-                        principalTable: "Exercise",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "PostSubComment",
                 columns: table => new
                 {
@@ -937,13 +1015,13 @@ namespace VNH.Infrastructure.Migrations
                 columns: new[] { "Id", "CreatedAt", "Description", "Title" },
                 values: new object[,]
                 {
-                    { new Guid("25752490-4ba5-4abb-ac3b-192205cd1b6e"), new DateTime(2023, 11, 29, 23, 13, 41, 415, DateTimeKind.Local).AddTicks(1890), "Sử dụng khi bạn thấy nội dung bài đăng chứa lời lẽ xúc phạm, kỳ thị hoặc có tính chất đe doạ đến người khác.", "Nội dung xấu, xúc phạm, hay kỳ thị" },
-                    { new Guid("3043c693-b3c9-453e-9876-31c943222576"), new DateTime(2023, 11, 29, 23, 13, 41, 415, DateTimeKind.Local).AddTicks(1905), "Dùng khi bạn muốn báo cáo vì nó quá nhiều thông báo hoặc quảng cáo không mong muốn.", "Nội dung xuất hiện quá nhiều thông báo hoặc quảng cáo không mong muốn" },
-                    { new Guid("349ed807-6107-436f-9a4c-9d6183fbc444"), new DateTime(2023, 11, 29, 23, 13, 41, 415, DateTimeKind.Local).AddTicks(1894), "Sử dụng khi bạn thấy nội dung chứa hình ảnh tự tử hoặc khuyến khích hành vi tự gây thương tổn.", "Chứa nội dung tự tử hoặc tự gây thương tổn" },
-                    { new Guid("4a780087-9058-41c9-b84b-944d1a502010"), new DateTime(2023, 11, 29, 23, 13, 41, 415, DateTimeKind.Local).AddTicks(1899), "Sử dụng khi bạn thấy rằng nội dung chứa thông tin sai lệch, giả mạo hoặc vi phạm quy tắc về sự thật và trung thực.", "Bài đăng chứa thông tin sai lệch hoặc giả mạo" },
-                    { new Guid("bab1da58-6921-44b9-837f-c58d3998497b"), new DateTime(2023, 11, 29, 23, 13, 41, 415, DateTimeKind.Local).AddTicks(1892), "Dùng khi bạn thấy nội dung chứa hình ảnh hoặc video bạo lực hoặc đội nhóm xấu, hoặc khuyến khích hành vi bạo lực.", "Chứa nội dung bạo lực hoặc đội nhóm xấu" },
-                    { new Guid("c4ddb872-06c5-4779-a8a3-a55e5b2c5347"), new DateTime(2023, 11, 29, 23, 13, 41, 415, DateTimeKind.Local).AddTicks(1897), "Sử dụng khi bạn cho rằng Nội dung vi phạm quyền sở hữu trí tuệ hoặc bản quyền, chẳng hạn như sử dụng hình ảnh hoặc video mà bạn sở hữu mà không có sự cho phép.", "Nội dung vi phạm bản quyền hoặc sở hữu trí tuệ" },
-                    { new Guid("d30e1353-0163-43c1-b757-7957981b0eda"), new DateTime(2023, 11, 29, 23, 13, 41, 415, DateTimeKind.Local).AddTicks(1878), " Báo cáo này được sử dụng khi người dùng chia sẻ nội dung cá nhân của bạn mà bạn cho rằng vi phạm quyền riêng tư của bạn.", "Nội dung vi phạm quy định về quyền riêng tư" }
+                    { new Guid("25752490-4ba5-4abb-ac3b-192205cd1b6e"), new DateTime(2023, 12, 18, 12, 59, 36, 825, DateTimeKind.Local).AddTicks(1435), "Sử dụng khi bạn thấy nội dung bài đăng chứa lời lẽ xúc phạm, kỳ thị hoặc có tính chất đe doạ đến người khác.", "Nội dung xấu, xúc phạm, hay kỳ thị" },
+                    { new Guid("3043c693-b3c9-453e-9876-31c943222576"), new DateTime(2023, 12, 18, 12, 59, 36, 825, DateTimeKind.Local).AddTicks(1453), "Dùng khi bạn muốn báo cáo vì nó quá nhiều thông báo hoặc quảng cáo không mong muốn.", "Nội dung xuất hiện quá nhiều thông báo hoặc quảng cáo không mong muốn" },
+                    { new Guid("349ed807-6107-436f-9a4c-9d6183fbc444"), new DateTime(2023, 12, 18, 12, 59, 36, 825, DateTimeKind.Local).AddTicks(1442), "Sử dụng khi bạn thấy nội dung chứa hình ảnh tự tử hoặc khuyến khích hành vi tự gây thương tổn.", "Chứa nội dung tự tử hoặc tự gây thương tổn" },
+                    { new Guid("4a780087-9058-41c9-b84b-944d1a502010"), new DateTime(2023, 12, 18, 12, 59, 36, 825, DateTimeKind.Local).AddTicks(1449), "Sử dụng khi bạn thấy rằng nội dung chứa thông tin sai lệch, giả mạo hoặc vi phạm quy tắc về sự thật và trung thực.", "Bài đăng chứa thông tin sai lệch hoặc giả mạo" },
+                    { new Guid("bab1da58-6921-44b9-837f-c58d3998497b"), new DateTime(2023, 12, 18, 12, 59, 36, 825, DateTimeKind.Local).AddTicks(1438), "Dùng khi bạn thấy nội dung chứa hình ảnh hoặc video bạo lực hoặc đội nhóm xấu, hoặc khuyến khích hành vi bạo lực.", "Chứa nội dung bạo lực hoặc đội nhóm xấu" },
+                    { new Guid("c4ddb872-06c5-4779-a8a3-a55e5b2c5347"), new DateTime(2023, 12, 18, 12, 59, 36, 825, DateTimeKind.Local).AddTicks(1445), "Sử dụng khi bạn cho rằng Nội dung vi phạm quyền sở hữu trí tuệ hoặc bản quyền, chẳng hạn như sử dụng hình ảnh hoặc video mà bạn sở hữu mà không có sự cho phép.", "Nội dung vi phạm bản quyền hoặc sở hữu trí tuệ" },
+                    { new Guid("d30e1353-0163-43c1-b757-7957981b0eda"), new DateTime(2023, 12, 18, 12, 59, 36, 825, DateTimeKind.Local).AddTicks(1413), " Báo cáo này được sử dụng khi người dùng chia sẻ nội dung cá nhân của bạn mà bạn cho rằng vi phạm quyền riêng tư của bạn.", "Nội dung vi phạm quy định về quyền riêng tư" }
                 });
 
             migrationBuilder.InsertData(
@@ -951,20 +1029,49 @@ namespace VNH.Infrastructure.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { new Guid("5d4e4081-91f8-4fc0-b8eb-9860b7849604"), "ed14ffc7-e2d5-4165-a466-43faa539db13", "student", "student" },
-                    { new Guid("a18be9c0-aa65-4af8-bd17-00bd9344e575"), "c998aba1-7d62-483a-a82c-dffca027ed0e", "admin", "admin" },
-                    { new Guid("cfafcfcd-d796-43f4-8ac0-ead43bd2f18a"), "ae9a8b2b-7978-448e-a405-c884869f328d", "teacher", "teacher" }
+                    { new Guid("5d4e4081-91f8-4fc0-b8eb-9860b7849604"), "f2c7ce5d-de4f-496a-bc53-129835856dc1", "student", "student" },
+                    { new Guid("a18be9c0-aa65-4af8-bd17-00bd9344e575"), "b8563bb9-4b36-4a5b-864b-36b593d5d36c", "admin", "admin" },
+                    { new Guid("cfafcfcd-d796-43f4-8ac0-ead43bd2f18a"), "f5fcff63-f067-448e-b72e-aefb426c558d", "teacher", "teacher" }
                 });
 
             migrationBuilder.InsertData(
                 table: "User",
-                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "DateOfBirth", "Email", "EmailConfirmed", "Fullname", "Gender", "Image", "Introduction", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "NumberConfirm", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { new Guid("d1f771da-b318-42f8-a003-5a15614216f5"), 0, "4e2eef99-65a4-4b8a-a919-145ed60b15a2", new DateTime(2002, 3, 18, 0, 0, 0, 0, DateTimeKind.Local), "admin@gmail.com", true, "Lương Xuân Nhất", 0, "", null, false, null, "onionwebdev@gmail.com", "admin", null, "AQAAAAEAACcQAAAAEAL81EjrI0KYNGldHCVGr6VWAAG6C3NTtw/mpPYP8v1ClFiJBnsTwh8zzWucfocLyQ==", null, false, "", false, "admin" });
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "DateOfBirth", "Email", "EmailConfirmed", "Fullname", "Gender", "Image", "Introduction", "IsDeleted", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "NumberConfirm", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[] { new Guid("d1f771da-b318-42f8-a003-5a15614216f5"), 0, "4cc11f7a-e277-40e9-8018-03bd9affb56d", new DateTime(2002, 3, 18, 0, 0, 0, 0, DateTimeKind.Local), "admin@gmail.com", true, "Lương Xuân Nhất", 0, "", null, false, false, null, "onionwebdev@gmail.com", "admin", null, "AQAAAAEAACcQAAAAELthC2YX0yD3LyCfcc90BjRdfZ/u/PQV2FZWsQ2HpyTwsxIOediSiMRDm+kImP50+Q==", null, false, "", false, "admin" });
 
             migrationBuilder.InsertData(
                 table: "UserRoles",
                 columns: new[] { "RoleId", "UserId" },
                 values: new object[] { new Guid("a18be9c0-aa65-4af8-bd17-00bd9344e575"), new Guid("d1f771da-b318-42f8-a003-5a15614216f5") });
+
+            migrationBuilder.InsertData(
+                table: "Topic",
+                columns: new[] { "Id", "AuthorId", "CreatedAt", "Title", "UpdatedAt" },
+                values: new object[,]
+                {
+                    { new Guid("00000000-0000-0000-0000-000000000000"), new Guid("d1f771da-b318-42f8-a003-5a15614216f5"), null, "Lịch sử Cổ đại", null },
+                    { new Guid("12f52ba9-2673-4d2c-86a8-984335cc4129"), new Guid("d1f771da-b318-42f8-a003-5a15614216f5"), null, "Vương quốc Âu Lạc.", null },
+                    { new Guid("19ef7fc7-5f58-4e90-a59a-3972ad2ef157"), new Guid("d1f771da-b318-42f8-a003-5a15614216f5"), null, "Nhà Nguyễn", null },
+                    { new Guid("25a66923-d6e8-47da-9b8b-3d5f2efa0f33"), new Guid("d1f771da-b318-42f8-a003-5a15614216f5"), null, "Nghệ thuật và văn hóa đương đại", null },
+                    { new Guid("27fd3609-9965-4d57-99b7-4fcbb8653547"), new Guid("d1f771da-b318-42f8-a003-5a15614216f5"), null, "Chính sách đổi mới", null },
+                    { new Guid("2f3dea3f-47d1-40aa-ad9b-25dc19fad03f"), new Guid("d1f771da-b318-42f8-a003-5a15614216f5"), null, "Đời sống trong xã cổ Đông Sơn.", null },
+                    { new Guid("3f447575-d3f3-415d-bc59-5a1397ff4938"), new Guid("d1f771da-b318-42f8-a003-5a15614216f5"), null, "Giao lưu văn hóa quốc tế", null },
+                    { new Guid("3fe8d29b-059e-477a-b7f7-a1401545a4b8"), new Guid("d1f771da-b318-42f8-a003-5a15614216f5"), null, "Nhà Hậu Lê", null },
+                    { new Guid("52cd4ca9-3029-40dd-bbf2-e44d726b9b2e"), new Guid("d1f771da-b318-42f8-a003-5a15614216f5"), null, "Thời kỳ đổi mới", null },
+                    { new Guid("568558af-648d-46ae-8317-ade70012f3cf"), new Guid("d1f771da-b318-42f8-a003-5a15614216f5"), null, "Văn hóa và Nghệ thuật", null },
+                    { new Guid("73c9975b-7e5d-4a67-be4f-ea8088ef0b1a"), new Guid("d1f771da-b318-42f8-a003-5a15614216f5"), null, "Văn hóa dân gian", null },
+                    { new Guid("81631b70-12f2-4118-b362-16ce4f9b1b85"), new Guid("d1f771da-b318-42f8-a003-5a15614216f5"), null, "Lịch sử thời kỳ thuộc địa", null },
+                    { new Guid("8b2cc6db-df2a-4390-a6a8-9d40c27ec2d1"), new Guid("d1f771da-b318-42f8-a003-5a15614216f5"), null, "Anh hùng", null },
+                    { new Guid("95807a63-e5df-49af-bb11-0c210cff64d9"), new Guid("d1f771da-b318-42f8-a003-5a15614216f5"), null, "Phong trào Duy Tân", null },
+                    { new Guid("975ade78-8f23-41e2-8b7e-0885f4daa97c"), new Guid("d1f771da-b318-42f8-a003-5a15614216f5"), null, "Triều đại Lý.", null },
+                    { new Guid("98d9ed5f-3ba9-44ed-bd0b-f887cb34f1f8"), new Guid("d1f771da-b318-42f8-a003-5a15614216f5"), null, "Chiến tranh Pháp-Đông Dương", null },
+                    { new Guid("a164d0be-812c-4a9c-ab5f-c9d4d04bb4cf"), new Guid("d1f771da-b318-42f8-a003-5a15614216f5"), null, "Chiến tranh Việt Nam", null },
+                    { new Guid("ab9bfbd4-26a1-42b0-bef6-ac239e8df4a3"), new Guid("d1f771da-b318-42f8-a003-5a15614216f5"), null, "Thời kỳ thuộc địa Pháp", null },
+                    { new Guid("be364be8-ed1c-4997-8ed5-4b0b53857cb8"), new Guid("d1f771da-b318-42f8-a003-5a15614216f5"), null, "Thách thức hiện đại hóa", null },
+                    { new Guid("daa7b78e-80a7-4b24-92c2-34fa17d77da9"), new Guid("d1f771da-b318-42f8-a003-5a15614216f5"), null, "Thời kỳ Trung đại", null },
+                    { new Guid("eca76873-e0d8-4c7f-ae25-f05707e8ee35"), new Guid("d1f771da-b318-42f8-a003-5a15614216f5"), null, "Những thăng trầm của triều đại Lê", null },
+                    { new Guid("fe70bbdb-fa47-4bde-8b72-6a531488ac4d"), new Guid("d1f771da-b318-42f8-a003-5a15614216f5"), null, "Chiến tranh Việt Nam", null }
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Answer_AuthorId",
@@ -1047,6 +1154,12 @@ namespace VNH.Infrastructure.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ExamHistory_MultipleChoiceId",
+                table: "ExamHistory",
+                column: "MultipleChoiceId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ExerciseDetail_ExerciseId",
                 table: "ExerciseDetail",
                 column: "ExerciseId");
@@ -1060,6 +1173,11 @@ namespace VNH.Infrastructure.Migrations
                 name: "IX_Lesson_CourseId",
                 table: "Lesson",
                 column: "CourseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MultipleChoise_UserId",
+                table: "MultipleChoise",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_NotificationDetails_NotificationId",
@@ -1197,6 +1315,16 @@ namespace VNH.Infrastructure.Migrations
                 column: "TagId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Quiz_MultipleChoiceId",
+                table: "Quiz",
+                column: "MultipleChoiceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_QuizAnswer_QuizId",
+                table: "QuizAnswer",
+                column: "QuizId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Search_UserId",
                 table: "Search",
                 column: "UserId");
@@ -1255,6 +1383,9 @@ namespace VNH.Infrastructure.Migrations
                 name: "DocumentSave");
 
             migrationBuilder.DropTable(
+                name: "ExamHistory");
+
+            migrationBuilder.DropTable(
                 name: "ExerciseDetail");
 
             migrationBuilder.DropTable(
@@ -1291,7 +1422,7 @@ namespace VNH.Infrastructure.Migrations
                 name: "QuestionTag");
 
             migrationBuilder.DropTable(
-                name: "Quiz");
+                name: "QuizAnswer");
 
             migrationBuilder.DropTable(
                 name: "Roles");
@@ -1318,6 +1449,9 @@ namespace VNH.Infrastructure.Migrations
                 name: "Document");
 
             migrationBuilder.DropTable(
+                name: "Exercise");
+
+            migrationBuilder.DropTable(
                 name: "Notification");
 
             migrationBuilder.DropTable(
@@ -1330,25 +1464,28 @@ namespace VNH.Infrastructure.Migrations
                 name: "Tag");
 
             migrationBuilder.DropTable(
-                name: "Exercise");
+                name: "Quiz");
 
             migrationBuilder.DropTable(
                 name: "Answer");
 
             migrationBuilder.DropTable(
+                name: "Lesson");
+
+            migrationBuilder.DropTable(
                 name: "Post");
 
             migrationBuilder.DropTable(
-                name: "Lesson");
+                name: "MultipleChoise");
 
             migrationBuilder.DropTable(
                 name: "Question");
 
             migrationBuilder.DropTable(
-                name: "Topic");
+                name: "Course");
 
             migrationBuilder.DropTable(
-                name: "Course");
+                name: "Topic");
 
             migrationBuilder.DropTable(
                 name: "User");

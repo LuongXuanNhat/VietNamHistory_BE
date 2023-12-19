@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using VNH.Infrastructure.Implement.Common;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using VNH.Application.DTOs.Catalog.Posts;
+using VNH.Application.DTOs.Common;
 
 namespace VNH.Infrastructure.Implement.Catalog.Documents
 {
@@ -78,25 +79,23 @@ namespace VNH.Infrastructure.Implement.Catalog.Documents
         {
             var user = await _userManager.FindByEmailAsync(name);
             
-            var updateDocument = _dataContext.Documents
-                .FirstOrDefault(x => x.SubId.Equals(requestDto.SubId));
+            var updateDocument = _dataContext.Documents.FirstOrDefault(x => x.SubId.Equals(requestDto.SubId));
             if (updateDocument is null)
             {
                 return new ApiErrorResult<DocumentReponseDto>("Lỗi :Tài liệu không được cập nhập (không tìm thấy tài liệu)");
-            }
-            if (updateDocument.FileName != string.Empty)
-            {
-                await _storageService.DeleteDocFileAsync(updateDocument.FileName);
             }
             updateDocument.Title = requestDto.Title;
             string formattedDateTime = DateTime.Now.ToString("HHmmss.fff") + HandleCommon.GenerateRandomNumber().ToString();
             var Id = HandleCommon.SanitizeString(updateDocument.Title);
             updateDocument.SubId = Id.Trim().Replace(" ", "-") + "-" + formattedDateTime;
-            updateDocument.FilePath = await _document.SaveFile(requestDto.FileName, updateDocument.SubId);
+            if (requestDto.FileName is not null)
+            {
+                await _storageService.DeleteDocFileAsync(updateDocument.FileName);
+                updateDocument.FilePath = await _document.SaveFile(requestDto.FileName, updateDocument.SubId);
+            }
             updateDocument.UpdatedAt = DateTime.Now;
             updateDocument.Description = requestDto.Description;
             updateDocument.FileName = updateDocument.SubId;
-
             try
             {
                 _dataContext.Documents.Update(updateDocument);
@@ -193,20 +192,25 @@ namespace VNH.Infrastructure.Implement.Catalog.Documents
             return new ApiSuccessResult<string>("Đã xóa tài liệu");
         }
 
-        public async Task<ApiResult<bool>> GetSave(DocumentFpkDto docsFpk)
+        public async Task<ApiResult<NumberReponse>> GetSave(DocumentFpkDto docsFpk)
         {
             var docs = _dataContext.Documents.First(x => x.SubId.Equals(docsFpk.DocumentId));
             var check = await _dataContext.DocumentSaves.Where(x => x.DocumentId.Equals(docs.Id) && x.UserId == Guid.Parse(docsFpk.UserId)).FirstOrDefaultAsync();
-            var reuslt = check != null;
-            return new ApiSuccessResult<bool>(reuslt);
+            var numberSave = await _dataContext.DocumentSaves.Where(x => x.DocumentId.Equals(docs.Id)).CountAsync();
+
+            if (check != null)
+            {
+                return new ApiSuccessResult<NumberReponse>(new() { Check = true, Quantity = numberSave });
+            }
+            return new ApiSuccessResult<NumberReponse>(new() { Check = false, Quantity = numberSave});
         }
 
-        public async Task<ApiResult<int>> AddOrRemoveSaveDocs(DocumentFpkDto docsFpk)
+        public async Task<ApiResult<NumberReponse>> AddOrRemoveSaveDocs(DocumentFpkDto docsFpk)
         {
             var docs = await _dataContext.Documents.FirstOrDefaultAsync(x => x.SubId.Equals(docsFpk.DocumentId));
             if (docs is null)
             {
-                return new ApiErrorResult<int>("Không tìm thấy bài viết");
+                return new ApiErrorResult<NumberReponse>("Không tìm thấy bài viết");
             }
             var check = _dataContext.DocumentSaves.Where(x => x.DocumentId == docs.Id && x.UserId == Guid.Parse(docsFpk.UserId)).FirstOrDefault();
             var mess = "";
@@ -221,13 +225,13 @@ namespace VNH.Infrastructure.Implement.Catalog.Documents
                 };
                 _dataContext.DocumentSaves.Add(save);
                 await _dataContext.SaveChangesAsync();
-                return new ApiSuccessResult<int>(saveNumber+1);
+                return new ApiSuccessResult<NumberReponse>(new() { Check = true, Quantity = saveNumber + 1 });
             }
             else
             {
                 _dataContext.DocumentSaves.Remove(check);
                 await _dataContext.SaveChangesAsync();
-                return new ApiSuccessResult<int>(saveNumber-1);
+                return new ApiSuccessResult<NumberReponse>(new() { Check = false, Quantity = saveNumber - 1 });
             }
 
 

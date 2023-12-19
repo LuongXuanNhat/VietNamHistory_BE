@@ -1,5 +1,6 @@
 ﻿using VNH.Application.DTOs.Catalog.Document;
 using VNH.Application.DTOs.Catalog.Posts;
+using VNH.Application.DTOs.Common;
 using VNH.Application.DTOs.Common.ResponseNotification;
 
 namespace VNH.Application.Interfaces.Documents
@@ -12,9 +13,9 @@ namespace VNH.Application.Interfaces.Documents
         Task<ApiResult<List<DocumentReponseDto>>> GetAll();
         Task<ApiResult<string>> Delete(string id, string email);
 
-        Task<ApiResult<bool>> GetSave(DocumentFpkDto docsFpk);
+        Task<ApiResult<NumberReponse>> GetSave(DocumentFpkDto docsFpk);
 
-        Task<ApiResult<int>> AddOrRemoveSaveDocs(DocumentFpkDto docsFpk);
+        Task<ApiResult<NumberReponse>> AddOrRemoveSaveDocs(DocumentFpkDto docsFpk);
         Task<ApiResult<List<DocumentReponseDto>>> Search(string keyWord);
         Task<ApiResult<List<DocumentReponseDto>>> GetMyDocument(string userId);
         Task<ApiResult<List<DocumentReponseDto>>> GetMySave(string userId);
