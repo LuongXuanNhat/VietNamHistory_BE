@@ -38,7 +38,7 @@ namespace VNH.Infrastructure.Implement.Catalog.ExamHistorys
             var user = await _userManager.FindByEmailAsync(name);
             var examhistory = _mapper.Map<ExamHistory>(requestDto);
             var multiples = await _dataContext.MultipleChoices.FirstOrDefaultAsync(x => x.Id.Equals(requestDto.MultipleChoiceId));
-
+            examhistory.Id = Guid.NewGuid();
             examhistory.MultipleChoiceId = requestDto.MultipleChoiceId;
             examhistory.UserId = requestDto.UserId;
             examhistory.StarDate = requestDto.StarDate;
