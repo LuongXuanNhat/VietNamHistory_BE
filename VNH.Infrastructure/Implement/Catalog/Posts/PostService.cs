@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -518,6 +520,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
         {
             Guid userId = Guid.Parse(id);
             var users = await _dataContext.User.Where(x => !x.IsDeleted).ToListAsync();
+            var topics = await _dataContext.Topics.ToListAsync();
 
             var posts = await (
                 from postSave in _dataContext.PostSaves
@@ -537,6 +540,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
                     post.UserShort.Id = userShort.Id;
                     post.UserShort.Image = userShort.Image;
                 }
+                post.TopicName = topics.FirstOrDefault(x => x.Id == item.TopicId)?.Title ?? "";
                 result.Add(post);
             }
             return new ApiSuccessResult<List<PostResponseDto>>(result);
@@ -545,12 +549,22 @@ namespace VNH.Infrastructure.Implement.Catalog.Posts
         {
             var posts = await _dataContext.Posts.Where(x=>x.UserId.Equals(Guid.Parse(id)) && !x.IsDeleted).ToListAsync();
             var result = new List<PostResponseDto>();
+            var topics = await _dataContext.Topics.ToListAsync();
+            var user = await _dataContext.User.Where(x => !x.IsDeleted && x.Id.ToString().Equals(id)).FirstOrDefaultAsync();
+
             foreach (var item in posts)
             {
                 var post = _mapper.Map<PostResponseDto>(item);
                 post.SaveNumber = await _dataContext.PostSaves.Where(x => x.PostId.Equals(post.Id)).CountAsync();
                 post.CommentNumber = await _dataContext.PostComments.Where(x => x.PostId.Equals(post.Id)).CountAsync();
                 post.LikeNumber = await _dataContext.PostLikes.Where(x => x.PostId.Equals(post.Id)).CountAsync();
+                post.TopicName = topics.FirstOrDefault(x => x.Id == item.TopicId)?.Title ?? "";
+                if (user is not null)
+                {
+                    post.UserShort.FullName = user.Fullname;
+                    post.UserShort.Id = user.Id;
+                    post.UserShort.Image = user.Image;
+                }
                 result.Add(post);
             }
 

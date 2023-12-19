@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using VNH.Application.DTOs.Catalog.Forum.Question;
 using VNH.Application.DTOs.Catalog.Posts;
@@ -248,7 +250,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
 
 
         }
-        public async Task<ApiResult<NumberReponse>> GetSave(QuestionFpkDto questionFpk)
+        public async Task<ApiResult<NumberReponse>> GetSave(QuestionFpkDto questionFpk) 
         {
             var question = await _dataContext.Questions.FirstOrDefaultAsync(x => x.Id.Equals(Guid.Parse(questionFpk.QuestionId)) && !x.IsDeleted);
             var number = await _dataContext.QuestionSaves.Where(x => x.QuestionId.Equals(question.Id)).CountAsync();
@@ -377,6 +379,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
         public async Task<ApiResult<List<QuestionResponseDto>>> GetMyQuestion(string id)
         {
             var questions = await _dataContext.Questions.Where(x => x.AuthorId.Equals(Guid.Parse(id)) && !x.IsDeleted).ToListAsync();
+            var user = await _dataContext.User.Where(x => !x.IsDeleted && x.Id.ToString().Equals(id)).FirstOrDefaultAsync();
             var result = new List<QuestionResponseDto>();
             foreach (var item in questions)
             {
@@ -384,6 +387,12 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
                 question.SaveNumber = await _dataContext.QuestionSaves.Where(x => x.QuestionId.Equals(item.Id)).CountAsync();
                 question.CommentNumber = await _dataContext.Answers.Where(x => x.QuestionId.Equals(item.Id)).CountAsync();
                 question.LikeNumber = await _dataContext.QuestionLikes.Where(x => x.QuestionId.Equals(item.Id)).CountAsync();
+                if (user is not null)
+                {
+                    question.UserShort.FullName = user.Fullname;
+                    question.UserShort.Id = user.Id;
+                    question.UserShort.Image = user.Image;
+                }
                 result.Add(question);
             }
 
@@ -466,7 +475,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
         public async Task<ApiResult<List<QuestionResponseDto>>> GetMyQuestionSaved(string id)
         {
             Guid userId = Guid.Parse(id);
-            var users = await _dataContext.User.ToListAsync();
+            var users = await _dataContext.User.Where(x => !x.IsDeleted).ToListAsync();
 
             var questions = await(
                 from questionSave in _dataContext.QuestionSaves

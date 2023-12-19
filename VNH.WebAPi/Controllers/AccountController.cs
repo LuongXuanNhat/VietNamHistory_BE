@@ -266,7 +266,7 @@ namespace VNH.WebAPi.Controllers
         public async Task<IActionResult> ForgetPassword([FromQuery] string email)
         {
             var result = await _account.ForgetPassword(email);
-            return result.IsSuccessed ? Ok(result) : BadRequest(result);
+            return Ok(result);
         }
 
         [HttpGet("ForgetPassword/ConfirmCode")]
