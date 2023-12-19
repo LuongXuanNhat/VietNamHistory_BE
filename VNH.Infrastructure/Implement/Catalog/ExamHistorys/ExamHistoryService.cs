@@ -136,6 +136,7 @@ namespace VNH.Infrastructure.Implement.Catalog.ExamHistorys
                 var exs = _mapper.Map<ExamHistoryResponseDto>(item);
                 var userShort = users.First(x=>x.Id == item.UserId);
                 var multis = await _dataContext.MultipleChoices.FirstOrDefaultAsync(x => x.Id.Equals(item.MultipleChoiceId));
+
                 var rsp = _mapper.Map<MultipleChoiceResponseDto>(multis);
                 if (userShort is not null)
                 {
@@ -143,6 +144,7 @@ namespace VNH.Infrastructure.Implement.Catalog.ExamHistorys
                     exs.UserShortDto.Id = userShort.Id;
                     exs.UserShortDto.Image = userShort.Image;
                 }
+                exs.numberQuiz = multis.Quiz.Count;
                 exs.multipleChoiceResponseDto = rsp;
 
 

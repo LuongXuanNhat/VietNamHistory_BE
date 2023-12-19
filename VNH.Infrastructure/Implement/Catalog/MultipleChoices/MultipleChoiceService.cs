@@ -316,10 +316,11 @@ namespace VNH.Infrastructure.Implement.Catalog.MultipleChoices
             var quizanswerList = await _dataContext.QuizAnswers.ToListAsync();
 
             var result = new List<MultipleChoiceResponseDto>();
-
+            
             foreach (var item in list)
             {
                 var multi = _mapper.Map<MultipleChoiceResponseDto>(item);
+                multi.numberQuiz = quizlist.Count;
                 var userShort = users.First(x=> x.Id == item.UserId);
                 if(userShort is not null)
                 {
@@ -327,6 +328,7 @@ namespace VNH.Infrastructure.Implement.Catalog.MultipleChoices
                     multi.UserShort.Id = userShort.Id;
                     multi.UserShort.Image = userShort.Image;
                 }
+                
                 result.Add(multi);
                     
             }

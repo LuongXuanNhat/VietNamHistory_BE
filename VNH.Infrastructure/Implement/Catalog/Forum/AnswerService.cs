@@ -121,7 +121,6 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
 
             Answer answerQuestion = _mapper.Map<Answer>(answer);
             answerQuestion.QuestionId = question.Id;
-            answerQuestion.CreatedAt = DateTime.Now;
             _dataContext.Answers.Add(answerQuestion);
             await _dataContext.SaveChangesAsync();
 
@@ -192,7 +191,6 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
             }
             SubAnswer sub = _mapper.Map<SubAnswer>(subAnswer);
             sub.PreAnswerId = answer.Id;
-            sub.CreatedAt = DateTime.Now;
 
             _dataContext.SubAnswers.Add(sub);
             await _dataContext.SaveChangesAsync();

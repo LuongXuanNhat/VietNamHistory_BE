@@ -20,6 +20,9 @@ namespace VNH.Application.DTOs.Catalog.MultipleChoiceDto
         public DateTime? UpdatedAt { get; set; }
         public int WorkTime { get; set; }
 
+        public int numberQuiz { get; set; } = 0;
+
+
         public UserShortDto?  UserShort { get; set; } = new UserShortDto();
 
         public List<QuizDto> Quizs { get; set; } = new List<QuizDto>();
