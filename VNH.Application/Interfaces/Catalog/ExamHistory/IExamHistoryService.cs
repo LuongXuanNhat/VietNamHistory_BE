@@ -12,10 +12,9 @@ namespace VNH.Application.Interfaces.Catalog.ExamHistory
     {
 
         Task<ApiResult<ExamHistoryResponseDto>> Create(CreateExamHistoryDto requestDto, string name);
-        Task<ApiResult<string>> Update(CreateExamHistoryDto requestDto, string name);
+        Task<ApiResult<ExamHistoryResponseDto>> Update(CreateExamHistoryDto requestDto, string name);
 
         Task<ApiResult<List<ExamHistoryResponseDto>>> GetMyExamHistory(string id);
-
-
+        Task<ApiResult<List<ExamHistoryResponseDto>>> GetExamHistory(string examId);
     }
 }

@@ -10,6 +10,7 @@ namespace VNH.Application.Interfaces.Common
     public interface IImageService
     {
         Task<string> SaveFile(IFormFile file);
+        Task<string> SaveImageArticle(IFormFile file);
         Task<byte[]> ConvertFormFileToByteArray(IFormFile formFile);
         string ConvertByteArrayToString(byte[]? byteArray, Encoding encoding);
         byte[] CompressImage(byte[] originalImage, int KbNumber);

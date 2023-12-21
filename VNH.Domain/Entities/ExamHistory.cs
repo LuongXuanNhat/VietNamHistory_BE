@@ -20,7 +20,7 @@ namespace VNH.Domain.Entities
 
         public Guid UserId { get; set; }
 
-        public int Scores { get; set; }
+        public float Scores { get; set; }
 
       
         public int CompletionTime { get; set; }

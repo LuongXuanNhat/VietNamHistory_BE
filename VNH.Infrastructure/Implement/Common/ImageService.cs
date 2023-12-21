@@ -12,6 +12,7 @@ namespace VNH.Infrastructure.Implement.Common
     public class ImageService : IImageService
     {
         private const string USER_CONTENT_FOLDER_NAME = "Images";
+        private const string USER_IMAGE_FOLDER_NAME = "ArticleImages";
         private readonly string URL = SystemConstants.UrlWeb;
         private readonly IStorageService _storageService;
         public ImageService(IStorageService storageService)
@@ -24,6 +25,13 @@ namespace VNH.Infrastructure.Implement.Common
             var fileName = $"{Guid.NewGuid()}{Path.GetExtension(originalFileName)}";
             await _storageService.SaveFileAsync(file.OpenReadStream(), fileName);
             return URL + USER_CONTENT_FOLDER_NAME + "/" + fileName;
+        }
+        public async Task<string> SaveImageArticle(IFormFile file)
+        {
+            var originalFileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName?.Trim('"');
+            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(originalFileName)}";
+            await _storageService.SaveImageFileAsync(file.OpenReadStream(), fileName);
+            return URL + USER_IMAGE_FOLDER_NAME + "/" + fileName;
         }
         public string ConvertByteArrayToString(byte[]? byteArray, Encoding encoding)
         {

@@ -17,7 +17,7 @@ namespace VNH.Application.DTOs.Catalog.ExamHistory
 
         public int numberQuiz { get; set; } = 0;
 
-        public int Scores { get; set; }
+        public float Scores { get; set; }
 
         public int CompletionTime { get; set; }
 

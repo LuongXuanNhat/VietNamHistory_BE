@@ -13,7 +13,7 @@ namespace VNH.Application.DTOs.Catalog.ExamHistory
         public Guid MultipleChoiceId { get; set; }
         public Guid UserId { get; set; }
 
-        public int Scores { get; set; }
+        public float Scores { get; set; }
 
         public int CompletionTime { get; set; }
 

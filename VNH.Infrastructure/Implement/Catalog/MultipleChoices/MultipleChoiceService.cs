@@ -40,10 +40,6 @@ namespace VNH.Infrastructure.Implement.Catalog.MultipleChoices
         public async Task<ApiResult<string>> Create(CreateQuizDto requestDto,string name)
         {
             var user = await _userManager.FindByEmailAsync(name);
-            var check = await _dataContext.ExamHistories.Where(x => x.UserId.Equals(user.Id)).FirstOrDefaultAsync();
-            if (check != null) {
-              return await Update(requestDto, name);
-            }
             var multipleChoice = new MultipleChoice();
             var quiz = ReadQuestionFromDocx(requestDto.File);
             multipleChoice.Title = requestDto.Title;
@@ -320,7 +316,7 @@ namespace VNH.Infrastructure.Implement.Catalog.MultipleChoices
             foreach (var item in list)
             {
                 var multi = _mapper.Map<MultipleChoiceResponseDto>(item);
-                multi.numberQuiz = quizlist.Count;
+                multi.numberQuiz = quizlist.Where(x=>x.MultipleChoiceId.Equals(item.Id)).Count();
                 var userShort = users.First(x=> x.Id == item.UserId);
                 if(userShort is not null)
                 {

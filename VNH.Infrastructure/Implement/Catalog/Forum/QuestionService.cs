@@ -169,7 +169,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
             question.ViewNumber += 1;
             questionResponse.ViewNumber += 1;
             questionResponse.SaveNumber = await _dataContext.QuestionSaves.Where(x => x.QuestionId.Equals(question.Id)).CountAsync();
-            questionResponse.CommentNumber = await _dataContext.Answers.Where(x => x.QuestionId.Equals(question.Id)).CountAsync();
+            questionResponse.CommentNumber = await _dataContext.Answers.Where(x => x.QuestionId.Equals(question.Id) && !x.IsDeleted).CountAsync();
             questionResponse.LikeNumber = await _dataContext.QuestionLikes.Where(x => x.QuestionId.Equals(question.Id)).CountAsync();
 
             _dataContext.Questions.Update(question);
@@ -186,7 +186,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
             foreach (var item in questions)
             {
                 var question = _mapper.Map<QuestionResponseDto>(item);
-                question.CommentNumber = await _dataContext.Answers.Where(x => x.QuestionId.ToString() == question.Id).CountAsync();
+                question.CommentNumber = await _dataContext.Answers.Where(x => x.QuestionId.ToString() == question.Id && !x.IsDeleted).CountAsync();
                 question.SaveNumber    = await _dataContext.QuestionSaves.Where(x => x.QuestionId.ToString() == question.Id).CountAsync();
                 question.LikeNumber    = await _dataContext.QuestionLikes.Where(x => x.QuestionId.ToString() == question.Id).CountAsync();
 
@@ -479,7 +479,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
 
             var questions = await(
                 from questionSave in _dataContext.QuestionSaves
-                join question in _dataContext.Questions on questionSave.QuestionId equals question.Id
+                join question in _dataContext.Questions.Where(x=>!x.IsDeleted) on questionSave.QuestionId equals question.Id
                 where questionSave.UserId == userId
                 select question
             ).ToListAsync();
@@ -495,9 +495,9 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
                     question.UserShort.Id = userShort.Id;
                     question.UserShort.Image = userShort.Image;
                 }
-                question.SaveNumber = await _dataContext.QuestionSaves.Where(x => x.QuestionId.Equals(question.Id)).CountAsync();
-                question.CommentNumber = await _dataContext.Answers.Where(x => x.QuestionId.Equals(question.Id)).CountAsync();
-                question.LikeNumber = await _dataContext.QuestionLikes.Where(x => x.QuestionId.Equals(question.Id)).CountAsync();
+                question.SaveNumber = await _dataContext.QuestionSaves.Where(x => x.QuestionId.Equals(item.Id)).CountAsync();
+                question.CommentNumber = await _dataContext.Answers.Where(x => x.QuestionId.Equals(item.Id) && !x.IsDeleted).CountAsync();
+                question.LikeNumber = await _dataContext.QuestionLikes.Where(x => x.QuestionId.Equals(item.Id)).CountAsync();
                 result.Add(question);
             }
 
