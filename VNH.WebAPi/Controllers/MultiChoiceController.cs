@@ -94,6 +94,16 @@ namespace VNH.WebAPi.Controllers
         }
 
 
+        [HttpGet("MyMultipleChoice")]
+        [Authorize(Roles ="admin")]
+        public async Task<IActionResult> GetMyPost()
+        {
+            var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "";
+            var result = await _multipleChoiceService.GetMyMultipleChoice(id);
+            return result is null ? BadRequest(result) : Ok(result);
+        }
+
+
 
     }
 

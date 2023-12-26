@@ -21,6 +21,7 @@ namespace VNH.Application.Interfaces.Catalog.MultipleChoices
         Task<ApiResult<string>> Delete(string id, string userId);
 
         Task<ApiResult<string>> DeleteQuizById(string id);
+        Task<ApiResult<List<MultipleChoiceResponseDto>>> GetMyMultipleChoice(string id);
 
         Task<ApiResult<List<MultipleChoiceResponseDto>>> Search(string keyWord);
 

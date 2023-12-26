@@ -36,7 +36,7 @@ namespace VNH.Infrastructure.Implement.Catalog.ExamHistorys
         public async Task<ApiResult<ExamHistoryResponseDto>>  Create(CreateExamHistoryDto requestDto,string name)
         {
             var user = await _userManager.FindByEmailAsync(name);
-            var check = await _dataContext.ExamHistories.Where(x => x.UserId.Equals(user.Id)).FirstOrDefaultAsync();
+            var check = await _dataContext.ExamHistories.Where(x => x.UserId.Equals(user.Id) && x.MultipleChoiceId == requestDto.MultipleChoiceId ).FirstOrDefaultAsync();
             if (check != null)
             {
                 return await Update(requestDto, name);

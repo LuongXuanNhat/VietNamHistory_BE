@@ -37,7 +37,7 @@ namespace VNH.Infrastructure.Implement.Catalog.MultipleChoices
             _mapper = mapper;
         }
 
-        public async Task<ApiResult<string>> Create(CreateQuizDto requestDto,string name)
+        public async Task<ApiResult<string>> Create(CreateQuizDto requestDto, string name)
         {
             var user = await _userManager.FindByEmailAsync(name);
             var multipleChoice = new MultipleChoice();
@@ -51,8 +51,8 @@ namespace VNH.Infrastructure.Implement.Catalog.MultipleChoices
             {
                 _dataContext.MultipleChoices.Add(multipleChoice);
                 await _dataContext.SaveChangesAsync();
-                foreach(var quiestion in quiz)
-                { 
+                foreach (var quiestion in quiz)
+                {
                     var quizz = new Quiz()
                     {
                         Id = Guid.NewGuid(),
@@ -70,19 +70,19 @@ namespace VNH.Infrastructure.Implement.Catalog.MultipleChoices
                             QuizId = quizz.Id,
                             isCorrect = quizanswer.isCorrect
                         };
-                     
+
                         _dataContext.QuizAnswers.Add(answer);
                     }
                 }
                 await _dataContext.SaveChangesAsync();
                 return new ApiSuccessResult<string>("Tạo thành công");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return new ApiErrorResult<string>("Lỗi lưu  : " + ex.Message);
             }
 
-          
+
 
         }
 
@@ -268,32 +268,32 @@ namespace VNH.Infrastructure.Implement.Catalog.MultipleChoices
             }
             var user = await _userManager.FindByIdAsync(multipleChoice.UserId.ToString());
             var response = _mapper.Map<MultipleChoiceResponseDto>(multipleChoice);
-            var quizs = await _dataContext.Quizzes.Where(x=>x.MultipleChoiceId.Equals(Guid.Parse(id))).ToListAsync();
+            var quizs = await _dataContext.Quizzes.Where(x => x.MultipleChoiceId.Equals(Guid.Parse(id))).ToListAsync();
             response.WorkTime = multipleChoice.WorkTime;
-           
+
             foreach (var quiz in quizs)
             {
 
                 var quizanswers = await _dataContext.QuizAnswers.Where(x => x.QuizId.Equals(quiz.Id)).ToListAsync();
-                
+
                 response.Quizs.Add(new()
-                    {
-                        Id = quiz.Id,
-                        Content = quiz.Content,
-                        QuizAnswers = _mapper.Map<List<QuizAnswerDto>>(quizanswers),
-                        
-                    });
-                
-               
-             
-                
+                {
+                    Id = quiz.Id,
+                    Content = quiz.Content,
+                    QuizAnswers = _mapper.Map<List<QuizAnswerDto>>(quizanswers),
+
+                });
+
+
+
+
             }
-            foreach(var item in response.Quizs)
+            foreach (var item in response.Quizs)
             {
                 var quizanswers = await _dataContext.QuizAnswers.Where(x => x.QuizId.Equals(item.Id)).ToListAsync();
-                
+
             }
-           
+
             response.UserShort = new()
             {
                 FullName = user.Fullname,
@@ -301,42 +301,42 @@ namespace VNH.Infrastructure.Implement.Catalog.MultipleChoices
                 Image = user.Image,
             };
             return new ApiSuccessResult<MultipleChoiceResponseDto>(response);
-                }
+        }
 
 
         public async Task<ApiResult<List<MultipleChoiceResponseDto>>> GetAll()
         {
-            var list = await _dataContext.MultipleChoices.OrderByDescending(x=> x.CreatedAt).ToListAsync();
+            var list = await _dataContext.MultipleChoices.OrderByDescending(x => x.CreatedAt).ToListAsync();
             var users = await _dataContext.User.ToListAsync();
             var quizlist = await _dataContext.Quizzes.ToListAsync();
             var quizanswerList = await _dataContext.QuizAnswers.ToListAsync();
 
             var result = new List<MultipleChoiceResponseDto>();
-            
+
             foreach (var item in list)
             {
                 var multi = _mapper.Map<MultipleChoiceResponseDto>(item);
-                multi.NumberQuiz = quizlist.Where(x=>x.MultipleChoiceId.Equals(item.Id)).Count();
-                var userShort = users.First(x=> x.Id == item.UserId);
-                if(userShort is not null)
+                multi.NumberQuiz = quizlist.Where(x => x.MultipleChoiceId.Equals(item.Id)).Count();
+                var userShort = users.First(x => x.Id == item.UserId);
+                if (userShort is not null)
                 {
                     multi.UserShort.FullName = userShort.Fullname;
                     multi.UserShort.Id = userShort.Id;
                     multi.UserShort.Image = userShort.Image;
                 }
-                
+
                 result.Add(multi);
-                    
+
             }
             return new ApiSuccessResult<List<MultipleChoiceResponseDto>>(result);
         }
 
-        public async Task<ApiResult<string>> Update(CreateQuizDto requestDto,string name)
+        public async Task<ApiResult<string>> Update(CreateQuizDto requestDto, string name)
         {
             var user = await _userManager.FindByEmailAsync(name);
 
             var updateMultipleChoice = _dataContext.MultipleChoices.First(x => x.Id.Equals(Guid.Parse(requestDto.Id)));
-            if(updateMultipleChoice is null)
+            if (updateMultipleChoice is null)
             {
                 return new ApiErrorResult<string>("Lỗi :Không được cập nhập (không tìm thấy bài thi nào)");
             }
@@ -346,11 +346,11 @@ namespace VNH.Infrastructure.Implement.Catalog.MultipleChoices
             updateMultipleChoice.UpdatedAt = DateTime.Now;
             try
             {
-                   _dataContext.MultipleChoices.Update(updateMultipleChoice);
+                _dataContext.MultipleChoices.Update(updateMultipleChoice);
                 await _dataContext.SaveChangesAsync();
                 return new ApiSuccessResult<string>("Cập nhập bài thi thành công");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return new ApiErrorResult<string>("Lỗi lưu bài thi : " + ex.Message);
 
@@ -360,16 +360,16 @@ namespace VNH.Infrastructure.Implement.Catalog.MultipleChoices
 
         public async Task<ApiResult<QuizDto>> UpdateQuizById(QuizDto requestDto)
         {
-            var updateQuiz =  _dataContext.Quizzes.First(x => x.Id.Equals(requestDto.Id));
-            if(updateQuiz is null)
+            var updateQuiz = _dataContext.Quizzes.First(x => x.Id.Equals(requestDto.Id));
+            if (updateQuiz is null)
             {
                 return new ApiErrorResult<QuizDto>("Lỗi :Không được cập nhập (không tìm thấy câu hỏi nào)");
             }
             updateQuiz.Content = requestDto.Content;
-            foreach(var item in requestDto.QuizAnswers)
+            foreach (var item in requestDto.QuizAnswers)
             {
-                var updateQuizAnswer = _dataContext.QuizAnswers.First(x=>x.Id.Equals(item.Id));
-                if(updateQuizAnswer != null)
+                var updateQuizAnswer = _dataContext.QuizAnswers.First(x => x.Id.Equals(item.Id));
+                if (updateQuizAnswer != null)
                 {
                     updateQuizAnswer.Content = item.Content;
                     updateQuizAnswer.isCorrect = item.isCorrect;
@@ -385,7 +385,7 @@ namespace VNH.Infrastructure.Implement.Catalog.MultipleChoices
                 return new ApiSuccessResult<QuizDto>(response);
 
             }
-            catch(Exception ex) {
+            catch (Exception ex) {
                 return new ApiErrorResult<QuizDto>("Lỗi lưu câu hỏi : " + ex.Message);
 
             }
@@ -395,22 +395,22 @@ namespace VNH.Infrastructure.Implement.Catalog.MultipleChoices
         public async Task<ApiResult<string>> Delete(string id, string userId)
         {
             var multiple = await _dataContext.MultipleChoices.FirstOrDefaultAsync(x => x.Id.Equals(Guid.Parse(id)) && x.UserId.Equals(Guid.Parse(userId)));
-            if(multiple is null)
+            if (multiple is null)
             {
                 return new ApiErrorResult<string>("Không tìm thấy bài thi");
             }
 
             var quizs = await _dataContext.Quizzes.ToListAsync();
             var quizsAnswer = await _dataContext.QuizAnswers.ToListAsync();
-            foreach(var item in quizs)
+            foreach (var item in quizs)
             {
-                if(item.MultipleChoiceId.Equals(id))
+                if (item.MultipleChoiceId.Equals(id))
                 {
-                    foreach(var item1 in quizsAnswer)
+                    foreach (var item1 in quizsAnswer)
                     {
-                        if(item1.QuizId.Equals(item.Id))
+                        if (item1.QuizId.Equals(item.Id))
                         {
-                             _dataContext.QuizAnswers.Remove(item1);
+                            _dataContext.QuizAnswers.Remove(item1);
                             await _dataContext.SaveChangesAsync();
                         }
                     }
@@ -422,29 +422,46 @@ namespace VNH.Infrastructure.Implement.Catalog.MultipleChoices
             _dataContext.MultipleChoices.Remove(multiple);
             await _dataContext.SaveChangesAsync();
             return new ApiSuccessResult<string>("Xoá bài thi thành công");
-    }
+        }
 
         public async Task<ApiResult<string>> DeleteQuizById(string id)
         {
-            var quiz = await _dataContext.Quizzes.FirstOrDefaultAsync(x=>x.Id.Equals(Guid.Parse(id)));
-            if(quiz == null)
+            var quiz = await _dataContext.Quizzes.FirstOrDefaultAsync(x => x.Id.Equals(Guid.Parse(id)));
+            if (quiz == null)
             {
                 return new ApiErrorResult<string>("Không tìm thấy câu hỏi");
             }
             var quizanswers = await _dataContext.QuizAnswers.ToListAsync();
-            foreach(var item in quizanswers)
+            foreach (var item in quizanswers)
             {
-                if(item.QuizId.Equals(id))
+                if (item.QuizId.Equals(id))
                 {
                     _dataContext.QuizAnswers.Remove(item);
                     await _dataContext.SaveChangesAsync();
                 }
             }
             _dataContext.Quizzes.Remove(quiz);
-                await _dataContext.SaveChangesAsync();
+            await _dataContext.SaveChangesAsync();
             return new ApiSuccessResult<string>("Xoá câu hỏi thành công");
 
         }
+
+        public async Task<ApiResult<List<MultipleChoiceResponseDto>>> GetMyMultipleChoice(string id)
+        {
+            var list = await _dataContext.MultipleChoices.Where(x => x.UserId.Equals(Guid.Parse(id)) ).ToListAsync();
+            
+            var result = new List<MultipleChoiceResponseDto>();
+            var user = await _dataContext.User.Where(x => !x.IsDeleted && x.Id.ToString().Equals(id)).FirstOrDefaultAsync();
+            foreach( var item in list)
+            {
+                var multi = _mapper.Map<MultipleChoiceResponseDto>(item);
+               
+                result.Add(multi);
+            }
+            return new ApiSuccessResult<List<MultipleChoiceResponseDto>>(result);
+
+        }
+
 
 
         public async Task<ApiResult<List<MultipleChoiceResponseDto>>> Search(string keyWord)
