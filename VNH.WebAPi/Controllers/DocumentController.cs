@@ -96,5 +96,12 @@ namespace VNH.WebAPi.Controllers
             var result = await _documentService.GetMyDocument(userId);
             return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
+
+        [HttpPost("SaveDownloads")]
+        public async Task<IActionResult> SaveDownloads(Guid documentId)
+        {
+            await _documentService.SaveDownloads(documentId);
+            return Ok();
+        }
     }
 }

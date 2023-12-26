@@ -20,11 +20,12 @@ namespace VNH.WebAPi
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-            // Add DI in other layer
             var connectionString = builder.Environment.IsDevelopment()
                                  ? builder.Configuration.GetConnectionString("LocalDataConnect")
                                  : builder.Configuration.GetConnectionString("DataConnect");
+
+           // var connectionString = builder.Configuration.GetConnectionString("DataConnect");
+
             builder.Services.AddDbContext<VietNamHistoryContext>(options =>
             {
                 options.UseSqlServer(connectionString);

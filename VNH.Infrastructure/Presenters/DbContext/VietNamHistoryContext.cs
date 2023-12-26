@@ -69,9 +69,18 @@ namespace VNH.Infrastructure.Presenters.Migrations
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            //if (!optionsBuilder.IsConfigured)
+            //{
+            //    optionsBuilder.UseSqlServer(SystemConstants.ConnectString);
+            //}
+
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(SystemConstants.ConnectString);
+                optionsBuilder.UseSqlServer(SystemConstants.ConnectString,
+                    sqlServerOptionsBuilder =>
+                    {
+                        sqlServerOptionsBuilder.EnableRetryOnFailure(maxRetryCount: 5, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
+                    });
             }
         }
 
@@ -550,11 +559,6 @@ namespace VNH.Infrastructure.Presenters.Migrations
 
                 entity.HasOne(e => e.MultipleChoice).WithOne(d => d.ExamHistories).HasForeignKey<ExamHistory>(e => e.MultipleChoiceId);
             });
-
-
-
-
-       
 
 
             modelBuilder.Entity<IdentityUserRole<Guid>>().ToTable("UserRoles").HasKey(x => new { x.UserId, x.RoleId });

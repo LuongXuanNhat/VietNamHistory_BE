@@ -17,9 +17,7 @@ namespace VNH.Domain.Entities
         public Guid Id { get; set; }
 
         public string Title { get; set; }
-        [StringLength(500)]
         public string Description { get; set; }
-        [StringLength(500)]
 
         [Column(TypeName = "datetime")]
         public DateTime CreatedAt { get; set; } = DateTime.Now;

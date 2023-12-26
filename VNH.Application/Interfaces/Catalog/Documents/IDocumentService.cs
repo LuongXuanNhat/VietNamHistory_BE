@@ -19,5 +19,6 @@ namespace VNH.Application.Interfaces.Documents
         Task<ApiResult<List<DocumentReponseDto>>> Search(string keyWord);
         Task<ApiResult<List<DocumentReponseDto>>> GetMyDocument(string userId);
         Task<ApiResult<List<DocumentReponseDto>>> GetMySave(string userId);
+        Task SaveDownloads(Guid documentId);
     }
 }

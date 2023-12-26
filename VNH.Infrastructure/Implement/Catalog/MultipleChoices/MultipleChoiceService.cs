@@ -316,7 +316,7 @@ namespace VNH.Infrastructure.Implement.Catalog.MultipleChoices
             foreach (var item in list)
             {
                 var multi = _mapper.Map<MultipleChoiceResponseDto>(item);
-                multi.numberQuiz = quizlist.Where(x=>x.MultipleChoiceId.Equals(item.Id)).Count();
+                multi.NumberQuiz = quizlist.Where(x=>x.MultipleChoiceId.Equals(item.Id)).Count();
                 var userShort = users.First(x=> x.Id == item.UserId);
                 if(userShort is not null)
                 {
@@ -450,8 +450,8 @@ namespace VNH.Infrastructure.Implement.Catalog.MultipleChoices
         public async Task<ApiResult<List<MultipleChoiceResponseDto>>> Search(string keyWord)
         {
             var multiples = new List<MultipleChoiceResponseDto>();
-            var users = await _dataContext.Users.ToListAsync();
-            string[] searchKeywords = keyWord.ToLower().Split(',');
+            var users = await _dataContext.Users.Where(x=>!x.IsDeleted).ToListAsync();
+            string[] searchKeywords = keyWord.ToLower().Split(' ');
             var result = from multiple in _dataContext.MultipleChoices as IEnumerable<MultipleChoice>
                          let titleWords = multiple.Title.ToLower().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
                          let searchPhrases = HandleCommon.GenerateSearchPhrases(searchKeywords)
@@ -469,17 +469,23 @@ namespace VNH.Infrastructure.Implement.Catalog.MultipleChoices
                              WorkTime = multiple.WorkTime,
                              UserId = multiple.UserId,
                          };
-            foreach(var multi in result)
+
+            if(result.Count() > 0 )
             {
-                var item = _mapper.Map<MultipleChoiceResponseDto>(multi);
-                var userShort = users.First(x=>x.Id == multi.UserId);
-                if(userShort is not null)
+                var quizlist = await _dataContext.Quizzes.ToListAsync();
+                foreach (var multi in result)
                 {
-                    item.UserShort.FullName = userShort.Fullname;
-                    item.UserShort.Id = userShort.Id;
-                    item.UserShort.Image = userShort.Image;
+                    var item = _mapper.Map<MultipleChoiceResponseDto>(multi);
+                    var userShort = users.FirstOrDefault(x => x.Id == multi.UserId);
+                    item.NumberQuiz = quizlist.Where(x => x.MultipleChoiceId.Equals(multi.Id)).Count();
+                    if (userShort is not null)
+                    {
+                        item.UserShort.FullName = userShort.Fullname;
+                        item.UserShort.Id = userShort.Id;
+                        item.UserShort.Image = userShort.Image;
+                    }
+                    multiples.Add(item);
                 }
-                multiples.Add(item);
             }
 
             return new ApiSuccessResult<List<MultipleChoiceResponseDto>>(multiples);

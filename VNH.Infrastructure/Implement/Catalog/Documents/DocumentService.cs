@@ -158,16 +158,21 @@ namespace VNH.Infrastructure.Implement.Catalog.Documents
             }
             var user = await _userManager.FindByIdAsync(document
                 .UserId.ToString());
+
             var documentResponse = _mapper.Map<DocumentReponseDto>(document);
             documentResponse.FileName = document.FileName;
-            documentResponse
-                .UserShort = new()
+            
+            documentResponse.ViewNumber += 1;
+            document.ViewNumber += 1;
+
+            documentResponse.UserShort = new()
             {
                 FullName = user.Fullname,
                 Id = user.Id,
                 Image = user.Image
             };
 
+            _dataContext.Documents.Update(document);
             await _dataContext.SaveChangesAsync();
             return new ApiSuccessResult<DocumentReponseDto>(documentResponse);
         }
@@ -252,10 +257,12 @@ namespace VNH.Infrastructure.Implement.Catalog.Documents
                          select new Document()
                          {
                              Id = document.Id,
+                             UserId = document.UserId,
                              SubId = document.SubId,
                              Title = document.Title,
                              CreatedAt = document.CreatedAt,
                              UpdatedAt = document.UpdatedAt,
+                             Description = document.Description
                          };
 
             foreach (var document in result)
@@ -314,6 +321,19 @@ namespace VNH.Infrastructure.Implement.Catalog.Documents
                 result.Add(document);
             }
             return new ApiSuccessResult<List<DocumentReponseDto>>(result);
+        }
+
+        public async Task SaveDownloads(Guid documentId)
+        {
+            var document = await _dataContext.Documents.FirstOrDefaultAsync(x=>!x.IsDeleted && x.Id == documentId);
+            if(document is null)
+            {
+                return;
+            }
+
+            document.ViewNumber += 1;
+            _dataContext.Documents.Update(document);
+            await _dataContext.SaveChangesAsync();
         }
     }
 }

@@ -17,7 +17,6 @@ namespace VNH.Domain
 
         [Key]
         public Guid Id { get; set; }
-        [StringLength(500)]
         public string Title { get; set; }
         public string SubId { get; set; }
         public string Content { get; set; }

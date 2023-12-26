@@ -20,7 +20,7 @@ namespace VNH.Domain
         [Key]
         [StringLength(255)]
         public string Id { get; set; }
-        [StringLength(300)]
+        [StringLength(500)]
         public string SubId { get; set; } = string.Empty;
         [StringLength(255)]
         public string Title { get; set; }
