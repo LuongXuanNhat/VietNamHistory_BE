@@ -12,8 +12,8 @@ using VNH.Infrastructure.Presenters.Migrations;
 namespace VNH.Infrastructure.Migrations
 {
     [DbContext(typeof(VietNamHistoryContext))]
-    [Migration("20231227092843_u_exam_history")]
-    partial class u_exam_history
+    [Migration("20231227095837_u_multi_exam_2")]
+    partial class u_multi_exam_2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -410,30 +410,9 @@ namespace VNH.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ExamHistory");
-                });
-
-            modelBuilder.Entity("VNH.Domain.Entities.ExamHistoryMultipleChoice", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<Guid>("ExamHistoryId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("MultipleChoiceId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ExamHistoryId");
-
                     b.HasIndex("MultipleChoiceId");
 
-                    b.ToTable("ExamHistoryMultipleChoice");
+                    b.ToTable("ExamHistory");
                 });
 
             modelBuilder.Entity("VNH.Domain.Entities.MultipleChoice", b =>
@@ -1382,21 +1361,14 @@ namespace VNH.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("VNH.Domain.Entities.ExamHistoryMultipleChoice", b =>
+            modelBuilder.Entity("VNH.Domain.Entities.ExamHistory", b =>
                 {
-                    b.HasOne("VNH.Domain.Entities.ExamHistory", "ExamHistory")
-                        .WithMany("ExamHistoryMultipleChoice")
-                        .HasForeignKey("ExamHistoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("VNH.Domain.Entities.MultipleChoice", "MultipleChoice")
-                        .WithMany("ExamHistoryMultipleChoice")
+                        .WithMany("ExamHistory")
                         .HasForeignKey("MultipleChoiceId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ExamHistory");
+                        .IsRequired()
+                        .HasConstraintName("FK__MultipleChoice__ExamHistoryId__06CD04F7");
 
                     b.Navigation("MultipleChoice");
                 });
@@ -1805,14 +1777,9 @@ namespace VNH.Infrastructure.Migrations
                     b.Navigation("DocumentSaves");
                 });
 
-            modelBuilder.Entity("VNH.Domain.Entities.ExamHistory", b =>
-                {
-                    b.Navigation("ExamHistoryMultipleChoice");
-                });
-
             modelBuilder.Entity("VNH.Domain.Entities.MultipleChoice", b =>
                 {
-                    b.Navigation("ExamHistoryMultipleChoice");
+                    b.Navigation("ExamHistory");
 
                     b.Navigation("Quiz");
                 });

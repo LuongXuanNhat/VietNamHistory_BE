@@ -16,7 +16,6 @@
 
   <ItemGroup>
     <Folder Include="Common\Exceptions\" />
-    <Folder Include="Common\Contants\" />
     <Folder Include="System\" />
   </ItemGroup>
 

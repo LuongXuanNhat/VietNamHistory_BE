@@ -23,7 +23,7 @@ namespace VNH.WebAPi.Controllers
         public async Task<IActionResult> Index()
         {
             var result = await _documentService.GetAll();
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
 
         [HttpPut]
@@ -32,7 +32,7 @@ namespace VNH.WebAPi.Controllers
         public async Task<IActionResult> UpdateDocument([FromForm] CreateDocumentDto requestDto)
         {
             var result = await _documentService.Update(requestDto, User.Identity.Name);
-            return result == null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
 
 
@@ -42,21 +42,21 @@ namespace VNH.WebAPi.Controllers
         public async Task<IActionResult> CreateDocument([FromForm] CreateDocumentDto requestDto)
         {
             var result = await _documentService.Create(requestDto, User.Identity.Name);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Detail(string id)
         {
             var result = await _documentService.Detail(id);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
 
         [HttpDelete("Delete")]
         public async Task<IActionResult> Delete(string Id)
         {
             var result = await _documentService.Delete(Id, User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "");
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
 
         [HttpGet("Save")]
@@ -64,7 +64,7 @@ namespace VNH.WebAPi.Controllers
         public async Task<IActionResult> GetSaveDocs([FromQuery] DocumentFpkDto docsFpk)
         {
             var result = await _documentService.GetSave(docsFpk);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
 
         [HttpPost("Save")]
@@ -72,7 +72,7 @@ namespace VNH.WebAPi.Controllers
         public async Task<IActionResult> Save([FromForm] DocumentFpkDto docsFpk)
         {
             var result = await _documentService.AddOrRemoveSaveDocs(docsFpk);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
 
         [HttpGet("Search")]

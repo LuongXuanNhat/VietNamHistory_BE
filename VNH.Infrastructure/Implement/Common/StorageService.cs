@@ -44,8 +44,7 @@ namespace VNH.Infrastructure.Implement.Common
         }
         public async Task DeleteFileAsync(string fileName)
         {
-            string name = Path.GetFileName(new Uri(fileName).LocalPath);
-            var filePath = Path.Combine(_userContentFolder, name);
+            var filePath = Path.Combine(_userContentFolder, fileName);
             if (File.Exists(filePath))
             {
                 await Task.Run(() => File.Delete(filePath));

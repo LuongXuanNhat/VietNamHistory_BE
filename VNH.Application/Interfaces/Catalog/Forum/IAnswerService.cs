@@ -9,7 +9,7 @@ namespace VNH.Application.Interfaces.Catalog.Forum
     {
         
         Task<ApiResult<List<AnswerQuestionDto>>> GetAnswer(string questionId);
-        Task<ApiResult<List<AnswerQuestionDto>>> CreateAnswer(AnswerQuestionDto answer);
+        Task<ApiResult<List<AnswerQuestionDto>>> CreateAnswer(AnswerQuestionDto answer, string? id);
         Task<ApiResult<List<AnswerQuestionDto>>> UpdateAnswer(AnswerQuestionDto answer);
         Task<ApiResult<string>> DeteleAnswer(string id);
 

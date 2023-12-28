@@ -26,7 +26,7 @@ namespace VNH.WebAPi.Controllers
         public async Task<IActionResult> CreateMultiChoice([FromForm] CreateQuizDto requestDto)
         {
             var result = await _multipleChoiceService.Create(requestDto, User.Identity.Name);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
 
 
@@ -34,7 +34,7 @@ namespace VNH.WebAPi.Controllers
         public async Task<IActionResult> Detail(string id)
         {
             var result = await _multipleChoiceService.Detail(id);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
 
 
@@ -42,7 +42,7 @@ namespace VNH.WebAPi.Controllers
         public async Task<IActionResult> Index()
         {
             var result = await _multipleChoiceService.GetAll();
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
 
 
@@ -69,7 +69,7 @@ namespace VNH.WebAPi.Controllers
         {
 
             var result = await _multipleChoiceService.Delete(idMultipleChoice, User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "");
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
 
         }
 
@@ -79,7 +79,7 @@ namespace VNH.WebAPi.Controllers
         {
 
             var result = await _multipleChoiceService.DeleteQuizById(idQuiz);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
 
         }
 
@@ -88,7 +88,7 @@ namespace VNH.WebAPi.Controllers
         {
             var result = await _multipleChoiceService.Search(keyWord);
 
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
 
 
         }
@@ -100,7 +100,7 @@ namespace VNH.WebAPi.Controllers
         {
             var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "";
             var result = await _multipleChoiceService.GetMyMultipleChoice(id);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
 
 

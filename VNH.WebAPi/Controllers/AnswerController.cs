@@ -25,15 +25,16 @@ namespace VNH.WebAPi.Controllers
         public async Task<IActionResult> GetAnswers(string questionId)
         {
             var result = await _answerService.GetAnswer(questionId);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
 
         [HttpPost()]
         [Authorize]
         public async Task<IActionResult> CreateAnswer(AnswerQuestionDto answer)
         {
-            var result = await _answerService.CreateAnswer(answer);
-            return result is null ? BadRequest(result) : Ok(result);
+            var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var result = await _answerService.CreateAnswer(answer, id);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
 
         [HttpPut]
@@ -46,7 +47,7 @@ namespace VNH.WebAPi.Controllers
                 return BadRequest();
             }
             var result = await _answerService.UpdateAnswer(answer);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
         [HttpDelete("delete")]
         [Authorize]
@@ -58,7 +59,7 @@ namespace VNH.WebAPi.Controllers
                 return BadRequest();
             }
             var result = await _answerService.DeteleAnswer(idAnswer);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
 
 
@@ -67,7 +68,7 @@ namespace VNH.WebAPi.Controllers
         public async Task<IActionResult> CreateSubAnswer(SubAnswerQuestionDto subAnswer)
         {
             var result = await _answerService.CreateSubAnswer(subAnswer);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
 
         [HttpPut("SubAnswer")]
@@ -80,7 +81,7 @@ namespace VNH.WebAPi.Controllers
                 return BadRequest();
             }
             var result = await _answerService.UpdateSubAnswer(subAnswer);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
 
 
@@ -94,7 +95,7 @@ namespace VNH.WebAPi.Controllers
                 return BadRequest();
             }
             var result = await _answerService.DeteleSubAnswer(idSubAnswer);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
 
         [HttpPost("Confirm")]

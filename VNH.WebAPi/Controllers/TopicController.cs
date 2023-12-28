@@ -20,34 +20,34 @@ namespace VNH.WebAPi.Controllers
         public async Task<IActionResult> GetAllTopic()
         {
             var result = await _topicService.GetAllTopic();
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
         [HttpGet("GetById")]
         public async Task<IActionResult> GetById(string idTopic)
         {
             var result = await _topicService.GetById(idTopic);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> CreateTopic(string topic)
         {
             var result = await _topicService.CreateTopic(topic, User.Identity.Name);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
         [HttpPut]
         [Authorize]
         public async Task<IActionResult> UpdateTopic(Guid topicId ,string topic)
         {
             var result = await _topicService.UpdateTopic(topicId, topic);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
         [HttpDelete]
         [Authorize]
         public async Task<IActionResult> DeleteTopic(Guid topicId )
         {
             var result = await _topicService.DeleteTopic(topicId);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
 
     }

@@ -47,7 +47,7 @@ namespace VNH.Infrastructure.Implement.Catalog.ExamHistorys
             examhistory.MultipleChoiceId = requestDto.MultipleChoiceId;
             examhistory.UserId = requestDto.UserId;
             examhistory.StarDate = requestDto.StarDate;
-            examhistory.Scores = requestDto.Scores;
+            examhistory.Scores = float.Parse(requestDto.Scores.ToString());
             examhistory.CompletionTime = requestDto.CompletionTime;
             try
             {
@@ -95,7 +95,7 @@ namespace VNH.Infrastructure.Implement.Catalog.ExamHistorys
                 return new ApiErrorResult<ExamHistoryResponseDto>("Có lỗi xảy ra khi cập nhập kết quả!");
             }
             updateExamHistory.StarDate = DateTime.Now;
-            updateExamHistory.Scores = requestDto.Scores;
+            updateExamHistory.Scores = float.Parse(requestDto.Scores.ToString());
             updateExamHistory.CompletionTime = requestDto.CompletionTime;
 
             try

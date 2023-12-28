@@ -8,7 +8,6 @@ namespace VNH.Infrastructure.Presenters
     {
         public async Task SendComment(CommentPostDto comment)
         {
-            // Broadcast the subAnswer to all connected clients
             await Clients.All.SendAsync("ReceiveComment", comment);
         }
 
@@ -17,10 +16,21 @@ namespace VNH.Infrastructure.Presenters
             await Clients.All.SendAsync("ReceiveAnswer", comment);
         }
 
-        //public async Task SendSubAnswer(List<SubAnswerQuestionDto> subAnswer)
-        //{
-        //    await Clients.All.SendAsync("ReceiveSubAnswer", subAnswer);
-        //}
+        public async Task AddToGroup(string userId)
+        {
+            await Groups.AddToGroupAsync(Context.ConnectionId, userId);
+        }
+        public override async Task OnConnectedAsync()
+        {
+            Console.WriteLine("Client connected: " + Context.ConnectionId);
+            await base.OnConnectedAsync();
+        }
+
+        public override async Task OnDisconnectedAsync(Exception exception)
+        {
+            Console.WriteLine("Client disconnected: " + Context.ConnectionId);
+            await base.OnDisconnectedAsync(exception);
+        }
 
 
     }

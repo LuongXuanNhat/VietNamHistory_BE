@@ -1,11 +1,16 @@
 ﻿using AutoMapper;
+using DocumentFormat.OpenXml.Office2010.Excel;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using VNH.Application.Common.Contants;
 using VNH.Application.DTOs.Catalog.Forum.Answer;
+using VNH.Application.DTOs.Catalog.Notifications;
 using VNH.Application.DTOs.Catalog.Users;
 using VNH.Application.DTOs.Common;
 using VNH.Application.DTOs.Common.ResponseNotification;
+using VNH.Application.Implement.Catalog.NotificationServices;
 using VNH.Application.Interfaces.Catalog.Forum;
 using VNH.Domain;
 using VNH.Infrastructure.Presenters;
@@ -19,16 +24,16 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
         private readonly VietNamHistoryContext _dataContext;
         private readonly IHubContext<ChatSignalR> _answerHubContext;
         private readonly IMapper _mapper;
-
+        private readonly INotificationService _notificationService;
 
         public AnswerService(UserManager<User> userManager, IHubContext<ChatSignalR> answerHubContext,
-        IMapper mapper,
-          VietNamHistoryContext vietNamHistoryContext)
+        IMapper mapper,  VietNamHistoryContext vietNamHistoryContext, INotificationService notificationService)
         {
             _userManager = userManager;
             _dataContext = vietNamHistoryContext;
             _mapper = mapper;
             _answerHubContext = answerHubContext;
+            _notificationService = notificationService;
         }
 
         private UserShortDto? GetUserShort(List<User> users, Guid? IdUser)
@@ -111,7 +116,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
 
 
 
-        public async Task<ApiResult<List<AnswerQuestionDto>>> CreateAnswer(AnswerQuestionDto answer)
+        public async Task<ApiResult<List<AnswerQuestionDto>>> CreateAnswer(AnswerQuestionDto answer, string? id)
         {
             var question = await _dataContext.Questions.FirstOrDefaultAsync(x => x.Id.Equals(Guid.Parse(answer.QuestionId)) && !x.IsDeleted);
             if (question == null)
@@ -121,8 +126,22 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
 
             Answer answerQuestion = _mapper.Map<Answer>(answer);
             answerQuestion.QuestionId = question.Id;
+
             _dataContext.Answers.Add(answerQuestion);
             await _dataContext.SaveChangesAsync();
+
+            var user = await _dataContext.User.FirstOrDefaultAsync(x => x.Id.ToString().Equals(id) && !x.IsDeleted);
+            var noti = new NotificationDto()
+            {
+                Id = Guid.NewGuid(),
+                UserId = user.Id,
+                IdObject = question.Id,
+                Content = ConstantNofication.AnswerTheQuestion(user?.Fullname ?? ""),
+                Date = DateTime.Now,
+                Url = ConstantUrl.UrlQuestionDetail,
+                NotificationId = Guid.NewGuid()
+            };
+            await _notificationService.AddNotificationDetail(noti);
 
             var answers = await GetAnswer(answer.QuestionId);
             await _answerHubContext.Clients.All.SendAsync("ReceiveAnswer", answers);
@@ -285,6 +304,21 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
                     AnswerId = Guid.Parse(answer.AnswerId),
                     UserId = Guid.Parse(answer.UserId)
                 };
+
+                var ans = await _dataContext.Answers.FirstOrDefaultAsync(x => !x.IsDeleted && x.Id.ToString() == answer.AnswerId);
+                var user = await _dataContext.User.FirstOrDefaultAsync(x => x.Id.ToString().Equals(ans.AuthorId) && !x.IsDeleted);
+                var noti = new NotificationDto()
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = user.Id,
+                    IdObject = Guid.Parse(answer.QuestionId),
+                    Content = ConstantNofication.CommentAnswer(user?.Fullname ?? ""),
+                    Date = DateTime.Now,
+                    Url = ConstantUrl.UrlQuestionDetail,
+                    NotificationId = Guid.NewGuid()
+                };
+                await _notificationService.AddNotificationDetail(noti);
+
                 _dataContext.AnswerVotes.Add(answerVote);
                 await _dataContext.SaveChangesAsync();
                 var numberVote = await _dataContext.AnswerVotes.Where(x => x.AnswerId == Guid.Parse(answer.AnswerId)).CountAsync();

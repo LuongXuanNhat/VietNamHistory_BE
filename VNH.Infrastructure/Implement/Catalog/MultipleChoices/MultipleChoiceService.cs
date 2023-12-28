@@ -335,7 +335,7 @@ namespace VNH.Infrastructure.Implement.Catalog.MultipleChoices
         {
             var user = await _userManager.FindByEmailAsync(name);
 
-            var updateMultipleChoice = _dataContext.MultipleChoices.First(x => x.Id.Equals(Guid.Parse(requestDto.Id)));
+            var updateMultipleChoice = await _dataContext.MultipleChoices.FirstOrDefaultAsync(x => x.Id == Guid.Parse(requestDto.Id));
             if (updateMultipleChoice is null)
             {
                 return new ApiErrorResult<string>("Lỗi :Không được cập nhập (không tìm thấy bài thi nào)");
@@ -394,35 +394,60 @@ namespace VNH.Infrastructure.Implement.Catalog.MultipleChoices
 
         public async Task<ApiResult<string>> Delete(string id, string userId)
         {
-            var multiple = await _dataContext.MultipleChoices.FirstOrDefaultAsync(x => x.Id.Equals(Guid.Parse(id)) && x.UserId.Equals(Guid.Parse(userId)));
+            var multiple = await _dataContext.MultipleChoices
+                .FirstOrDefaultAsync(x => x.Id.Equals(Guid.Parse(id)) && x.UserId.Equals(Guid.Parse(userId)));
+
             if (multiple is null)
             {
                 return new ApiErrorResult<string>("Không tìm thấy bài thi");
             }
 
-            var quizs = await _dataContext.Quizzes.ToListAsync();
-            var quizsAnswer = await _dataContext.QuizAnswers.ToListAsync();
-            foreach (var item in quizs)
+            var multipleChoiceId = multiple.Id;
+
+            // Xoá lịch sử bài thi
+            var examHistoriesToDelete = _dataContext.ExamHistories
+                .Where(x => x.MultipleChoiceId == multipleChoiceId)
+                .ToList();
+
+            if (examHistoriesToDelete.Any())
             {
-                if (item.MultipleChoiceId.Equals(id))
-                {
-                    foreach (var item1 in quizsAnswer)
-                    {
-                        if (item1.QuizId.Equals(item.Id))
-                        {
-                            _dataContext.QuizAnswers.Remove(item1);
-                            await _dataContext.SaveChangesAsync();
-                        }
-                    }
-                    _dataContext.Quizzes.Remove(item);
-                    await _dataContext.SaveChangesAsync();
-                }
+                _dataContext.ExamHistories.RemoveRange(examHistoriesToDelete);
             }
 
+            // Xoá câu trả lời của từng câu hỏi
+            var quizIdsToDelete = _dataContext.Quizzes
+                .Where(x => x.MultipleChoiceId.Equals(multipleChoiceId))
+                .Select(x => x.Id)
+                .ToList();
+
+            var quizAnswerToDelete = _dataContext.QuizAnswers
+                .Where(x => quizIdsToDelete.Contains(x.QuizId))
+                .ToList();
+
+            if (quizAnswerToDelete.Any())
+            {
+                _dataContext.QuizAnswers.RemoveRange(quizAnswerToDelete);
+            }
+
+            // Xoá câu hỏi
+            var quizzesToDelete = _dataContext.Quizzes
+                .Where(x => x.MultipleChoiceId.Equals(multipleChoiceId))
+                .ToList();
+
+            if (quizzesToDelete.Any())
+            {
+                _dataContext.Quizzes.RemoveRange(quizzesToDelete);
+            }
+
+            // Xoá bài thi
             _dataContext.MultipleChoices.Remove(multiple);
+
+            // Lưu thay đổi vào cơ sở dữ liệu
             await _dataContext.SaveChangesAsync();
+
             return new ApiSuccessResult<string>("Xoá bài thi thành công");
         }
+
 
         public async Task<ApiResult<string>> DeleteQuizById(string id)
         {

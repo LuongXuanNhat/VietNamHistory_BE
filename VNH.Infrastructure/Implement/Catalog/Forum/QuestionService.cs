@@ -4,10 +4,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using VNH.Application.Common.Contants;
 using VNH.Application.DTOs.Catalog.Forum.Question;
+using VNH.Application.DTOs.Catalog.Notifications;
 using VNH.Application.DTOs.Catalog.Posts;
 using VNH.Application.DTOs.Common;
 using VNH.Application.DTOs.Common.ResponseNotification;
+using VNH.Application.Implement.Catalog.NotificationServices;
 using VNH.Application.Interfaces.Catalog.Forum;
 using VNH.Domain;
 using VNH.Infrastructure.Implement.Common;
@@ -20,15 +23,17 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
 
         private readonly UserManager<User> _userManager;
         private readonly VietNamHistoryContext _dataContext;
+        private readonly INotificationService _notificationService;
         private readonly IMapper _mapper;
 
         public QuestionService(UserManager<User> userManager,
-            IMapper mapper,
+            IMapper mapper, INotificationService notificationService,
            VietNamHistoryContext vietNamHistoryContext)
         {
             _userManager = userManager;
             _dataContext = vietNamHistoryContext;
             _mapper = mapper;
+            _notificationService = notificationService;
         }
 
 
@@ -357,12 +362,25 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
             var likeNumber = await _dataContext.QuestionLikes.Where(x => x.QuestionId == question.Id).CountAsync();
             if (check is null)
             {
+                var user = await _dataContext.User.FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == question.AuthorId);
                 var like = new QuestionLike()
                 {
                     Id = Guid.NewGuid(),
                     QuestionId = question.Id,
                     UserId = Guid.Parse(questionFpk.UserId)
                 };
+                var noti = new NotificationDto()
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = question.AuthorId ?? Guid.NewGuid(),
+                    IdObject = question.Id,
+                    Content = ConstantNofication.LikeQuestion(user?.Fullname ?? ""),
+                    Date = DateTime.Now,
+                    Url = ConstantUrl.UrlQuestionDetail,
+                    NotificationId = Guid.NewGuid()
+                };
+                await _notificationService.AddNotificationDetail(noti);
+
                 _dataContext.QuestionLikes.Add(like);
                 await _dataContext.SaveChangesAsync();
                 return new ApiSuccessResult<NumberReponse>(new() { Check = true, Quantity = likeNumber + 1 });
@@ -468,7 +486,7 @@ namespace VNH.Infrastructure.Implement.Catalog.Forum
                     item.UserShort.Image = userShort.Image;
                 }
                 questions.Add(item);
-            }
+            } 
             return new ApiSuccessResult<List<QuestionResponseDto>>(questions);
         }
 

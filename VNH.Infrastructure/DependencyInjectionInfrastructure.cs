@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using VNH.Application.Services.Catalog.Users;
@@ -38,6 +37,8 @@ using VNH.Application.Interfaces.Catalog.ExamHistory;
 using VNH.Infrastructure.Implement.Catalog.ExamHistorys;
 using VNH.Application.Interfaces.Catalog.NewsHistory;
 using VNH.Infrastructure.Implement.Catalog.NewsHistory;
+using VNH.Application.Implement.Catalog.NotificationServices;
+using VNH.Infrastructure.Implement.Catalog.NotificationServices;
 
 namespace VNH.Infrastructure
 {
@@ -127,6 +128,7 @@ namespace VNH.Infrastructure
             services.AddScoped<IAnswerService, AnswerService>();
             services.AddScoped<IMultipleChoiceService, MultipleChoiceService>();
             services.AddScoped<IExamHistoryService, ExamHistoryService>();
+            services.AddScoped<INotificationService, NotificationService>();
             services.AddSignalR();
 
             

@@ -21,19 +21,19 @@ namespace VNH.WebAPi.Controllers
         public async Task<IActionResult> Index()
         {
             var result = await _postService.GetAll();
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
         [HttpGet("DiscoverMobile")]
         public async Task<IActionResult> IndexMobile()
         {
             var result = await _postService.GetAllMobile();
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
         [HttpGet("RandomArticle")]
         public async Task<IActionResult> RandomPost(int quantity = 0)
         {
             var result = await _postService.GetRandomPost(quantity);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
         [HttpPost]
         [Authorize]
@@ -41,7 +41,7 @@ namespace VNH.WebAPi.Controllers
         public async Task<IActionResult> CreatePost([FromForm] CreatePostDto requestDto)
         {
             var result = await _postService.Create(requestDto, User.Identity.Name);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
 
         [HttpPut]
@@ -50,21 +50,21 @@ namespace VNH.WebAPi.Controllers
         public async Task<IActionResult> UpdatePost([FromForm] CreatePostDto requestDto)
         {
             var result = await _postService.Update(requestDto, User.Identity.Name);
-            return result == null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Detail(string id)
         {
             var result = await _postService.Detail(id);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
 
         [HttpDelete("Delete")]
         public async Task<IActionResult> Delete(string Id)
         {
             var result = await _postService.Delete(Id, User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "");
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
 
         [HttpDelete("Remove")]
@@ -72,13 +72,13 @@ namespace VNH.WebAPi.Controllers
         public async Task<IActionResult> DeleteAdmin(string Id)
         {
             var result = await _postService.DeleteAdmin(Id);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
         [HttpGet("Like")]
         public async Task<IActionResult> GetLikePost([FromQuery] PostFpkDto postFpk)
         {
             var result = await _postService.GetLike(postFpk);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
         
         [HttpPost("Like")]
@@ -86,14 +86,14 @@ namespace VNH.WebAPi.Controllers
         public async Task<IActionResult> Like([FromForm] PostFpkDto postFpk)
         {
             var result = await _postService.AddOrUnLikePost(postFpk);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
         [HttpGet("Save")]
         [Authorize]
         public async Task<IActionResult> GetSavePost([FromQuery] PostFpkDto postFpk)
         {
             var result = await _postService.GetSave(postFpk);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
         [HttpGet("MyPostSaved")]
         [Authorize]
@@ -101,7 +101,7 @@ namespace VNH.WebAPi.Controllers
         {
             var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "";
             var result = await _postService.GetMyPostSaved(id);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
         [HttpGet("MyPost")]
         [Authorize]
@@ -109,7 +109,7 @@ namespace VNH.WebAPi.Controllers
         {
             var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "";
             var result = await _postService.GetMyPost(id);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
 
         [HttpPost("Save")]
@@ -117,7 +117,7 @@ namespace VNH.WebAPi.Controllers
         public async Task<IActionResult> Save([FromForm] PostFpkDto postFpk)
         {
             var result = await _postService.AddOrRemoveSavePost(postFpk);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
 
         [HttpPost("Report")]
@@ -139,26 +139,27 @@ namespace VNH.WebAPi.Controllers
         public async Task<IActionResult> GetPostByTag(string tag)
         {
             var result = await _postService.GetPostByTag(tag);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
         [HttpGet("Search")]
         public async Task<IActionResult> Search([FromQuery] string keyWord)
         {
             var result = await _postService.SearchPosts(keyWord);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
         [HttpGet("Chat")]
         public async Task<IActionResult> GetComments(string PostId)
         {
             var result = await _postService.GetComment(PostId);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
         [HttpPost("Chat")]
         [Authorize]
         public async Task<IActionResult> CreateComment(CommentPostDto comment)
         {
-            var result = await _postService.CreateComment(comment);
-            return result is null ? BadRequest(result) : Ok(result);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "";
+            var result = await _postService.CreateComment(comment, userId);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
         [HttpPut("Chat")]
         [Authorize]
@@ -170,7 +171,7 @@ namespace VNH.WebAPi.Controllers
                 return BadRequest();
             }
             var result = await _postService.UpdateComment(comment);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
         [HttpDelete("Chat")]
         [Authorize]
@@ -182,7 +183,7 @@ namespace VNH.WebAPi.Controllers
                 return BadRequest();
             }
             var result = await _postService.DeteleComment(idComment);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
         [HttpGet("Chat/NumberComment")]
         public async Task<IActionResult> GetCommentPost(string PostId)
@@ -196,7 +197,7 @@ namespace VNH.WebAPi.Controllers
         public async Task<IActionResult> FindByTopic(string TopicName)
         {
             var result = await _postService.FindByTopic(TopicName);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
     }
 }

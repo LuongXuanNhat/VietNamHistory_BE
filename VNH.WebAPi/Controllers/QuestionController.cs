@@ -26,7 +26,7 @@ namespace VNH.WebAPi.Controllers
         public async Task<IActionResult> CreateQuestion([FromForm] CreateQuestionDto requestDto)
         {
             var result = await _questionService.Create(requestDto, User.Identity.Name);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
 
         [HttpPut]
@@ -60,41 +60,41 @@ namespace VNH.WebAPi.Controllers
         public async Task<IActionResult> Index()
         {
             var result = await _questionService.GetAll();
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
 
         [HttpDelete("Delete")]
         public async Task<IActionResult> Delete(string Id)
         {
             var result = await _questionService.Delete(Id, User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "");
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
         [HttpPost("Like")]
         [Authorize]
         public async Task<IActionResult> Like([FromForm] QuestionFpkDto questionFpk)
         {
             var result = await _questionService.AddOrUnLikeQuestion(questionFpk);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
         [HttpGet("Like")]
         public async Task<IActionResult> GetLikePost([FromQuery] QuestionFpkDto questionFpk)
         {
             var result = await _questionService.GetLike(questionFpk);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
         [HttpGet("Save")]
         [Authorize]
         public async Task<IActionResult> GetSaveQuestion([FromQuery] QuestionFpkDto questionFpk)
         {
             var result = await _questionService.GetSave(questionFpk);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
         [HttpPost("Save")]
         [Authorize]
         public async Task<IActionResult> Save([FromForm] QuestionFpkDto questionFpk)
         {
             var result = await _questionService.AddOrRemoveSaveQuestion(questionFpk);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
         [HttpGet("MyQuestionSaved")]
         [Authorize]
@@ -102,7 +102,7 @@ namespace VNH.WebAPi.Controllers
         {
             var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "";
             var result = await _questionService.GetMyQuestionSaved(id);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
         [HttpGet("MyQuestion")]
         [Authorize]
@@ -110,14 +110,14 @@ namespace VNH.WebAPi.Controllers
         {
             var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "";
             var result = await _questionService.GetMyQuestion(id);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
         [HttpPost("Report")]
         [Authorize]
         public async Task<IActionResult> Report([FromBody] ReportQuestionDto reportquestionDto)
         {
             var result = await _questionService.ReportQuestion(reportquestionDto);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
 
         [HttpGet("Report")]
@@ -125,26 +125,26 @@ namespace VNH.WebAPi.Controllers
         public async Task<IActionResult> GetReport()
         {
             var result = await _questionService.GetReport();
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
         [HttpGet("Search")]
         public async Task<IActionResult> Search([FromQuery] string keyWord)
         {
             var result = await _questionService.SearchQuestions(keyWord);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
         [HttpGet("AllTag")]
         public async Task<IActionResult> GetAllTag( int numberTag)
         {
             var result = await _questionService.GetAllTag(numberTag);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
 
         [HttpGet("FindByTag")]
         public async Task<IActionResult> GetQuestionByTag(string tag)
         {
             var result = await _questionService.GetQuestionByTag(tag);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
 
     }

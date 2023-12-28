@@ -18,13 +18,13 @@ namespace VNH.WebAPi.Controllers
         public async Task<IActionResult> GetAll()
         {
             var result = await _hasgTagService.GetAllTag(0);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
         [HttpGet("TopTag")]
         public async Task<IActionResult> GetTopTags(int numberTag)
         {
             var result = await _hasgTagService.GetAllTag(numberTag);
-            return result is null ? BadRequest(result) : Ok(result);
+            return !result.IsSuccessed ? BadRequest(result) : Ok(result);
         }
     }
 }

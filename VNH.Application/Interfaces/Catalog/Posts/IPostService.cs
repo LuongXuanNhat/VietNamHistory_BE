@@ -23,7 +23,7 @@ namespace VNH.Application.Interfaces.Posts
         Task<ApiResult<NumberReponse>> GetSave(PostFpkDto postFpk);
         Task<ApiResult<List<PostResponseDto>>> GetPostByTag(string tag);
         Task<ApiResult<List<CommentPostDto>>> GetComment(string postId);
-        Task<ApiResult<List<CommentPostDto>>> CreateComment(CommentPostDto comment);
+        Task<ApiResult<List<CommentPostDto>>> CreateComment(CommentPostDto comment, string userId);
         Task<ApiResult<List<CommentPostDto>>> UpdateComment(CommentPostDto comment);
         Task<ApiResult<List<CommentPostDto>>> DeteleComment(string id);
         Task<ApiResult<List<PostResponseDto>>> GetMyPostSaved(string id);
